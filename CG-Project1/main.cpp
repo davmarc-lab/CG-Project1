@@ -119,7 +119,7 @@ int main()
 	Window w = Window("Hello rect", WIDTH, HEIGHT);
 	if (w.initializeWindow() == 0)
 	{
-		Shader roadShader("resources/vertexShader.vert", "resources/roadFragShader.frag");
+		Shader roadShader("resources/vertexShader.vert", "resources/backFragShader.frag");
 		Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
 
 		Square c = Square();

@@ -18,6 +18,11 @@ void Square::createVertexArray()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+    glBindBuffer(GL_ARRAY_BUFFER, this->vbo_c);
+    glBufferData(GL_ARRAY_BUFFER, this->colors.size() * sizeof(vec4), this->colors.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
+    glEnableVertexAttribArray(1);
 }
 
 void Square::draw()

@@ -23,7 +23,13 @@ private:
 	int nvertex = 6;
 
 public:
-	Square() {}
+	Square() 
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            this->colors.push_back(vec4(0, 1, 0, 1));
+        }
+    }
 
 	void draw();
 
