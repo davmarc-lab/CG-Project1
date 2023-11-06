@@ -30,5 +30,6 @@ void main()
     else
         color = background;
 
+
     FragColor = color;        
 }

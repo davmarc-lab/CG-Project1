@@ -87,7 +87,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="resources\fragmentShader.frag" />
-    <None Include="resources\roadFragShader.frag" />
     <None Include="resources\vertexShader.vert" />
+    <None Include="resources\backFragShader.frag" />
   </ItemGroup>
 </Project>

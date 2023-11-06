@@ -154,8 +154,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="resources\backFragShader.frag" />
     <None Include="resources\fragmentShader.frag" />
-    <None Include="resources\roadFragShader.frag" />
     <None Include="resources\vertexShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
