@@ -12,6 +12,7 @@ Window::Window(const char *name, int w, int h)
     this->width = w;
     this->height = h;
     this->windowName = name;
+    this->resolution = vec2(this->width, this->height);
 }
 
 /*

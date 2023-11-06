@@ -69,9 +69,12 @@ void processPlayerInput(Window window, Shape2D* player)
 	float velocity = 0.2;
 	int pixel = 1;
 
+    float width = window.getResolution().x;
+    float height = window.getResolution().y;
+
 	vec3 pos = vec3(player->getModelMatrix()[3]);
 
-	if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && pos.y < 500 - 50 - 25)
+	if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && pos.y < height / 2 - 50 - 25)
 	{
 		player->translateShape(vec3(0, pixel * velocity, 0));
 	}
@@ -120,7 +123,11 @@ int main()
 	if (w.initializeWindow() == 0)
 	{
 		Shader roadShader("resources/vertexShader.vert", "resources/backFragShader.frag");
-		Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
+        Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
+        roadShader.use();
+        GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
+        glUniform2f(resLoc, w.getResolution().x, w.getResolution().y);
+        cout << w.getResolution().y << endl;
 
 		Square c = Square();
 		c.createVertexArray();
@@ -146,7 +153,7 @@ int main()
 		enemy.scaleShape(vec3(25, 25, 1));
 
 		initWindowView(shader);
-		GLuint roadLoc = glGetUniformLocation(shader.getId(), "road");
+        
 
 		while (!glfwWindowShouldClose(w.getWindow()))
 		{
@@ -169,7 +176,6 @@ int main()
 			modelLoc = glGetUniformLocation(roadShader.getId(), "model");
 			projLoc = glGetUniformLocation(roadShader.getId(), "projection");
 
-			glUniform1i(roadLoc, 1);
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(c.getModelMatrix()));
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, value_ptr(projection));
 			glBindVertexArray(c.getVertexArrayObject());
