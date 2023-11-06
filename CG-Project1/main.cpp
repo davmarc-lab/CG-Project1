@@ -127,7 +127,6 @@ int main()
         roadShader.use();
         GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
         glUniform2f(resLoc, w.getResolution().x, w.getResolution().y);
-        cout << w.getResolution().y << endl;
 
 		Square c = Square();
 		c.createVertexArray();
