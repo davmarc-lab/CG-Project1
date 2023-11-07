@@ -1,8 +1,7 @@
-﻿  Square.cpp
+﻿  IntScene.cpp
+  Quad.cpp
+  Rect.cpp
   main.cpp
 C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Shape.hpp(29,42): warning C4267: '=': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\main.cpp(36,14): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
-C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\main.cpp(69,17): warning C4305: 'inizializzazione': troncamento da 'double' a 'float'
-C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\main.cpp(106,17): warning C4305: 'inizializzazione': troncamento da 'double' a 'float'
   Generazione del codice in corso...
   CG-Project1.vcxproj -> C:\Users\Davidescion\Source\Repos\CG-Project1\x64\Debug\CG-Project1.exe

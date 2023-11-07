@@ -128,8 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c" />
+    <ClCompile Include="IntScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\Hermite.cpp" />
+    <ClCompile Include="Quad.cpp" />
+    <ClCompile Include="Rect.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Shader\Shader.cpp" />
     <ClCompile Include="Shape\ComplexShape2D.cpp" />
@@ -143,8 +146,11 @@
     <ClInclude Include="include\GLFW\glfw3.h" />
     <ClInclude Include="include\GLFW\glfw3native.h" />
     <ClInclude Include="include\KHR\khrplatform.h" />
+    <ClInclude Include="IntScene.hpp" />
     <ClInclude Include="Lib.hpp" />
     <ClInclude Include="Math\Hermite.hpp" />
+    <ClInclude Include="Quad.hpp" />
+    <ClInclude Include="Rect.hpp" />
     <ClInclude Include="Scene\Scene.hpp" />
     <ClInclude Include="Shader\Shader.hpp" />
     <ClInclude Include="Shape\ComplexShape2D.hpp" />

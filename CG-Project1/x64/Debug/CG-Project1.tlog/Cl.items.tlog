@@ -1,6 +1,9 @@
 C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\include\glad\glad.c;C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\x64\Debug\glad.obj
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\IntScene.cpp;C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\x64\Debug\IntScene.obj
 C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\main.cpp;C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\x64\Debug\main.obj
 C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Math\Hermite.cpp;C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\x64\Debug\Hermite.obj
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Quad.cpp;C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\x64\Debug\Quad.obj
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Rect.cpp;C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\x64\Debug\Rect.obj
 C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Scene\Scene.cpp;C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\x64\Debug\Scene.obj
 C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shader\Shader.cpp;C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\x64\Debug\Shader.obj
 C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\ComplexShape2D.cpp;C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\x64\Debug\ComplexShape2D.obj

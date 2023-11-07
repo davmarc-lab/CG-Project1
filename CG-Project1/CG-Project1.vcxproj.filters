@@ -42,6 +42,15 @@
     <ClCompile Include="include\glad\glad.c">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="IntScene.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Rect.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Quad.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lib.hpp">
@@ -81,6 +90,15 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="Color\Color.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="IntScene.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Rect.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Quad.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
