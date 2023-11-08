@@ -24,6 +24,6 @@ void Shape2D::createVertexArray()
     glEnableVertexAttribArray(1);
 }
 
-void draw() {
+void Shape2D::draw() {
     
 }

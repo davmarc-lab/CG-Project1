@@ -28,6 +28,10 @@ public:
         this->ntriangle = ntriangle;
     }
 
+    void setColor(Color color) { this->color = color; }
+
+    void setMidColor(Color mid) { this->midColor = color; }
+
     virtual void createVertexArray() override;
 
     virtual void draw() override;

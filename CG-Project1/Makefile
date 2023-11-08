@@ -5,6 +5,7 @@ glad = ./include/glad/glad.c
 gladh = ./include/glad/glad.h
 win = ./Window/Window.cpp
 winh = ./Window/Window.hpp
+intsh = ./Shape/ComplexShape2D.hpp
 square = ./Shape/Square.cpp
 squareh = ./Shape/Square.hpp
 shape = ./Shape/Shape.cpp
@@ -20,13 +21,13 @@ all: main.exe
 main.exe: main.o window.o shape.o shader.o scene.o square.o glad.o
 	g++ ${FLAGS} -o main.exe main.o window.o square.o shape.o glad.o shader.o scene.o ${LIBS}
 
-main.o: main.cpp ${gladh} ${libh}
+main.o: main.cpp ${gladh} ${libh} ${intsh}
 	gcc -c ${FLAGS} main.cpp -o main.o
 
 window.o: ${win} ${winh} ${libh} ${gladh}
 	gcc -c ${FLAGS} ${win} -o window.o
 
-shape.o: ${shape} ${shapeh} ${libh} ${gladh}
+shape.o: ${shape} ${shapeh} ${libh} ${gladh} ${intsh}
 	gcc -c ${FLAGS} ${shape} -o shape.o
 
 shader.o: ${shader} ${shaderh} ${shapeh} ${gladh}
@@ -35,7 +36,7 @@ shader.o: ${shader} ${shaderh} ${shapeh} ${gladh}
 scene.o: ${scene} ${sceneh} ${libh} ${gladh}
 	gcc -c ${FLAGS} ${scene} -o scene.o
 
-square.o: ${square} ${squareh} ${libh} ${gladh}
+square.o: ${square} ${squareh} ${libh} ${gladh} ${intsh}
 	gcc -c ${FLAGS} ${square} -o square.o
 
 glad.o: ${glad} ${gladh}

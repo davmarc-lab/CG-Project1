@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Lib.hpp"
+#include "../Color/Color.hpp"
 #include <vector>
 
 class ComplexShape2D
@@ -11,6 +12,8 @@ public:
     GLuint vbo_c;
     vector<vec3> vertex;
     vector<vec4> colors;
+    Color color;
+    Color midColor;
     mat4 model;
     int nvertex = 0;
     int ntriangle = 0;
@@ -32,6 +35,10 @@ public:
     int getTriangleNum() { return this->ntriangle; }
 
     void setTriangleNum(int n) { this->ntriangle = n; }
+
+    void setColor(Color color) { this->color = color; }
+
+    void setMidColor(Color mid) { this->midColor = color; }
 
     vector<vec3> getVertexArray() { return this->vertex; }
 

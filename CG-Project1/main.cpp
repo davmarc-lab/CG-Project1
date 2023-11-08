@@ -65,7 +65,7 @@ bool checkOutOfBounds(vec3 pos)
 }
 
 // keep the player in the box
-void processPlayerInput(Window window, Shape2D* player)
+void processPlayerInput(Window window, ComplexShape2D* player)
 {
 	float velocity = 0.2;
 	int pixel = 1;
@@ -124,7 +124,7 @@ int main()
 	if (w.initializeWindow() == 0)
 	{
 		Shader roadShader("resources/vertexShader.vert", "resources/backFragShader.frag");
-      Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
+        Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
         roadShader.use();
         GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
         glUniform2f(resLoc, w.getResolution().x, w.getResolution().y);
@@ -135,25 +135,29 @@ int main()
 		ComplexShape2D* player = new Shape2D(50);
 		player->setColor(color::WHITE);
 		player->setMidColor(color::RED);
-		buildCircle(0, 0, 1.0, 1.0, &player);
-		player.createVertexArray();
+		buildCircle(0, 0, 1.0, 1.0, player);
+		player->createVertexArray();
 
-		player.setModelMatrix(mat4(1.0f));
-	player.translateShape(vec3(200, 200, 0));
-		player.scaleShape(vec3(25, 25, 1));
+		player->setModelMatrix(mat4(1.0f));
+	    player->translateShape(vec3(200, 200, 0));
+		player->scaleShape(vec3(25, 25, 1));
 
-		Shape2D enemy = Shape2D(50);
-		enemy.setColor(color::BLACK);
-		enemy.setMidColor(color::WHITE);
-		buildCircle(0, 0, 1.0, 1.0, &enemy);
-		enemy.createVertexArray();
+		ComplexShape2D* enemy = new Shape2D(50);
+		enemy->setColor(color::BLACK);
+		enemy->setMidColor(color::WHITE);
+		buildCircle(0, 0, 1.0, 1.0, enemy);
+		enemy->createVertexArray();
 
-		enemy.setModelMatrix(mat4(1.0f));
-		enemy.translateShape(vec3(1400, 200, 0));
-		enemy.scaleShape(vec3(25, 25, 1));
+		enemy->setModelMatrix(mat4(1.0f));
+		enemy->translateShape(vec3(1400, 200, 0));
+		enemy->scaleShape(vec3(25, 25, 1));
 
 		initWindowView(shader);
-        
+
+        Scene scene = Scene();
+        scene.addShape2dToScene(c);
+        scene.addShape2dToScene(player);
+        scene.addShape2dToScene(enemy);
 
 		while (!glfwWindowShouldClose(w.getWindow()))
 		{
@@ -162,34 +166,34 @@ int main()
 
 			// input
 			w.processCloseInput();
-			processPlayerInput(w, &player);
+			processPlayerInput(w, player);
 
 			// render
 			glClearColor(0.78f, 0.96f, 0.94f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			roadShader.use();
-			c.setModelMatrix(mat4(1.0f));
-			c.translateShape(vec3(0, 0, 0));
-			c.scaleShape(vec3(WIDTH, HEIGHT / 2, 1));
+			c->setModelMatrix(mat4(1.0f));
+			c->translateShape(vec3(0, 0, 0));
+			c->scaleShape(vec3(WIDTH, HEIGHT / 2, 1));
 
 			modelLoc = glGetUniformLocation(roadShader.getId(), "model");
 			projLoc = glGetUniformLocation(roadShader.getId(), "projection");
 
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(c.getModelMatrix()));
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(c->getModelMatrix()));
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, value_ptr(projection));
-			glBindVertexArray(c.getVertexArrayObject());
-			glDrawElements(GL_TRIANGLES, c.getVertexNum(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(c->getVertexArrayObject());
+			glDrawElements(GL_TRIANGLES, c->getVertexNum(), GL_UNSIGNED_INT, 0);
 
 			shader.use();
 
 			modelLoc = glGetUniformLocation(shader.getId(), "model");
 			projLoc = glGetUniformLocation(shader.getId(), "projection");
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(player.getModelMatrix()));
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(player->getModelMatrix()));
 			glUniformMatrix4fv(projLoc, 1, GL_FALSE, value_ptr(projection));
 
-			glBindVertexArray(player.getVertexArrayObject());
-			glDrawArrays(GL_TRIANGLE_FAN, 0, player.getVertexNum() + 2);
+			glBindVertexArray(player->getVertexArrayObject());
+			glDrawArrays(GL_TRIANGLE_FAN, 0, player->getVertexNum() + 2);
 
 			// swap buffers and poll IO events
 			glfwSwapBuffers(w.getWindow());
