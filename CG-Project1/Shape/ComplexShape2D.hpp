@@ -2,6 +2,7 @@
 
 #include "../Lib.hpp"
 #include "../Color/Color.hpp"
+#include "../Shader/Shader.hpp"
 #include <vector>
 
 class ComplexShape2D
@@ -17,8 +18,7 @@ public:
     mat4 model;
     int nvertex = 0;
     int ntriangle = 0;
-
-public:
+    Shader shader;
 
     // Add element to vertex vector3
     void addElementVertex(vec3 elem) { this->vertex.push_back(elem); }
@@ -65,6 +65,10 @@ public:
     void clearVertexArray() { this->vertex.clear(); }
 
     void clearColorArray() { this->colors.clear(); }
+
+    void setShader(Shader shader) { this->shader = shader; }
+
+    void useShader() { this->shader.use(); }
  
     // Creates the VAO of the shape
     virtual void createVertexArray() = 0;

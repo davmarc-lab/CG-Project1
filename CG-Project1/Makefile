@@ -27,7 +27,7 @@ main.o: main.cpp ${gladh} ${libh} ${intsh}
 window.o: ${win} ${winh} ${libh} ${gladh}
 	gcc -c ${FLAGS} ${win} -o window.o
 
-shape.o: ${shape} ${shapeh} ${libh} ${gladh} ${intsh}
+shape.o: ${shape} ${shapeh} ${libh} ${gladh} ${intsh} ${shaderh}
 	gcc -c ${FLAGS} ${shape} -o shape.o
 
 shader.o: ${shader} ${shaderh} ${shapeh} ${gladh}
@@ -36,7 +36,7 @@ shader.o: ${shader} ${shaderh} ${shapeh} ${gladh}
 scene.o: ${scene} ${sceneh} ${libh} ${gladh}
 	gcc -c ${FLAGS} ${scene} -o scene.o
 
-square.o: ${square} ${squareh} ${libh} ${gladh} ${intsh}
+square.o: ${square} ${squareh} ${libh} ${gladh} ${intsh} ${shaderh}
 	gcc -c ${FLAGS} ${square} -o square.o
 
 glad.o: ${glad} ${gladh}

@@ -39,6 +39,8 @@ private:
 public:
     Shader(const char *vertexPath, const char *fragmentPath);
 
+    Shader() {}
+
     GLuint getId() { return this->id; }
 
     void setId(GLuint val) { this->id = val; }
