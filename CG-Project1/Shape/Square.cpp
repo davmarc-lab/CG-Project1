@@ -25,7 +25,7 @@ void Square::createVertexArray()
     glEnableVertexAttribArray(1);
 }
 
-void Square::draw()
+void Square::draw() 
 {
 	glBindVertexArray(this->vao);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

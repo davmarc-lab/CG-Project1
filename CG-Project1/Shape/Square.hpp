@@ -1,15 +1,13 @@
 #pragma once
 
 #include "../Lib.hpp"
+#include "ComplexShape2D.hpp"
 #include <vector>
 
-class Square
+class Square : public ComplexShape2D
 {
 private:
 
-	GLuint vao;
-	GLuint vbo_g;
-	GLuint vbo_c;
 	GLuint ebo;
 	float vertex[12] = {
 		1.0f, 1.0f, 0.0f,		// top right
@@ -18,9 +16,6 @@ private:
 		-1.0f, 1.0f, 0.0f		// top left
 	};
 	unsigned int indices[6] = { 0, 1, 3, 1 ,2 ,3 };
-	vector<vec4> colors;
-	mat4 model = mat4(1.0f);
-	int nvertex = 6;
 
 public:
 	Square() 
@@ -29,24 +24,11 @@ public:
         {
             this->colors.push_back(vec4(0, 1, 0, 1));
         }
+        this->nvertex = 6;
     }
 
-	void draw();
+	virtual void draw() override;
 
-	GLuint getVertexArrayObject() { return this->vao; }
+	virtual void createVertexArray() override;
 
-	void createVertexArray();
-
-	int getVertexNum() { return this->nvertex; }
-
-	mat4 getModelMatrix() { return this->model; }
-
-	void setModelMatrix(mat4 model) { this->model = mat4(model); }
-
-	// modify model matrix
-	void scaleShape(vec3 vec) { this->setModelMatrix(scale(this->getModelMatrix(), vec)); }
-
-	void translateShape(vec3 vec) { this->setModelMatrix(translate(this->getModelMatrix(), vec)); }
-
-	void rotateShape(vec3 vec, float w) { this->setModelMatrix(rotate(this->getModelMatrix(), radians(w), vec)); }
 };

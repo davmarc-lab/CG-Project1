@@ -23,3 +23,7 @@ void Shape2D::createVertexArray()
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
     glEnableVertexAttribArray(1);
 }
+
+void draw() {
+    
+}
