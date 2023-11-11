@@ -116,16 +116,23 @@ void enemyMoveAction(Shape2D* entity)
 int main()
 {
     Window w = Window("Hello rect", WIDTH, HEIGHT);
-    if (w.initializeWindow() == 0)
+    if (w.initializeWindow() != 0)
     {
+        cout << "Cannot start the application, due to GLFW error" << endl;
+        return -1;
+    }
+    else
+    {   
+        // Create the background shader and set the window resolution for drawing purpose
         Shader roadShader("resources/vertexShader.vert", "resources/backFragShader.frag");
         roadShader.use();
-        
         GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
         glUniform2f(resLoc, WIDTH, HEIGHT);
-
+        
+        // Creates the shapes shader
         Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
 
+        // Create all the shapes of the scene
         ComplexShape2D* c = new Square();
         c->scaleShape(vec3(1600, 900 / 2, 1));
         c->createVertexArray();
@@ -143,16 +150,18 @@ int main()
         enemy->setColor(color::BLACK);
         enemy->setMidColor(color::WHITE);
         buildCircle(0, 0, 1.0, 1.0, enemy);
-        enemy->createVertexArray();
 
+        enemy->createVertexArray();
         enemy->translateShape(vec3(1400, 200, 0));
         enemy->scaleShape(vec3(25, 25, 1));
 
+        // Creates the drawing scenes with the projection matrix
         Scene scene = Scene(projection);
         scene.addShape2dToScene(c, roadShader);
         scene.addShape2dToScene(player, shader);
         scene.addShape2dToScene(enemy, shader);
 
+        // Start of window loop
         while (!glfwWindowShouldClose(w.getWindow()))
         {
             // input
@@ -162,19 +171,14 @@ int main()
             // render
             glClearColor(0.78f, 0.96f, 0.94f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
+
             scene.drawScene();
-            
+
             // swap buffers and poll IO events
             glfwSwapBuffers(w.getWindow());
             glfwPollEvents();
         }
         w.terminateWindow();
-    }
-    else
-    {
-        cout << "Cannot start the application, due to GLFW error" << endl;
-        return -1;
     }
 
     return 0;

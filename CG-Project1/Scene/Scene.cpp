@@ -29,5 +29,4 @@ void reshape(int width, int height)
 {
     float aspectratio = (float) width / (float) height;
 
-    // if (aspectratio < 
 }
