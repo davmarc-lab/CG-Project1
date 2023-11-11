@@ -2,6 +2,7 @@
 
 #include "../Shape/Shape.hpp"
 #include "../Shader/Shader.hpp"
+#include <glm/ext/matrix_clip_space.hpp>
 #include <iostream>
 #include <utility>
 
@@ -11,8 +12,12 @@ class Scene
 {
 private:
     vector<pair<ComplexShape2D*, Shader>> shapes;
+    mat4 projection;
+    
 public:
-    Scene();
+    Scene() {}
+
+    Scene(mat4 projection);
 
     void addShape2dToScene(ComplexShape2D* shape, Shader shader) { this->shapes.push_back(pair(shape, shader)); }
 

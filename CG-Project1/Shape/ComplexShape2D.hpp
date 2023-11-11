@@ -15,7 +15,7 @@ public:
     vector<vec4> colors;
     Color color;
     Color midColor;
-    mat4 model;
+    mat4 model = mat4(1.0f);
     int nvertex = 0;
     int ntriangle = 0;
 

@@ -26,14 +26,10 @@ void Shape2D::createVertexArray()
 }
 
 void Shape2D::draw(Shader shader) {
-    GLuint modelLoc, projLoc;
-    mat4 projection = ortho(0.0f, 1600.0f, 0.0f, 900.0f);
+    GLuint modelLoc;
 
-    shader.use();
     modelLoc = glGetUniformLocation(shader.getId(), "model");
-    projLoc = glGetUniformLocation(shader.getId(), "projection");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(this->getModelMatrix()));
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, value_ptr(projection));
 
     glBindVertexArray(this->getVertexArrayObject());
     glDrawArrays(GL_TRIANGLE_FAN, 0, this->getVertexNum() + 2);
