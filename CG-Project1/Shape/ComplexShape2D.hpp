@@ -37,7 +37,11 @@ public:
 
     void setColor(Color color) { this->color = color; }
 
-    void setMidColor(Color mid) { this->midColor = color; }
+    Color getColor() { return this->color; }
+
+    void setMidColor(Color mid) { this->midColor = mid; }
+
+    Color getMidColor() { return this->midColor; }
 
     vector<vec3> getVertexArray() { return this->vertex; }
 
