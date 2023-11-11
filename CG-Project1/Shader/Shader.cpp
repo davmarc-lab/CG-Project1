@@ -39,10 +39,6 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath)
     const char *vShaderCode = vertexCode.c_str();
     const char *fShaderCode = fragmentCode.c_str();
 
-    // cout << vShaderCode << endl;
-
-    // cout << fShaderCode << endl;
-
     // compiles the provided shaders
     GLuint vertex, fragment;
 
