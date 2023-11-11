@@ -18,7 +18,6 @@ public:
     mat4 model;
     int nvertex = 0;
     int ntriangle = 0;
-    Shader shader;
 
     // Add element to vertex vector3
     void addElementVertex(vec3 elem) { this->vertex.push_back(elem); }
@@ -66,13 +65,9 @@ public:
 
     void clearColorArray() { this->colors.clear(); }
 
-    void setShader(Shader shader) { this->shader = shader; }
-
-    void useShader() { this->shader.use(); }
- 
     // Creates the VAO of the shape
     virtual void createVertexArray() = 0;
 
     // Create all vertex and color VBO, enable them and draw in the windows
-    virtual void draw() = 0;
+    virtual void draw(Shader shader) = 0;
 };

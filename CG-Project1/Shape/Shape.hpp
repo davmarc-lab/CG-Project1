@@ -34,6 +34,6 @@ public:
 
     virtual void createVertexArray() override;
 
-    virtual void draw() override;
+    virtual void draw(Shader shader) override;
 
 };

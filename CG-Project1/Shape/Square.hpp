@@ -27,7 +27,7 @@ public:
         this->nvertex = 6;
     }
 
-	virtual void draw() override;
+	virtual void draw(Shader shader) override;
 
 	virtual void createVertexArray() override;
 

@@ -10,13 +10,13 @@ using namespace std;
 class Scene
 {
 private:
-    vector<ComplexShape2D*> shapes;
+    vector<pair<ComplexShape2D*, Shader>> shapes;
 public:
     Scene();
 
-    void addShape2dToScene(ComplexShape2D* shape, Shader shader) { this->shapes.push_back(shape); }
+    void addShape2dToScene(ComplexShape2D* shape, Shader shader) { this->shapes.push_back(pair(shape, shader)); }
 
-    vector<ComplexShape2D*> getSceneElements() { return this->shapes; }
+    vector<pair<ComplexShape2D*, Shader>> getSceneElements() { return this->shapes; }
 
     GLenum getRenderMode(ComplexShape2D shape);
 
