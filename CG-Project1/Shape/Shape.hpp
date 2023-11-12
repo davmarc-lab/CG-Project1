@@ -7,9 +7,6 @@
 
 class Shape2D : public ComplexShape2D
 {
-private:
-    Color midColor = Color();
-    Color color = Color();
 
 public:
 
