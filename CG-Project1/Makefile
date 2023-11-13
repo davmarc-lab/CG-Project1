@@ -22,8 +22,8 @@ libh = Lib.hpp
 
 all: main.exe
 
-main.exe: main.o window.o shape.o shader.o scene.o square.o hermite.o curve.o glad.o
-	g++ ${FLAGS} -o main.exe main.o window.o square.o shape.o hermite.o glad.o curve.o shader.o scene.o ${LIBS}
+main.exe: main.o window.o shape.o shader.o scene.o square.o curve.o glad.o
+	g++ ${FLAGS} -o main.exe main.o window.o square.o shape.o glad.o curve.o shader.o scene.o ${LIBS}
 
 main.o: main.cpp ${gladh} ${libh} ${intsh}
 	gcc -c ${FLAGS} main.cpp -o main.o
@@ -42,9 +42,6 @@ scene.o: ${scene} ${sceneh} ${libh} ${gladh}
 
 square.o: ${square} ${squareh} ${libh} ${gladh} ${intsh} ${shaderh}
 	gcc -c ${FLAGS} ${square} -o square.o
-
-hermite.o: ${herm} ${hermh} ${libh} ${gladh} ${intsh} ${shaderh}
-	gcc -c ${FLAGS} ${herm} -o hermite.o
 
 curve.o: ${curve} ${curveh} ${libh} ${gladh} ${intsh} ${shaderh}
 	gcc -c ${FLAGS} ${curve} -o curve.o

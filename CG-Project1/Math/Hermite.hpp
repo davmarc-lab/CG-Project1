@@ -15,7 +15,7 @@ float DX (int i, float *t);
 
 float DY (int i, float *t);
 
-void hermiteInterpolation(float *t, Curve *shape, vec4 color_top, vec4 color_bot);
+Curve* hermiteInterpolation(float *t, Curve *shape, vec4 color_top, vec4 color_bot);
 
 Curve* buildHermite(vec4 color_top, vec4 color_bot, Curve *shape);
 

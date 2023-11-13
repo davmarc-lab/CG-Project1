@@ -1,5 +1,4 @@
 ﻿#include "Lib.hpp"
-#include "Math/Hermite.hpp"
 #include "Shape/ComplexShape2D.hpp"
 #include "Shape/Curve.hpp"
 #include "Window/Window.hpp"
@@ -157,19 +156,19 @@ int main()
         enemy->translateShape(vec3(1400, 200, 0));
         enemy->scaleShape(vec3(25, 25, 1));
 
-        ComplexShape2D* herm = new Curve();
-        readDataFromFile("resources/hermite/boomerang.txt");
-        herm = buildHermite(herm->getMidColor().getColorVector(), herm->getColor().getColorVector(), (Curve*) herm);
-        herm->createVertexArray();
+        /* Curve* herm = new Curve(); */
+        /* herm->readDataFromFile("resources/hermite/boomerang.txt"); */
+        /* herm->buildHermite(herm->getMidColor().getColorVector(), herm->getColor().getColorVector()); */
+        /* herm->createVertexArray(); */
 
-        herm->translateShape(vec3(400, 200, 0));
-        herm->scaleShape(vec3(20, 20, 1));
+        /* herm->translateShape(vec3(400, 200, 0)); */
+        /* herm->scaleShape(vec3(200, 200, 1)); */
 
         // Creates the drawing scenes with the projection matrix
         Scene scene = Scene(projection);
-        /* scene.addShape2dToScene(c, roadShader); */
-        /* scene.addShape2dToScene(player, shader); */
-        scene.addShape2dToScene(herm, shader);
+        scene.addShape2dToScene(c, roadShader);
+        scene.addShape2dToScene(player, shader);
+        /* scene.addShape2dToScene(herm, shader); */
 
         // Start of window loop
         while (!glfwWindowShouldClose(w.getWindow()))

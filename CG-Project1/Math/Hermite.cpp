@@ -55,7 +55,7 @@ float DY (int i, float *t)
         return derivate->CP.at(i).y;
 }
 
-void hermiteInterpolation(float *t, Curve *shape, vec4 color_top, vec4 color_bot)
+Curve* hermiteInterpolation(float *t, Curve *shape, vec4 color_top, vec4 color_bot)
 {
     float p_t = 0, p_b = 0, p_c = 0, x, y;
     float step_tg = 1.0 / (float)(pval - 1);
@@ -66,7 +66,7 @@ void hermiteInterpolation(float *t, Curve *shape, vec4 color_top, vec4 color_bot
     shape->clearVertexArray();
     shape->clearColorArray();
 
-    shape->addElementVertex(vec3(-0.1, -0.7, 0.0));
+    shape->addElementVertex(vec3(-0.446875, 0.125, 0));
     shape->addElementColors(color_bot);
 
     for (tg = 0; tg <= 1; tg += step_tg)
@@ -78,8 +78,11 @@ void hermiteInterpolation(float *t, Curve *shape, vec4 color_top, vec4 color_bot
 
         x = shape->CP[is].x + PHI0(tgmap) + DX (is, t) * PHI1(tgmap) * phase + shape->CP[is + 1].x + PSI0(tgmap) + DX (is + 1, t) * PSI1(tgmap) * phase;
         y = shape->CP[is].y + PHI0(tgmap) + DY (is, t) * PHI1(tgmap) * phase + shape->CP[is + 1].y + PSI0(tgmap) + DY (is + 1, t) * PSI1(tgmap) * phase;
-    }
 
+        shape->addElementVertex(vec3(x, y, 0));
+        shape->addElementColors(color_top);
+    }
+    return shape;
 }
 
 Curve* buildHermite(vec4 color_top, vec4 color_bot, Curve *shape)
@@ -94,10 +97,11 @@ Curve* buildHermite(vec4 color_top, vec4 color_bot, Curve *shape)
 
         for (int i = 0; i < curve->CP.size(); i++)
             t[i] = (float)i * step;
-        hermiteInterpolation(t, curve, color_top, color_bot);
+        curve = hermiteInterpolation(t, curve, color_top, color_bot);
 
         shape->setVertexNum(curve->getVertexArray().size());
     }
+    cout << shape->getVertexArray().size() << endl;
     return curve;
 }
 
@@ -119,9 +123,9 @@ void readDataFromFile(const char* pathFile)
     {
         row++;
 
-        if (row <= 1000)
+        if (row >= 1000)
         {
-            std::cout << "Too much row in the file, cannot read all the data" << std::endl;
+            cout << "Too much row in the file, cannot read all the data" << endl;
             break;
         }
     }
@@ -133,4 +137,5 @@ void readDataFromFile(const char* pathFile)
         curve->CP.push_back(vec3(data[i].x, data[i].y, data[i].z));
         derivate->CP.push_back(vec3(0.0, 0.0, 0.0));
     }
+
 }
