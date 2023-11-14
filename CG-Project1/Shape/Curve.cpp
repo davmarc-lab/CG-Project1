@@ -54,8 +54,8 @@ void Curve::hermiteInterpolation(float* t, vec4 color_top, vec4 color_bot, Curve
 
 	Fig->vertex.clear();
 	Fig->colors.clear();
-    this->addElementVertex(vec3(-0.15, 0, 0));
-    this->addElementColors(color_bot);
+    /*this->addElementVertex(vec3(0, 0, 0));
+    this->addElementColors(color_bot);*/
 
 	for (tg = 0; tg <= 1; tg += passotg)
 	{

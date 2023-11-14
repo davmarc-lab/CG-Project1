@@ -27,7 +27,7 @@ public:
     Scene(mat4 projection);
 
     // Add to the scene a given shape and his shader.
-    void addShape2dToScene(ComplexShape2D* shape, Shader shader) { this->shapes.push_back(pair(shape, shader)); }
+    void addShape2dToScene(ComplexShape2D* shape, Shader shader) { this->shapes.push_back(pair<ComplexShape2D*, Shader> (shape, shader)); }
 
     // Retrieves all the element of the scene in a vector<pair<ComplexShape2D*, Shader>>.
     vector<pair<ComplexShape2D*, Shader>> getSceneElements() { return this->shapes; }

@@ -115,7 +115,7 @@ void enemyMoveAction(ComplexShape2D* entity)
 
 void rotateObject(ComplexShape2D* shape)
 {
-    float velocity = 7.3f;
+    float velocity = 4.3f;
     shape->rotateShape(vec3(0, 0, 1), velocity);
 }
 
@@ -163,13 +163,13 @@ int main()
 
         // Create a shape from an hermite curve file
         Curve* herm = new Curve();
-        herm->readDataFromFile("resources/hermite/boomerang.txt");
-        herm->buildHermite(color::BLACK, color::RED, herm);
+        herm->readDataFromFile("resources/hermite/banana.txt");
+        herm->buildHermite(color::GREEN, color::WHITE, herm);
 
         herm->createVertexArray();
 
         herm->translateShape(vec3(500, 200, 0));
-        herm->scaleShape(vec3(200, 200, 1));
+        herm->scaleShape(vec3(150, 150, 1));
 
         // Creates the drawing scenes with the projection matrix
         Scene scene = Scene(projection);
@@ -191,7 +191,7 @@ int main()
 
             scene.drawScene();
             enemyMoveAction(enemy);
-            rotateObject(herm);
+			//rotateObject(herm);
 
             // swap buffers and poll IO events
             glfwSwapBuffers(w.getWindow());

@@ -1,7 +1,22 @@
-﻿  IntScene.cpp
-  Quad.cpp
-  Rect.cpp
+﻿  Curve.cpp
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(14,89): warning C4244: 'return': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(16,89): warning C4244: 'return': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(19,115): warning C4244: 'return': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(21,115): warning C4244: 'return': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(26,99): warning C4244: 'return': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(28,95): warning C4244: 'return': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(31,115): warning C4244: 'return': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(33,115): warning C4244: 'return': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(49,16): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(68,109): warning C4244: '=': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(69,109): warning C4244: '=': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(85,14): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(90,45): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Curve.cpp(96,6): warning C4101: 'i': variabile locale senza riferimenti
   main.cpp
-C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Shape.hpp(29,42): warning C4267: '=': conversione da 'size_t' a 'int'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\Shape\Shape.hpp(19,42): warning C4267: '=': conversione da 'size_t' a 'int'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\main.cpp(35,17): warning C4244: 'inizializzazione': conversione da 'double' a 'float'. Possibile perdita di dati.
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\main.cpp(68,20): warning C4305: 'inizializzazione': troncamento da 'double' a 'float'
+C:\Users\Davidescion\Source\Repos\CG-Project1\CG-Project1\main.cpp(106,20): warning C4305: 'inizializzazione': troncamento da 'double' a 'float'
   Generazione del codice in corso...
   CG-Project1.vcxproj -> C:\Users\Davidescion\Source\Repos\CG-Project1\x64\Debug\CG-Project1.exe
