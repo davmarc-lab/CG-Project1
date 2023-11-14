@@ -35,26 +35,12 @@ float Curve::dy(int i, float* t, float Tens, float Bias, float Cont, Curve* Fig)
 
 float Curve::DX(int i, float* t)
 {
-	// Nei vertex di controllo per i quali non sono stati modificati i parametri Tens, Bias, Cont il valore della derivata della componente x della curva � quello originale, altrimenti � quello che � stato modificato nella funzione
-	// keyboardfunc  in seguito alla modifica dei valori Tens, Bias e Cont.
-
-	if (Derivata.CP.at(i).x == 0)
-		return dx(i, t, 0.0, 0.0, 0.0, &Poligonale);
-
-	if (Derivata.CP.at(i).x != 0)
-		return Derivata.CP.at(i).x;
+    return Derivata.CP.at(i).x == 0 ? dx(i, t, 0.0, 0.0, 0.0, &Poligonale) : Derivata.CP.at(i).x;
 }
 
 float Curve::DY(int i, float* t)
 {
-	// Nei vertex di controllo per i quali non sono stati modificati i parametri Tens, Bias, Cont il valore della derivata della componente y della curva � quello originale, altrimenti � quello che � stato modificato nella funzione
-	// keyboardfunc  in seguito alla modifica dei valori Tens, Bias e Cont.
-
-	if (Derivata.CP.at(i).y == 0)
-		return dy(i, t, 0.0, 0.0, 0.0, &Poligonale);
-
-	if (Derivata.CP.at(i).y != 0)
-		return Derivata.CP.at(i).y;
+    return Derivata.CP.at(i).y == 0 ? dy(i, t, 0.0, 0.0, 0.0, &Poligonale) : Derivata.CP.at(i).y; 
 }
 
 void Curve::hermiteInterpolation(float* t, vec4 color_top, vec4 color_bot, Curve* Fig)
@@ -64,11 +50,12 @@ void Curve::hermiteInterpolation(float* t, vec4 color_top, vec4 color_bot, Curve
 
 	float tg = 0, tgmapp, ampiezza;
 	int i = 0;
-	int is = 0; // indice dell'estremo sinistro dell'intervallo [t(i),t(i+1)] a cui il punto tg
-	// appartiene
+	int is = 0;
 
 	Fig->vertex.clear();
 	Fig->colors.clear();
+    this->addElementVertex(vec3(-0.15, 0, 0));
+    this->addElementColors(color_bot);
 
 	for (tg = 0; tg <= 1; tg += passotg)
 	{
@@ -100,7 +87,6 @@ void Curve::buildHermite(vec4 color_top, vec4 color_bot, Curve* forma)
 			t[i] = (float)i * step;
 
 		this->hermiteInterpolation(t, color_top, color_bot, &Curva);
-
         this->setVertexNum(this->vertex.size());
 	}
 }
@@ -133,7 +119,7 @@ void Curve::readDataFromFile(const char* path)
 		// Puoi aggiungere un controllo qui per evitare il superamento dell'array dati
 		if (riga >= 1000)
 		{
-			printf("Troppe righe nel file. L'array dati   stato completamente riempito.\n");
+			printf("The file is too long, cannot write all data.\n");
 			break;
 		}
 	}

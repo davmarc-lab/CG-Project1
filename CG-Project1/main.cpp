@@ -98,10 +98,10 @@ int startDirection = 1;
 
 bool checkInRoadBound(float y)
 {
-    return y < 500 - 50 - 25 && y > 0 + 50 + 25;
+    return y < HEIGHT / 2 - 50 - 25 && y > 0 + 50 + 25;
 }
 
-void enemyMoveAction(Shape2D* entity)
+void enemyMoveAction(ComplexShape2D* entity)
 {
     float velocity = 0.1;
     int pixel = 1;
@@ -110,8 +110,13 @@ void enemyMoveAction(Shape2D* entity)
     if (!checkInRoadBound(pos.y))
         startDirection *= -1;
     entity->translateShape(vec3(0, startDirection * pixel * velocity, 0));
+}
 
-    // cout << pos.x << ", " << pos.y << endl;
+
+void rotateObject(ComplexShape2D* shape)
+{
+    float velocity = 7.3f;
+    shape->rotateShape(vec3(0, 0, 1), velocity);
 }
 
 int main()
@@ -156,6 +161,7 @@ int main()
         enemy->translateShape(vec3(1400, 200, 0));
         enemy->scaleShape(vec3(25, 25, 1));
 
+        // Create a shape from an hermite curve file
         Curve* herm = new Curve();
         herm->readDataFromFile("resources/hermite/boomerang.txt");
         herm->buildHermite(color::BLACK, color::RED, herm);
@@ -165,12 +171,11 @@ int main()
         herm->translateShape(vec3(500, 200, 0));
         herm->scaleShape(vec3(200, 200, 1));
 
-        cout << to_string(herm->getModelMatrix()) << endl;
-
         // Creates the drawing scenes with the projection matrix
         Scene scene = Scene(projection);
         scene.addShape2dToScene(c, roadShader);
         scene.addShape2dToScene(player, shader);
+        scene.addShape2dToScene(enemy, shader);
         scene.addShape2dToScene(herm, shader);
 
         // Start of window loop
@@ -185,6 +190,8 @@ int main()
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             scene.drawScene();
+            enemyMoveAction(enemy);
+            rotateObject(herm);
 
             // swap buffers and poll IO events
             glfwSwapBuffers(w.getWindow());
