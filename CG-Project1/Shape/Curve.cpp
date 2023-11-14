@@ -1,169 +1,178 @@
 #include "Curve.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
-#include <cstdio>
-#include <iostream>
+Curve Curva = Curve();
+Curve Derivata = Curve();
+Curve Poligonale = Curve();
 
-#define MAX_DATA 1000
+int pval = 140;
+float* t;
 
-Curve* derivate = new Curve();
-Curve* poly = new Curve();
-Curve* curve = new Curve();
-
-float pval = 140;
-float *t;
-
-float Curve::dx (int i, float *t, float Tens, float Bias, float Cont, Curve *poly)
+float Curve::dx(int i, float* t, float Tens, float Bias, float Cont, Curve* Fig)
 {
-    if (i == 0)
-        return 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (poly->CP[i + 1].x - poly->CP[i].x) / (t[i + 1] - t[i]);
-    if (i == poly->CP.size() - 1)
-        return 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (poly->CP[i].x - poly->CP[i - 1].x) / (t[i] - t[i - 1]);
+	if (i == 0)
+		return 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (Fig->CP[i + 1].x - Fig->CP[i].x) / (t[i + 1] - t[i]);
+	if (i == Fig->CP.size() - 1)
+		return 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (Fig->CP[i].x - Fig->CP[i - 1].x) / (t[i] - t[i - 1]);
 
-    if (i % 2 == 0)
-        return 0.5 * (1 - Tens) * (1 + Bias) * (1 + Cont) * (poly->CP.at(i).x - poly->CP.at(i - 1).x) / (t[i] - t[i - 1]) + 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (poly->CP.at(i + 1).x - poly->CP.at(i).x) / (t[i + 1] - t[i]);
-    else
-        return 0.5 * (1 - Tens) * (1 + Bias) * (1 - Cont) * (poly->CP.at(i).x - poly->CP.at(i - 1).x) / (t[i] - t[i - 1]) + 0.5 * (1 - Tens) * (1 - Bias) * (1 + Cont) * (poly->CP.at(i + 1).x - poly->CP.at(i).x) / (t[i + 1] - t[i]);
+	if (i % 2 == 0)
+		return 0.5 * (1 - Tens) * (1 + Bias) * (1 + Cont) * (Fig->CP.at(i).x - Fig->CP.at(i - 1).x) / (t[i] - t[i - 1]) + 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (Fig->CP.at(i + 1).x - Fig->CP.at(i).x) / (t[i + 1] - t[i]);
+	else
+		return 0.5 * (1 - Tens) * (1 + Bias) * (1 - Cont) * (Fig->CP.at(i).x - Fig->CP.at(i - 1).x) / (t[i] - t[i - 1]) + 0.5 * (1 - Tens) * (1 - Bias) * (1 + Cont) * (Fig->CP.at(i + 1).x - Fig->CP.at(i).x) / (t[i + 1] - t[i]);
+}
+float Curve::dy(int i, float* t, float Tens, float Bias, float Cont, Curve* Fig)
+{
+	if (i == 0)
+		return 0.5 * (1.0 - Tens) * (1.0 - Bias) * (1 - Cont) * (Fig->CP.at(i + 1).y - Fig->CP.at(i).y) / (t[i + 1] - t[i]);
+	if (i == Fig->CP.size() - 1)
+		return 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (Fig->CP.at(i).y - Fig->CP.at(i - 1).y) / (t[i] - t[i - 1]);
 
+	if (i % 2 == 0)
+		return 0.5 * (1 - Tens) * (1 + Bias) * (1 + Cont) * (Fig->CP.at(i).y - Fig->CP.at(i - 1).y) / (t[i] - t[i - 1]) + 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (Fig->CP.at(i + 1).y - Fig->CP.at(i).y) / (t[i + 1] - t[i]);
+	else
+		return 0.5 * (1 - Tens) * (1 + Bias) * (1 - Cont) * (Fig->CP.at(i).y - Fig->CP.at(i - 1).y) / (t[i] - t[i - 1]) + 0.5 * (1 - Tens) * (1 - Bias) * (1 + Cont) * (Fig->CP.at(i + 1).y - Fig->CP.at(i).y) / (t[i + 1] - t[i]);
 }
 
-float Curve::dy(int i, float *t, float Tens, float Bias, float Cont, Curve *poly)
+float Curve::DX(int i, float* t)
 {
-    if (i == 0)
-        return 0.5 * (1.0 - Tens) * (1.0 - Bias) * (1 - Cont) * (poly->CP.at(i + 1).y - poly->CP.at(i).y) / (t[i + 1] - t[i]);
-    if (i == poly->CP.size() - 1)
-        return 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (poly->CP.at(i).y - poly->CP.at(i - 1).y) / (t[i] - t[i - 1]);
+	// Nei vertex di controllo per i quali non sono stati modificati i parametri Tens, Bias, Cont il valore della derivata della componente x della curva � quello originale, altrimenti � quello che � stato modificato nella funzione
+	// keyboardfunc  in seguito alla modifica dei valori Tens, Bias e Cont.
 
-    if (i % 2 == 0)
-        return 0.5 * (1 - Tens) * (1 + Bias) * (1 + Cont) * (poly->CP.at(i).y - poly->CP.at(i - 1).y) / (t[i] - t[i - 1]) + 0.5 * (1 - Tens) * (1 - Bias) * (1 - Cont) * (poly->CP.at(i + 1).y - poly->CP.at(i).y) / (t[i + 1] - t[i]);
-    else
-        return 0.5 * (1 - Tens) * (1 + Bias) * (1 - Cont) * (poly->CP.at(i).y - poly->CP.at(i - 1).y) / (t[i] - t[i - 1]) + 0.5 * (1 - Tens) * (1 - Bias) * (1 + Cont) * (poly->CP.at(i + 1).y - poly->CP.at(i).y) / (t[i + 1] - t[i]);
+	if (Derivata.CP.at(i).x == 0)
+		return dx(i, t, 0.0, 0.0, 0.0, &Poligonale);
+
+	if (Derivata.CP.at(i).x != 0)
+		return Derivata.CP.at(i).x;
 }
 
-float Curve::DX (int i, float *t)
+float Curve::DY(int i, float* t)
 {
-    if (derivate->CP.at(i).x == 0)
-        return dx(i, t, 0.0, 0.0, 0.0, poly);
-    else
-        return derivate->CP.at(i).x;
+	// Nei vertex di controllo per i quali non sono stati modificati i parametri Tens, Bias, Cont il valore della derivata della componente y della curva � quello originale, altrimenti � quello che � stato modificato nella funzione
+	// keyboardfunc  in seguito alla modifica dei valori Tens, Bias e Cont.
+
+	if (Derivata.CP.at(i).y == 0)
+		return dy(i, t, 0.0, 0.0, 0.0, &Poligonale);
+
+	if (Derivata.CP.at(i).y != 0)
+		return Derivata.CP.at(i).y;
 }
 
-float Curve::DY (int i, float *t)
+void Curve::hermiteInterpolation(float* t, vec4 color_top, vec4 color_bot, Curve* Fig)
 {
-    if (derivate->CP.at(i).y == 0)
-        return dy(i, t, 0.0, 0.0, 0.0, poly);
-    else
-        return derivate->CP.at(i).y;
+	float p_t = 0, p_b = 0, p_c = 0, x, y;
+	float passotg = 1.0 / (float)(pval - 1);
+
+	float tg = 0, tgmapp, ampiezza;
+	int i = 0;
+	int is = 0; // indice dell'estremo sinistro dell'intervallo [t(i),t(i+1)] a cui il punto tg
+	// appartiene
+
+	Fig->vertex.clear();
+	Fig->colors.clear();
+
+	for (tg = 0; tg <= 1; tg += passotg)
+	{
+		if (tg > t[is + 1])
+			is++;
+
+		ampiezza = (t[is + 1] - t[is]);
+		tgmapp = (tg - t[is]) / ampiezza;
+
+		x = Fig->CP[is].x * PHI0(tgmapp) + DX(is, t) * PHI1(tgmapp) * ampiezza + Fig->CP[is + 1].x * PSI0(tgmapp) + DX(is + 1, t) * PSI1(tgmapp) * ampiezza;
+		y = Fig->CP[is].y * PHI0(tgmapp) + DY(is, t) * PHI1(tgmapp) * ampiezza + Fig->CP[is + 1].y * PSI0(tgmapp) + DY(is + 1, t) * PSI1(tgmapp) * ampiezza;
+		this->vertex.push_back(vec3(x, y, 0.0));
+		this->colors.push_back(color_top);
+	}
 }
 
-void Curve::hermiteInterpolation(float *t, vec4 color_top, vec4 color_bot)
+
+void Curve::buildHermite(vec4 color_top, vec4 color_bot, Curve* forma)
 {
-    float p_t = 0, p_b = 0, p_c = 0, x, y;
-    float step_tg = 1.0 / (float)(pval - 1);
+	Poligonale.CP = Curva.CP;
+	Poligonale.colCP = Curva.colCP;
+    Poligonale.createVertexArray();
 
-    float tg = 0, tgmap, phase;
-    int is = 0;
+	if (Poligonale.CP.size() > 1)
+	{
+		t = new float[Poligonale.CP.size()];
+		float step = 1.0 / (float)(Poligonale.CP.size() - 1);
+		for (int i = 0; i < Poligonale.CP.size(); i++)
+			t[i] = (float)i * step;
 
-    this->clearVertexArray();
-    this->clearColorArray();
+		this->hermiteInterpolation(t, color_top, color_bot, &Curva);
 
-    this->addElementVertex(vec3(-0.446875, 0.125, 0));
-    this->addElementColors(color_bot);
-
-    for (tg = 0; tg <= 1; tg += step_tg)
-    {
-        if (tg > t[is +1])
-            is++;
-        phase = t[is + 1] - t[is];
-        tgmap = (tg - t[is]) / phase;
-
-        x = this->CP[is].x + PHI0(tgmap) + DX (is, t) * PHI1(tgmap) * phase + this->CP[is + 1].x + PSI0(tgmap) + DX (is + 1, t) * PSI1(tgmap) * phase;
-        y = this->CP[is].y + PHI0(tgmap) + DY (is, t) * PHI1(tgmap) * phase + this->CP[is + 1].y + PSI0(tgmap) + DY (is + 1, t) * PSI1(tgmap) * phase;
-
-        this->addElementVertex(vec3(x, y, 0));
-        this->addElementColors(color_top);
-    }
+        this->setVertexNum(this->vertex.size());
+	}
 }
 
-void Curve::buildHermite(vec4 color_top, vec4 color_bot)
+void Curve::readDataFromFile(const char* path)
 {
-    poly->CP = curve->CP;
-    poly->colCP = curve->colCP;
+	int i;
+	struct Dati
+	{
+		float x;
+		float y;
+		float z;
+	};
 
-    if (poly->CP.size() > 1)
-    {
-        t = new float[curve->CP.size()];
-        float step = 1.0 / (float)(curve->CP.size() - 1);
+	FILE* file = fopen(path, "r");
+	if (file == NULL)
+	{
+		perror("Impossibile aprire il file");
+	}
 
-        for (int i = 0; i < curve->CP.size(); i++)
-            t[i] = (float)i * step;
-        this->hermiteInterpolation(t, color_top, color_bot);
+	// Vettore per memorizzare i dati
+	struct Dati dati[1000]; // Supponiamo che ci siano al massimo 100 righe nel file
 
-        this->setVertexNum(curve->getVertexArray().size());
-    }
-    cout << this->getVertexArray().size() << endl;
-}
+	int riga = 0;
+	while (fscanf(file, "%f %f %f", &dati[riga].x, &dati[riga].y, &dati[riga].z) == 3)
+	{
+		// Incrementa l'indice della riga
+		riga++;
 
-void Curve::readDataFromFile(const char* pathFile)
-{
-    typedef struct Coords
-    {
-        float x, y, z;
-    } Coords;
+		// Puoi aggiungere un controllo qui per evitare il superamento dell'array dati
+		if (riga >= 1000)
+		{
+			printf("Troppe righe nel file. L'array dati   stato completamente riempito.\n");
+			break;
+		}
+	}
 
-    FILE *file = fopen(pathFile, "r");
-    if (file == NULL)
-        perror("Cannot open the file");
+	// Chiudi il file
+	fclose(file);
 
-    Coords data[MAX_DATA];
-
-    int row = 0;
-    while (fscanf(file, "%f %f %f", &data[row].x, &data[row].y, &data[row].z) == 3)
-    {
-        row++;
-
-        if (row >= 1000)
-        {
-            cout << "Too much row in the file, cannot read all the data" << endl;
-            break;
-        }
-    }
-
-    fclose(file);
-    
-    for (int i = 0; i < row; i++)
-    {
-        curve->CP.push_back(vec3(data[i].x, data[i].y, data[i].z));
-        derivate->CP.push_back(vec3(0.0, 0.0, 0.0));
-    }
-
+	for (int i = 0; i < riga; i++)
+	{
+		Curva.CP.push_back(vec3(dati[i].x, dati[i].y, dati[i].z));
+		Derivata.CP.push_back(vec3(0.0, 0.0, 0.0));
+	}
 }
 
 void Curve::createVertexArray()
 {
     glGenVertexArrays(1, &this->vao);
-    glBindVertexArray(this->vao);
+	glBindVertexArray(this->vao);
 
-    glGenBuffers(1, &this->vbo_g);
-    glBindBuffer(GL_ARRAY_BUFFER, this->vbo_g);
-    glBufferData(GL_ARRAY_BUFFER, this->vertex.size() * sizeof(vec3), this->vertex.data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &this->vbo_g);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_g);
+	glBufferData(GL_ARRAY_BUFFER, this->vertex.size() * sizeof(vec3), this->vertex.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-    glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(0);
 
-    glGenBuffers(1, &this->vbo_c);
-    glBindBuffer(GL_ARRAY_BUFFER, this->vbo_c);
-    glBufferData(GL_ARRAY_BUFFER, this->colors.size() * sizeof(vec4), this->colors.data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &this->vbo_c);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo_c);
+	glBufferData(GL_ARRAY_BUFFER, this->colors.size() * sizeof(vec4), this->colors.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
-    glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(1);
 }
 
-void Curve::draw(Shader shader) 
+void Curve::draw(Shader shader)
 {
     GLuint modelLoc = glGetUniformLocation(shader.getId(), "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(this->getModelMatrix()));
 
-    glBindVertexArray(this->vao);
+    glBindVertexArray(this->getVertexArrayObject());
 	glDrawArrays(GL_TRIANGLE_FAN, 0, this->getVertexNum());
 }

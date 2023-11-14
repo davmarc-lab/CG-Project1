@@ -23,10 +23,10 @@ class Curve : public ComplexShape2D
 
         float DY (int i, float *t);
 
-        void hermiteInterpolation(float *t, vec4 color_top, vec4 color_bot);
+        void hermiteInterpolation(float *t, vec4 color_top, vec4 color_bot, Curve* fig);
 
     public:
-        void buildHermite(vec4 color_top, vec4 color_bot);
+        void buildHermite(vec4 color_top, vec4 color_bot, Curve* forma);
 
         void readDataFromFile(const char* pathFile);
 

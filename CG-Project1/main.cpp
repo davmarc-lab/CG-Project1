@@ -129,7 +129,7 @@ int main()
         roadShader.use();
         GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
         glUniform2f(resLoc, WIDTH, HEIGHT);
-        
+
         // Creates the shapes shader
         Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
 
@@ -156,19 +156,22 @@ int main()
         enemy->translateShape(vec3(1400, 200, 0));
         enemy->scaleShape(vec3(25, 25, 1));
 
-        /* Curve* herm = new Curve(); */
-        /* herm->readDataFromFile("resources/hermite/boomerang.txt"); */
-        /* herm->buildHermite(herm->getMidColor().getColorVector(), herm->getColor().getColorVector()); */
-        /* herm->createVertexArray(); */
+        Curve* herm = new Curve();
+        herm->readDataFromFile("resources/hermite/boomerang.txt");
+        herm->buildHermite(color::BLACK, color::RED, herm);
 
-        /* herm->translateShape(vec3(400, 200, 0)); */
-        /* herm->scaleShape(vec3(200, 200, 1)); */
+        herm->createVertexArray();
+
+        herm->translateShape(vec3(500, 200, 0));
+        herm->scaleShape(vec3(200, 200, 1));
+
+        cout << to_string(herm->getModelMatrix()) << endl;
 
         // Creates the drawing scenes with the projection matrix
         Scene scene = Scene(projection);
         scene.addShape2dToScene(c, roadShader);
         scene.addShape2dToScene(player, shader);
-        /* scene.addShape2dToScene(herm, shader); */
+        scene.addShape2dToScene(herm, shader);
 
         // Start of window loop
         while (!glfwWindowShouldClose(w.getWindow()))
