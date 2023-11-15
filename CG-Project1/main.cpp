@@ -1,6 +1,7 @@
 ﻿#include "Lib.hpp"
 #include "Shape/ComplexShape2D.hpp"
 #include "Shape/Curve.hpp"
+#include "Utils/utils.hpp"
 #include "Window/Window.hpp"
 #include "Shape/Shape.hpp"
 #include "Shape/Square.hpp"
@@ -94,24 +95,6 @@ void processPlayerInput(Window window, ComplexShape2D* player)
     }
 }
 
-int startDirection = 1;
-
-bool checkInRoadBound(float y)
-{
-    return y < HEIGHT / 2 - 50 - 25 && y > 0 + 50 + 25;
-}
-
-void enemyMoveAction(ComplexShape2D* entity)
-{
-    float velocity = 0.1;
-    int pixel = 1;
-    vec3 pos = vec3(entity->getModelMatrix()[3]);
-
-    if (!checkInRoadBound(pos.y))
-        startDirection *= -1;
-    entity->translateShape(vec3(0, startDirection * pixel * velocity, 0));
-}
-
 
 void rotateObject(ComplexShape2D* shape)
 {
@@ -140,7 +123,7 @@ int main()
 
         // Create all the shapes of the scene
         ComplexShape2D* c = new Square();
-        c->scaleShape(vec3(1600, 900 / 2, 1));
+        c->scaleShape(vec3(WIDTH, HEIGHT / 2, 1));
         c->createVertexArray();
 
         ComplexShape2D* player = new Shape2D(50);
@@ -164,7 +147,7 @@ int main()
         // Create a shape from an hermite curve file
         Curve* herm = new Curve();
         herm->readDataFromFile("resources/hermite/banana.txt");
-        herm->buildHermite(color::GREEN, color::WHITE, herm);
+        herm->buildHermite(color::YELLOW, color::WHITE, herm);
 
         herm->createVertexArray();
 
@@ -178,6 +161,9 @@ int main()
         scene.addShape2dToScene(enemy, shader);
         scene.addShape2dToScene(herm, shader);
 
+        Helper enemHelper = Helper(w.getResolution());
+        Helper bananaHelper = Helper(w.getResolution());
+
         // Start of window loop
         while (!glfwWindowShouldClose(w.getWindow()))
         {
@@ -190,7 +176,8 @@ int main()
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             scene.drawScene();
-            enemyMoveAction(enemy);
+            enemHelper.enemyMoveAction(enemy);
+            bananaHelper.enemyMoveAction(herm);
 			//rotateObject(herm);
 
             // swap buffers and poll IO events

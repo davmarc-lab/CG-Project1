@@ -54,5 +54,6 @@ namespace color {
 	const vec4 RED = vec4(1, 0, 0, 1);
 	const vec4 GREEN = vec4(0, 1, 0, 1);
 	const vec4 BLUE = vec4(0, 0, 1, 1);
+    const vec4 YELLOW = vec4(0.98, 0.9, 0, 1);
 }
 

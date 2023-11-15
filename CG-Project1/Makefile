@@ -19,11 +19,13 @@ hermh = ./Math/Hermite.hpp
 curve = ./Shape/Curve.cpp
 curveh = ./Shape/Curve.hpp
 libh = Lib.hpp
+util = ./Utils/utils.cpp
+utilh = ./Utils/utils.hpp
 
 all: main.exe
 
-main.exe: main.o window.o shape.o shader.o scene.o square.o curve.o glad.o
-	g++ ${FLAGS} -o main.exe main.o window.o square.o shape.o glad.o curve.o shader.o scene.o ${LIBS}
+main.exe: main.o window.o shape.o shader.o scene.o helper.o square.o curve.o glad.o
+	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o shape.o glad.o curve.o shader.o scene.o ${LIBS}
 
 main.o: main.cpp ${gladh} ${libh} ${intsh}
 	gcc -c ${FLAGS} main.cpp -o main.o
@@ -45,6 +47,9 @@ square.o: ${square} ${squareh} ${libh} ${gladh} ${intsh} ${shaderh}
 
 curve.o: ${curve} ${curveh} ${libh} ${gladh} ${intsh} ${shaderh}
 	gcc -c ${FLAGS} ${curve} -o curve.o
+
+helper.o: ${util} ${utilh}
+	gcc -c ${FLAGS} ${util} -o helper.o
 
 glad.o: ${glad} ${gladh}
 	gcc -c ${FLAGS} ${glad} -o glad.o
