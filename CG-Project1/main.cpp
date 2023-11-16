@@ -146,7 +146,7 @@ int main()
 
         // Create a shape from an hermite curve file
         Curve* herm = new Curve();
-        herm->readDataFromFile("resources/hermite/banana.txt");
+        herm->readDataFromFile("resources/hermite/boomerang.txt");
         herm->buildHermite(color::YELLOW, color::WHITE, herm);
 
         herm->createVertexArray();
@@ -178,7 +178,8 @@ int main()
 
             scene.drawScene();
             enemHelper.enemyMoveAction(enemy);
-            bananaHelper.enemyMoveAction(herm);
+            // bananaHelper.enemyMoveAction(herm);
+            rotateObject(herm);
 
             // swap buffers and poll IO events
             glfwSwapBuffers(w.getWindow());

@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Collision\Collision.cpp" />
     <ClCompile Include="include\glad\glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
@@ -134,9 +135,11 @@
     <ClCompile Include="Shape\Curve.cpp" />
     <ClCompile Include="Shape\Shape.cpp" />
     <ClCompile Include="Shape\Square.cpp" />
+    <ClCompile Include="Utils\utils.cpp" />
     <ClCompile Include="Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Collision\Collision.hpp" />
     <ClInclude Include="Color\Color.hpp" />
     <ClInclude Include="include\glad\glad.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
@@ -149,6 +152,7 @@
     <ClInclude Include="Shape\Curve.hpp" />
     <ClInclude Include="Shape\Shape.hpp" />
     <ClInclude Include="Shape\Square.hpp" />
+    <ClInclude Include="Utils\utils.hpp" />
     <ClInclude Include="Window\Window.hpp" />
   </ItemGroup>
   <ItemGroup>

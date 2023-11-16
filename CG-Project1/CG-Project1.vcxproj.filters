@@ -21,9 +21,6 @@
     <ClCompile Include="Window\Window.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Shape\ComplexShape2D.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="Shape\Shape.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
@@ -36,19 +33,16 @@
     <ClCompile Include="Scene\Scene.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Math\Hermite.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="include\glad\glad.c">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="IntScene.cpp">
+    <ClCompile Include="Shape\Curve.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Rect.cpp">
+    <ClCompile Include="Utils\utils.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Quad.cpp">
+    <ClCompile Include="Collision\Collision.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,9 +68,6 @@
     <ClInclude Include="Scene\Scene.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Math\Hermite.hpp">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="include\glad\glad.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
@@ -92,13 +83,13 @@
     <ClInclude Include="Color\Color.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="IntScene.hpp">
+    <ClInclude Include="Shape\Curve.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Rect.hpp">
+    <ClInclude Include="Utils\utils.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Quad.hpp">
+    <ClInclude Include="Collision\Collision.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
