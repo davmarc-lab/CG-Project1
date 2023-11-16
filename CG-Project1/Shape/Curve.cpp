@@ -5,6 +5,7 @@ Curve Curva = Curve();
 Curve Derivata = Curve();
 Curve Poligonale = Curve();
 
+// number of points for final result
 int pval = 140;
 float* t;
 
