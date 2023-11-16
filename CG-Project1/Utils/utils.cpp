@@ -7,11 +7,10 @@ bool Helper::checkInRoadBound(float y)
 
 void Helper::enemyMoveAction(ComplexShape2D* entity)
 {
-    float velocity = 0.1;
     int pixel = 1;
     vec3 pos = vec3(entity->getModelMatrix()[3]);
 
     if (!checkInRoadBound(pos.y))
         this->startDirection *= -1;
-    entity->translateShape(vec3(0, startDirection * pixel * velocity, 0));
+    entity->translateShape(vec3(0, startDirection * pixel * this->yvelocity, 0));
 }

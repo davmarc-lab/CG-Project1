@@ -98,7 +98,7 @@ void processPlayerInput(Window window, ComplexShape2D* player)
 
 void rotateObject(ComplexShape2D* shape)
 {
-    float velocity = 4.3f;
+    float velocity = 3.5f;
     shape->rotateShape(vec3(0, 0, 1), velocity);
 }
 
@@ -163,6 +163,7 @@ int main()
 
         Helper enemHelper = Helper(w.getResolution());
         Helper bananaHelper = Helper(w.getResolution());
+        bananaHelper.setYVelocity(0.05f);
 
         // Start of window loop
         while (!glfwWindowShouldClose(w.getWindow()))
@@ -178,7 +179,6 @@ int main()
             scene.drawScene();
             enemHelper.enemyMoveAction(enemy);
             bananaHelper.enemyMoveAction(herm);
-			//rotateObject(herm);
 
             // swap buffers and poll IO events
             glfwSwapBuffers(w.getWindow());
