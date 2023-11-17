@@ -40,4 +40,6 @@ public:
 
     // This method call all draw(shader) method of each shape implemented from ComplexShape2D class.
     void drawScene();
+
+    void clear();
 };

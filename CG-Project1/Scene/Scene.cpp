@@ -25,8 +25,11 @@ void Scene::drawScene()
     }
 }
 
-void reshape(int width, int height)
+void Scene::clear()
 {
-    float aspectratio = (float) width / (float) height;
-
+    for (auto elem: this->getSceneElements())
+    {
+        elem.first->clearShape();
+        elem.second.clearShader();
+    }
 }

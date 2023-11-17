@@ -3,74 +3,14 @@
 #include "Shape/ComplexShape2D.hpp"
 #include "Window/Window.hpp"
 
+#include <GLFW/glfw3.h>
+#include <climits>
+#include <exception>
 #include <iostream>
 
 #define PI 3.14159265358979323846
 
 const int WIDTH = 1600, HEIGHT = 900;
-
-void buildCircle(float cx, float cy, float raggiox, float raggioy, ComplexShape2D* fig)
-{
-    float stepA = (2 * PI) / fig->getTriangleNum();
-    float t, xx, yy;
-
-    fig->addElementVertex(vec3(cx, cy, 0.0));
-
-    fig->addElementColors(fig->getMidColor().getColorVector());
-
-    for (int i = 0; i <= fig->getTriangleNum(); i++)
-    {
-        t = (float)i * stepA;
-        xx = cx + raggiox * cos(t);
-        yy = cy + raggioy * sin(t);
-        fig->addElementVertex(vec3(xx, yy, 0.0));
-        // Colore
-        fig->addElementColors(fig->getColor().getColorVector()); // Nota che la quarta componente corrisponde alla trasparenza del colore
-    }
-
-    fig->setVertexNum(fig->getTriangleNum());
-}
-
-bool checkOutOfBounds(vec3 pos)
-{
-    cout << pos.x << ", " << pos.y << endl;
-    if (pos.x > WIDTH || pos.x < 0 || pos.y > 500 || pos.y < 0)
-        return true;
-    return false;
-}
-
-// keep the player in the box
-void processPlayerInput(Window window, ComplexShape2D* player)
-{
-    float velocity = 0.2;
-    int pixel = 1;
-
-    float width = window.getResolution().x;
-    float height = window.getResolution().y;
-
-    vec3 pos = vec3(player->getModelMatrix()[3]);
-
-    if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && pos.y < height / 2 - 50 - 25)
-    {
-        player->translateShape(vec3(0, pixel * velocity, 0));
-    }
-
-    if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS && pos.y > 0 + 50 + 25)
-    {
-        player->translateShape(vec3(0, -pixel * velocity, 0));
-    }
-
-    if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS && pos.x > 0 + 25)
-    {
-        player->translateShape(vec3(-pixel * velocity, 0, 0));
-    }
-
-    if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS && pos.x < WIDTH - 27)
-    {
-        player->translateShape(vec3(pixel * velocity, 0, 0));
-    }
-}
-
 
 void rotateObject(ComplexShape2D* shape)
 {
@@ -87,12 +27,25 @@ int main()
     // Initialize all game object and window
     game.init();
 
+    // time variables
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+
     // Start of window loop
     while (!glfwWindowShouldClose(window.getWindow()))
     {
+        // manage frames time
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        glfwPollEvents();
+
         // input
         window.processCloseInput();
-        /* processPlayerInput(window, player); */
+        game.processInput(deltaTime, window);
+
+        // update game state
+        game.update(deltaTime);
 
         // render
         glClearColor(0.78f, 0.96f, 0.94f, 1.0f);
@@ -106,8 +59,8 @@ int main()
 
         // swap buffers and poll IO events
         glfwSwapBuffers(window.getWindow());
-        glfwPollEvents();
     }
+    game.clear();
     window.terminateWindow();
     return 0;
 }

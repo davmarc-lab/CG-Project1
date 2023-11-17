@@ -1,6 +1,6 @@
+#include "Window.hpp"
 #include <iostream>
 #include <string.h>
-#include "Window.hpp"
 
 using namespace std;
 

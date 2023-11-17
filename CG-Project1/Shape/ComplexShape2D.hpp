@@ -93,6 +93,8 @@ class ComplexShape2D
         // Retrieves the vector of colors for each vertex.
         vector<vec4> getColorsArray() { return this->colors; }
 
+        vec3 getPosition() { return this->model[3]; }
+
         // This method clear the vertex vector.
         void clearVertexArray() { this->vertex.clear(); }
 

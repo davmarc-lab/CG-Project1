@@ -56,6 +56,8 @@ public:
     // This method use the shader.
     void use();
 
+    void clearShader();
+
     //---List of method for uniform values---
 
     void setBool(const string &name, bool value);

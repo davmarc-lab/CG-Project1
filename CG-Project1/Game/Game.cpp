@@ -16,8 +16,9 @@ mat4 projection = ortho(0.0f, (float)1600, 0.0f, (float)900);
 
 Scene scene = Scene(projection);
 ComplexShape2D* player = new Shape2D(50);
+Curve* boomer = new Curve();
 /* Helper enemHelper = Helper(window.getResolution()); */
-/* Helper bananaHelper = Helper(window.getResolution()); */
+/* Helper boomerangHelper = Helper(window.getResolution()); */
 
 Game::Game(unsigned int width, unsigned int height)
 {
@@ -58,35 +59,72 @@ void Game::init()
     enemy->scaleShape(vec3(25, 25, 1));
 
     // Create a shape from an hermite curve file
-    Curve* herm = new Curve();
-    herm->readDataFromFile("resources/hermite/boomerang.txt");
-    herm->buildHermite(color::YELLOW, color::WHITE, herm);
+    boomer->readDataFromFile("resources/hermite/boomerang.txt");
+    boomer->buildHermite(color::BLUE, color::WHITE, boomer);
 
-    herm->createVertexArray();
-    herm->translateShape(vec3(500, 200, 0));
-    herm->scaleShape(vec3(150, 150, 1));
+    boomer->createVertexArray();
+    boomer->translateShape(vec3(500, 200, 0));
+    boomer->scaleShape(vec3(150, 150, 1));
 
     // Creates the drawing scenes with the projection matrix
     scene.addShape2dToScene(c, roadShader);
     scene.addShape2dToScene(player, shader);
     scene.addShape2dToScene(enemy, shader);
-    scene.addShape2dToScene(herm, shader);
+    scene.addShape2dToScene(boomer, shader);
+
+    this->state = GAME_ACTIVE;
 
     /* bananaHelper.setYVelocity(0.05f); */
 }
 
-void Game::processInput(float deltaTime)
+void Game::processInput(float deltaTime, Window window)
 {
+    if (this->state == GAME_ACTIVE)
+    {
+        float playerVelocity = 13 * deltaTime;
+        vec3 playerPos = player->getPosition();
 
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && playerPos.y < (float)this->height / 2 - 50 - 25)
+        {
+            player->translateShape(vec3(0, playerVelocity, 0));
+        }
+
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS && playerPos.y > 0 + 50 + 25)
+        {
+            player->translateShape(vec3(0, -playerVelocity, 0));
+        }
+
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS && playerPos.x > 0 + 25)
+        {
+            player->translateShape(vec3(-playerVelocity, 0, 0));
+        }
+
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS && playerPos.x < this->width - 27)
+        {
+            player->translateShape(vec3(playerVelocity, 0, 0));
+        }
+
+    }
+}
+
+void rotateObject(vec3 rotation, ComplexShape2D* shape, float deltaTime)
+{
+    float velocity = 600 * deltaTime;
+    shape->rotateShape(rotation, velocity);
 }
 
 void Game::update(float deltaTime)
 {
-
+    rotateObject(vec3(0, 0, 1), boomer, deltaTime);
 }
 
 void Game::render()
 {
     scene.drawScene();
+}
+
+void Game::clear()
+{
+    scene.clear();
 }
 

@@ -70,6 +70,11 @@ void Shader::use()
     glUseProgram(this->getId());
 }
 
+void Shader::clearShader()
+{
+    glDeleteProgram(this->id);
+}
+
 void Shader::setBool(const string &name, bool value)
 {
     glUniform1i(glGetUniformLocation(this->getId(), name.c_str()), (int)value);
