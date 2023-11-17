@@ -2,19 +2,15 @@
 
 #include "../Lib.hpp"
 
-#include <glm/fwd.hpp>
-#include <type_traits>
 #include <vector>
 
 class Collision
 {
     private:
-        vector<vec3> points;
+        bool collision; 
 
     public:
-        Collision();
+        Collision() { this->collision = false; }
 
-        bool checkCollision2D(vec2 point);
-
-        bool checkCollision3D(vec3 point);
+        bool isColliding() { return this->collision; }
 };

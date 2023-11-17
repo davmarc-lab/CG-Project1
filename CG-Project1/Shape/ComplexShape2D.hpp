@@ -3,6 +3,7 @@
 #include "../Lib.hpp"
 #include "../Color/Color.hpp"
 #include "../Shader/Shader.hpp"
+#include "../Collision/Collision.hpp"
 #include <vector>
 
 /*
@@ -32,6 +33,8 @@ class ComplexShape2D
         int nvertex = 0;
         // Number of triangles of the shape.
         int ntriangle = 0;
+
+        Collision* collision = NULL;
 
         // Add element to vertex vector3.
         void addElementVertex(vec3 elem) { this->vertex.push_back(elem); }
@@ -77,6 +80,10 @@ class ComplexShape2D
 
         // This metod sets the model matrix.
         void setModelMatrix(mat4 model) { this->model = mat4(model); }
+
+        void setCollision(mat4 projection) { this->collision = new Collision(); }
+
+        bool isColliding() { return this->collision->isColliding(); }
 
         // This method transform the model matrix for scaling puropose.
         void scaleShape(vec3 mod) { this->setModelMatrix(scale(this->getModelMatrix(), mod)); }

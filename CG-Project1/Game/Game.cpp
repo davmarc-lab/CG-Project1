@@ -12,19 +12,22 @@
 #include "../Scene/Scene.hpp"
 #include "../Utils/utils.hpp"
 
-mat4 projection = ortho(0.0f, (float)1600, 0.0f, (float)900);
-
-Scene scene = Scene(projection);
 ComplexShape2D* player = new Shape2D(50);
 Curve* boomer = new Curve();
-/* Helper enemHelper = Helper(window.getResolution()); */
-/* Helper boomerangHelper = Helper(window.getResolution()); */
 
 Game::Game(unsigned int width, unsigned int height)
 {
     this->width = width;
     this->height = height;
+#define WIDTH width
+#define HEIGHT height
 }
+
+mat4 projection = ortho(0.0f, (float)1600, 0.0f, (float)900);
+
+Scene scene = Scene(projection);
+/* Helper enemHelper = Helper(window.getResolution()); */
+/* Helper boomerangHelper = Helper(window.getResolution()); */
 
 void Game::init()
 {
@@ -45,6 +48,7 @@ void Game::init()
     player->setColor(color::WHITE);
     player->setMidColor(color::RED);
     Helper::buildCircle(0, 0, 1.0, 1.0, player);
+    player->setCollision(projection);
     player->createVertexArray();
 
     player->translateShape(vec3(200, 200, 0));
