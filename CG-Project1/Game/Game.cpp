@@ -12,9 +12,8 @@
 #include "../Scene/Scene.hpp"
 #include "../Utils/utils.hpp"
 
-// ComplexShape2D* enemy = new Shape2D(50);
-ComplexShape2D* player = new Square(Color(0.8, 0.8, 0.8, 1.0));
-ComplexShape2D* enemy = new Square(Color(0.8, 0.8, 0.8, 1.0));
+ComplexShape2D* enemy = new Shape2D(50);
+ComplexShape2D* player = new Shape2D(50);
 Curve* boomer = new Curve();
 
 Game::Game(unsigned int width, unsigned int height)
@@ -48,48 +47,48 @@ void Game::init()
 	road->scaleShape(vec3(this->width, this->height / 2, 1));
 	road->createVertexArray();
 
-	//player->setColor(color::WHITE);
-	//player->setMidColor(color::RED);
-	//Helper::buildCircle(0, 0, 1.0, 1.0, player);
-	//player->setSolid();
+	player->setColor(color::WHITE);
+	player->setMidColor(color::RED);
+	Helper::buildCircle(0, 0, 1.0, 1.0, player);
+	player->setSolid();
 	player->createVertexArray();
-	player->translateShape(vec3(800, 200, 0));
-	player->scaleShape(vec3(150, 400, 1));
+	player->translateShape(vec3(1300, 200, 0));
+	player->scaleShape(vec3(25, 25, 1));
 
 
-	//// real player shape
-	//ComplexShape2D* carBody = new Square(color::RED);
-	//carBody->createVertexArray();
-	//carBody->translateShape(vec3(160, 131, 0));
-	//carBody->scaleShape(vec3(100, 30, 1));
+	// real player shape
+	ComplexShape2D* carBody = new Square(color::RED);
+	carBody->createVertexArray();
+	carBody->translateShape(vec3(160, 131, 0));
+	carBody->scaleShape(vec3(100, 60, 1));
 
-	//ComplexShape2D* fwheel = new Shape2D(50);
-	//fwheel->setColor(color::BLACK);
-	//fwheel->setMidColor(color::WHITE);
-	//Helper::buildCircle(0, 0, 1, 1, fwheel);
-	//fwheel->createVertexArray();
-	//fwheel->translateShape(vec3(100, 100, 0));
-	//fwheel->scaleShape(vec3(20, 20, 1));
+	ComplexShape2D* fwheel = new Shape2D(50);
+	fwheel->setColor(color::BLACK);
+	fwheel->setMidColor(color::WHITE);
+	Helper::buildCircle(0, 0, 1, 1, fwheel);
+	fwheel->createVertexArray();
+	fwheel->translateShape(vec3(100, 100, 0));
+	fwheel->scaleShape(vec3(20, 20, 1));
 
-	//ComplexShape2D* rwheel = new Shape2D(50);
-	//rwheel->setColor(color::BLACK);
-	//rwheel->setMidColor(color::WHITE);
-	//Helper::buildCircle(0, 0, 1, 1, rwheel);
-	//rwheel->createVertexArray();
-	//rwheel->translateShape(vec3(200, 100, 0));
-	//rwheel->scaleShape(vec3(20, 20, 1));
+	ComplexShape2D* rwheel = new Shape2D(50);
+	rwheel->setColor(color::BLACK);
+	rwheel->setMidColor(color::WHITE);
+	Helper::buildCircle(0, 0, 1, 1, rwheel);
+	rwheel->createVertexArray();
+	rwheel->translateShape(vec3(200, 100, 0));
+	rwheel->scaleShape(vec3(20, 20, 1));
 
-	/*enemy->setColor(color::BLACK);
+	enemy->setColor(color::BLACK);
 	enemy->setMidColor(color::WHITE);
 	Helper::buildCircle(0, 0, 1.0, 1.0, enemy);
-	enemy->setSolid();*/
+	enemy->setSolid();
 	enemy->createVertexArray();
-	enemy->translateShape(vec3(1300, 200, 0));
-	enemy->scaleShape(vec3(150, 400, 1));
+	enemy->translateShape(vec3(1400, 200, 0));
+	enemy->scaleShape(vec3(25, 25, 1));
 
 	// Create a shape from an hermite curve file
-	boomer->readDataFromFile("resources/hermite/car.txt");
-	boomer->buildHermite(color::GREEN, color::WHITE, boomer);
+	boomer->readDataFromFile("resources/hermite/boomerang.txt");
+	boomer->buildHermite(color::BLUE, color::WHITE, boomer);
 
 	boomer->createVertexArray();
 	boomer->setSolid();
@@ -100,9 +99,9 @@ void Game::init()
 	scene.addShape2dToScene(road, roadShader);
 	scene.addShape2dToScene(player, shader);
 	scene.addShape2dToScene(enemy, shader);
-	//scene.addShape2dToScene(carBody, shader);
-	//scene.addShape2dToScene(fwheel, shader);
-	//scene.addShape2dToScene(rwheel, shader);
+	scene.addShape2dToScene(carBody, shader);
+	scene.addShape2dToScene(fwheel, shader);
+	scene.addShape2dToScene(rwheel, shader);
 	scene.addShape2dToScene(boomer, shader);
 
 	this->state = GAME_ACTIVE;
@@ -114,7 +113,7 @@ void Game::processInput(float deltaTime, Window window)
 {
 	if (this->state == GAME_ACTIVE)
 	{
-		float playerVelocity = 5 * deltaTime;
+		float playerVelocity = 10 * deltaTime;
 		vec3 playerPos = boomer->getPosition();
 
 		if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && playerPos.y < (float)this->height / 2 - 50 - 25)
@@ -147,7 +146,7 @@ void rotateObject(vec3 rotation, ComplexShape2D* shape, float deltaTime)
 
 void Game::update(float deltaTime)
 {
-	// rotateObject(vec3(0, 0, 1), boomer, deltaTime);
+	rotateObject(vec3(0, 0, 1), boomer, deltaTime);
 
 	if (player->checkCollision(enemy))
 	{
