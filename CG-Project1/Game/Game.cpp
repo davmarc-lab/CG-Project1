@@ -12,11 +12,13 @@
 #include "../Scene/Scene.hpp"
 #include "../Utils/utils.hpp"
 
+ComplexShape2D* enemy = new Shape2D(50);
 ComplexShape2D* player = new Shape2D(50);
 Curve* boomer = new Curve();
 
 Game::Game(unsigned int width, unsigned int height)
 {
+    this->state = GAME_NONE;
     this->width = width;
     this->height = height;
 #define WIDTH width
@@ -48,16 +50,16 @@ void Game::init()
     player->setColor(color::WHITE);
     player->setMidColor(color::RED);
     Helper::buildCircle(0, 0, 1.0, 1.0, player);
-    player->setCollision(projection);
+    player->setSolid();
     player->createVertexArray();
 
     player->translateShape(vec3(200, 200, 0));
     player->scaleShape(vec3(25, 25, 1));
 
-    ComplexShape2D* enemy = new Shape2D(50);
     enemy->setColor(color::BLACK);
     enemy->setMidColor(color::WHITE);
     Helper::buildCircle(0, 0, 1.0, 1.0, enemy);
+    enemy->setSolid();
     enemy->createVertexArray();
     enemy->translateShape(vec3(1400, 200, 0));
     enemy->scaleShape(vec3(25, 25, 1));
@@ -67,6 +69,7 @@ void Game::init()
     boomer->buildHermite(color::BLUE, color::WHITE, boomer);
 
     boomer->createVertexArray();
+    boomer->setSolid();
     boomer->translateShape(vec3(500, 200, 0));
     boomer->scaleShape(vec3(150, 150, 1));
 
@@ -85,7 +88,7 @@ void Game::processInput(float deltaTime, Window window)
 {
     if (this->state == GAME_ACTIVE)
     {
-        float playerVelocity = 13 * deltaTime;
+        float playerVelocity = 17 * deltaTime;
         vec3 playerPos = player->getPosition();
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && playerPos.y < (float)this->height / 2 - 50 - 25)
@@ -120,6 +123,11 @@ void rotateObject(vec3 rotation, ComplexShape2D* shape, float deltaTime)
 void Game::update(float deltaTime)
 {
     rotateObject(vec3(0, 0, 1), boomer, deltaTime);
+
+    if (player->checkCollision(enemy))
+    {
+        player->setDestroyed();
+    }
 }
 
 void Game::render()

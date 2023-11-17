@@ -45,6 +45,9 @@
     <ClCompile Include="Collision\Collision.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Game.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lib.hpp">
@@ -90,6 +93,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="Collision\Collision.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Game.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

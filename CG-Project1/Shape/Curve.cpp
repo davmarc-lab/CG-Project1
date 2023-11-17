@@ -161,6 +161,7 @@ void Curve::draw(Shader shader)
 
     glBindVertexArray(this->getVertexArrayObject());
 	glDrawArrays(GL_TRIANGLE_FAN, 0, this->getVertexNum());
+	glBindVertexArray(0);
 }
 
 void Curve::clearShape()

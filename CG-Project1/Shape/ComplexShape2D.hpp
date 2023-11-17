@@ -5,6 +5,7 @@
 #include "../Shader/Shader.hpp"
 #include "../Collision/Collision.hpp"
 #include <vector>
+#include <glm/gtx/string_cast.hpp>
 
 /*
  * This abstract class provides a standard base for the most of basic shapes using VAO, geometry and
@@ -34,7 +35,11 @@ class ComplexShape2D
         // Number of triangles of the shape.
         int ntriangle = 0;
 
-        Collision* collision = NULL;
+        // Says if the shape is solid or not
+        bool isSolid = false;
+
+        // Says if the shape is destroyed or alive
+        bool isDestroyed = false;
 
         // Add element to vertex vector3.
         void addElementVertex(vec3 elem) { this->vertex.push_back(elem); }
@@ -81,9 +86,30 @@ class ComplexShape2D
         // This metod sets the model matrix.
         void setModelMatrix(mat4 model) { this->model = mat4(model); }
 
-        void setCollision(mat4 projection) { this->collision = new Collision(); }
+        void setSolid() { this->isSolid = true; }
 
-        bool isColliding() { return this->collision->isColliding(); }
+        bool checkCollision(ComplexShape2D* shape)
+        {
+            if (shape->isSolid)
+            {
+                auto firstPos = this->getPosition();
+                auto firstSize = this->getSize();
+                auto secondPos = shape->getPosition();
+                auto secondSize = shape->getSize();
+
+                bool collisionX = firstPos.x + firstSize.x * 2 >= secondPos.x && secondPos.x + secondSize.x * 2 >= firstPos.x;
+                bool collisionY = firstPos.y + firstSize.y * 2 >= secondPos.y && secondPos.y + secondSize.y * 2 >= firstPos.y;
+
+                return collisionX && collisionY;
+            }
+            return false;
+        }
+
+        void setDestroyed() { this->isDestroyed = true; }
+
+        void setAlive() { this->isDestroyed = false; }
+
+        bool isAlive() { return !this->isDestroyed; }
 
         // This method transform the model matrix for scaling puropose.
         void scaleShape(vec3 mod) { this->setModelMatrix(scale(this->getModelMatrix(), mod)); }
@@ -101,6 +127,8 @@ class ComplexShape2D
         vector<vec4> getColorsArray() { return this->colors; }
 
         vec3 getPosition() { return this->model[3]; }
+
+        vec3 getSize() { return vec3(this->model[0][0], this->model[1][1], this->model[2][2]); }
 
         // This method clear the vertex vector.
         void clearVertexArray() { this->vertex.clear(); }

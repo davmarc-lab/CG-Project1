@@ -5,6 +5,7 @@
 
 enum GameState
 {
+    GAME_NONE,
     GAME_ACTIVE,
     GAME_MENU,
     GAME_WIN

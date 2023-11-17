@@ -33,7 +33,7 @@ void Shape2D::draw(Shader shader) {
 
     glBindVertexArray(this->getVertexArrayObject());
     glDrawArrays(GL_TRIANGLE_FAN, 0, this->getVertexNum() + 2);
-
+    glBindVertexArray(0);
 }
 
 void Shape2D::clearShape()
