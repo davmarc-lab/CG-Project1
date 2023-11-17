@@ -2,6 +2,8 @@
 
 #include "../Shape/ComplexShape2D.hpp"
 
+#define PI 3.14159265358979323846
+
 class Helper
 {
     int wheight;
@@ -21,5 +23,7 @@ class Helper
         bool checkInRoadBound(float y);
 
         void enemyMoveAction(ComplexShape2D* entity);
+
+        static void buildCircle(float cx, float cy, float raggiox, float raggioy, ComplexShape2D* fig);
 };
 

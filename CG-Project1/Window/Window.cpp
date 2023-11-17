@@ -13,6 +13,11 @@ Window::Window(const char *name, int w, int h)
     this->height = h;
     this->windowName = name;
     this->resolution = vec2(this->width, this->height);
+
+    if (this->initializeWindow() != 0)
+    {
+        cout << "Cannot start the application, due to GLFW error" << endl;
+    }
 }
 
 /*

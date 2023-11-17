@@ -1,35 +1,13 @@
-﻿#include "Lib.hpp"
+﻿#include "Game/Game.hpp"
+#include "Lib.hpp"
 #include "Shape/ComplexShape2D.hpp"
-#include "Shape/Curve.hpp"
-#include "Utils/utils.hpp"
 #include "Window/Window.hpp"
-#include "Shape/Shape.hpp"
-#include "Shape/Square.hpp"
-#include "Shader/Shader.hpp"
-#include "Scene/Scene.hpp"
-#include "Color/Color.hpp"
 
-#include <GLFW/glfw3.h>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/trigonometric.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
 #define PI 3.14159265358979323846
 
 const int WIDTH = 1600, HEIGHT = 900;
-
-void initWindowView(Shader shader)
-{
-    mat4 view = translate(view, vec3(0.0f, 0.0f, -3));
-    mat4 projection = ortho(0.0f, (float)WIDTH, 0.0f, float(HEIGHT));
-
-    GLuint projLoc = glGetUniformLocation(shader.getId(), "projection");
-
-    // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, value_ptr(projection));
-}
 
 void buildCircle(float cx, float cy, float raggiox, float raggioy, ComplexShape2D* fig)
 {
@@ -52,8 +30,6 @@ void buildCircle(float cx, float cy, float raggiox, float raggioy, ComplexShape2
 
     fig->setVertexNum(fig->getTriangleNum());
 }
-
-mat4 projection = ortho(0.0f, (float)WIDTH, 0.0f, float(HEIGHT));
 
 bool checkOutOfBounds(vec3 pos)
 {
@@ -104,89 +80,34 @@ void rotateObject(ComplexShape2D* shape)
 
 int main()
 {
-    Window w = Window("Hello rect", WIDTH, HEIGHT);
-    if (w.initializeWindow() != 0)
+
+    Game game = Game(WIDTH, HEIGHT);
+    Window window = Window("Mario Kart", WIDTH, HEIGHT);
+
+    // Initialize all game object and window
+    game.init();
+
+    // Start of window loop
+    while (!glfwWindowShouldClose(window.getWindow()))
     {
-        cout << "Cannot start the application, due to GLFW error" << endl;
-        return -1;
+        // input
+        window.processCloseInput();
+        /* processPlayerInput(window, player); */
+
+        // render
+        glClearColor(0.78f, 0.96f, 0.94f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        game.render();
+
+        /* enemHelper.enemyMoveAction(enemy); */
+        /* // bananaHelper.enemyMoveAction(herm); */
+        /* rotateObject(herm); */
+
+        // swap buffers and poll IO events
+        glfwSwapBuffers(window.getWindow());
+        glfwPollEvents();
     }
-    else
-    {   
-        // Create the background shader and set the window resolution for drawing purpose
-        Shader roadShader("resources/vertexShader.vert", "resources/backFragShader.frag");
-        roadShader.use();
-        GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
-        glUniform2f(resLoc, WIDTH, HEIGHT);
-
-        // Creates the shapes shader
-        Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
-
-        // Create all the shapes of the scene
-        ComplexShape2D* c = new Square();
-        c->scaleShape(vec3(WIDTH, HEIGHT / 2, 1));
-        c->createVertexArray();
-
-        ComplexShape2D* player = new Shape2D(50);
-        player->setColor(color::WHITE);
-        player->setMidColor(color::RED);
-        buildCircle(0, 0, 1.0, 1.0, player);
-        player->createVertexArray();
-
-        player->translateShape(vec3(200, 200, 0));
-        player->scaleShape(vec3(25, 25, 1));
-
-        ComplexShape2D* enemy = new Shape2D(50);
-        enemy->setColor(color::BLACK);
-        enemy->setMidColor(color::WHITE);
-        buildCircle(0, 0, 1.0, 1.0, enemy);
-
-        enemy->createVertexArray();
-        enemy->translateShape(vec3(1400, 200, 0));
-        enemy->scaleShape(vec3(25, 25, 1));
-
-        // Create a shape from an hermite curve file
-        Curve* herm = new Curve();
-        herm->readDataFromFile("resources/hermite/boomerang.txt");
-        herm->buildHermite(color::YELLOW, color::WHITE, herm);
-
-        herm->createVertexArray();
-
-        herm->translateShape(vec3(500, 200, 0));
-        herm->scaleShape(vec3(150, 150, 1));
-
-        // Creates the drawing scenes with the projection matrix
-        Scene scene = Scene(projection);
-        scene.addShape2dToScene(c, roadShader);
-        scene.addShape2dToScene(player, shader);
-        scene.addShape2dToScene(enemy, shader);
-        scene.addShape2dToScene(herm, shader);
-
-        Helper enemHelper = Helper(w.getResolution());
-        Helper bananaHelper = Helper(w.getResolution());
-        bananaHelper.setYVelocity(0.05f);
-
-        // Start of window loop
-        while (!glfwWindowShouldClose(w.getWindow()))
-        {
-            // input
-            w.processCloseInput();
-            processPlayerInput(w, player);
-
-            // render
-            glClearColor(0.78f, 0.96f, 0.94f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            scene.drawScene();
-            enemHelper.enemyMoveAction(enemy);
-            // bananaHelper.enemyMoveAction(herm);
-            rotateObject(herm);
-
-            // swap buffers and poll IO events
-            glfwSwapBuffers(w.getWindow());
-            glfwPollEvents();
-        }
-        w.terminateWindow();
-    }
-
+    window.terminateWindow();
     return 0;
 }

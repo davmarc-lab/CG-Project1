@@ -3,6 +3,8 @@ LIBS = -lglfw -lGLU -lGL -lX11 -lXrandr -lpthread -lXi -ldl
 
 glad = ./include/glad/glad.c
 gladh = ./include/glad/glad.h
+game = ./Game/Game.cpp
+gameh = ./Game/Game.cpp
 win = ./Window/Window.cpp
 winh = ./Window/Window.hpp
 intsh = ./Shape/ComplexShape2D.hpp
@@ -24,10 +26,10 @@ utilh = ./Utils/utils.hpp
 
 all: main.exe
 
-main.exe: main.o window.o shape.o shader.o scene.o helper.o square.o curve.o glad.o
-	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o shape.o glad.o curve.o shader.o scene.o ${LIBS}
+main.exe: main.o window.o shape.o shader.o scene.o helper.o game.o square.o curve.o glad.o
+	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o game.o shape.o glad.o curve.o shader.o scene.o ${LIBS}
 
-main.o: main.cpp ${gladh} ${libh} ${intsh}
+main.o: main.cpp ${gladh} ${libh} ${intsh} ${gameh}
 	gcc -c ${FLAGS} main.cpp -o main.o
 
 window.o: ${win} ${winh} ${libh} ${gladh}
@@ -35,6 +37,9 @@ window.o: ${win} ${winh} ${libh} ${gladh}
 
 shape.o: ${shape} ${shapeh} ${libh} ${gladh} ${intsh} ${shaderh}
 	gcc -c ${FLAGS} ${shape} -o shape.o
+
+game.o: ${game} ${gameh}
+	gcc -c ${FLAGS} ${game} -o game.o
 
 shader.o: ${shader} ${shaderh} ${shapeh} ${gladh}
 	gcc -c ${FLAGS} ${shader} -o shader.o

@@ -45,6 +45,8 @@ public:
     // This constructor creates a shader with the vertex and fragment shader file path.
     Shader(const char *vertexPath, const char *fragmentPath);
 
+    /* ~Shader(); */
+
     // Retrieves the shader id.
     GLuint getId() { return this->id; }
 

@@ -31,4 +31,6 @@ public:
 
 	virtual void createVertexArray() override;
 
+    virtual void clearShape() override;
+
 };

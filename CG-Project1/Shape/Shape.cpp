@@ -35,3 +35,12 @@ void Shape2D::draw(Shader shader) {
     glDrawArrays(GL_TRIANGLE_FAN, 0, this->getVertexNum() + 2);
 
 }
+
+void Shape2D::clearShape()
+{
+    this->clearVertexArray();
+    this->clearColorArray();
+    glDeleteVertexArrays(1, &this->vao);
+    glDeleteBuffers(1, &this->vbo_g);
+    glDeleteBuffers(1, &this->vbo_c);
+}

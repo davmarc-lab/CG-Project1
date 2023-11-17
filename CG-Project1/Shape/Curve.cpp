@@ -73,7 +73,6 @@ void Curve::hermiteInterpolation(float* t, vec4 color_top, vec4 color_bot, Curve
 	}
 }
 
-
 void Curve::buildHermite(vec4 color_top, vec4 color_bot, Curve* forma)
 {
 	Poligonale.CP = Curva.CP;
@@ -162,4 +161,17 @@ void Curve::draw(Shader shader)
 
     glBindVertexArray(this->getVertexArrayObject());
 	glDrawArrays(GL_TRIANGLE_FAN, 0, this->getVertexNum());
+}
+
+void Curve::clearShape()
+{
+    this->clearVertexArray();
+    this->clearColorArray();
+    this->CP.clear();
+    this->colCP.clear();
+
+    // Clearing memory for VAO, VBO buffers
+    glDeleteVertexArrays(1, &this->vao);
+    glDeleteBuffers(1, &this->vbo_g);
+    glDeleteBuffers(1, &this->vbo_c);
 }

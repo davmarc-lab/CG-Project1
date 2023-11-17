@@ -35,3 +35,13 @@ void Square::draw(Shader shader)
     glBindVertexArray(this->getVertexArrayObject());
     glDrawElements(GL_TRIANGLES, this->getVertexNum(), GL_UNSIGNED_INT, 0);
 }
+
+void Square::clearShape()
+{
+    this->clearVertexArray();
+    this->clearColorArray();
+    glDeleteVertexArrays(1, &this->vao);
+    glDeleteBuffers(1, &this->vbo_g);
+    glDeleteBuffers(1, &this->vbo_c);
+    glDeleteBuffers(1, &this->ebo);
+}
