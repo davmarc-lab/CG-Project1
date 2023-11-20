@@ -10,7 +10,6 @@ void main()
     vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
     vec4 red = vec4(1.0, 0, 0, 1.0);
     vec4 gray = vec4(0.5, 0.5, 0.5, 1.0);
-    vec4 background = vec4(0.87, 0.92, 1.0, 1.0);
 
     vec2 fragCoord = gl_FragCoord.xy;
 
@@ -21,8 +20,8 @@ void main()
   
     vec4 color;
 
-    float ylimitRoad = resolution.y / 2 - 50;
-    float ylimit = resolution.y / 2;
+    float ylimitRoad = resolution.y- 50;
+    float ylimit = resolution.y;
     
         if (pattern < 50.0 && (gl_FragCoord.y < 50.0 || (gl_FragCoord.y > ylimitRoad && gl_FragCoord.y < ylimit)))
         // First 50 pixels are red
@@ -32,9 +31,6 @@ void main()
         color = white;
     else if (gl_FragCoord.y < ylimit)
         color = gray;
-    else
-        color = background;
-     
 
     FragColor = color;
 }

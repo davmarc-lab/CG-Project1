@@ -1,18 +1,22 @@
 #include "utils.hpp"
+#include <cstddef>
+#include <cstdlib>
+#include <ctime>
 
 bool Helper::checkInRoadBound(float y)
 {
     return y < (float)this->wheight / 2 - 50 - 25 && y > 0 + 50 + 25;
 }
 
-void Helper::enemyMoveAction(ComplexShape2D* entity)
+void Helper::enemyMoveAction(vec3 direction, ComplexShape2D* entity)
 {
     int pixel = 1;
     vec3 pos = vec3(entity->getModelMatrix()[3]);
 
     if (!checkInRoadBound(pos.y))
         this->startDirection *= -1;
-    entity->translateShape(vec3(0, startDirection * pixel * this->yvelocity, 0));
+    direction = direction * (startDirection * pixel * this->velocity);
+    entity->translateShape(direction);
 }
 
 void Helper::buildCircle(float cx, float cy, float raggiox, float raggioy, ComplexShape2D* fig)
@@ -34,4 +38,11 @@ void Helper::buildCircle(float cx, float cy, float raggiox, float raggioy, Compl
         fig->addElementColors(fig->getColor().getColorVector());
     }
     fig->setVertexNum(fig->getTriangleNum());
+}
+
+vec2 Helper::getRandomPosition2D(pair<int, int> xrange, pair<int, int> yrange)
+{
+    int xval = xrange.first - xrange.second == 0 ? xrange.first : rand() % (abs(xrange.first - xrange.second) + 1 + std::min(xrange.first, xrange.second));
+    int yval = yrange.first - yrange.second == 0 ? yrange.first : (rand() % (abs(yrange.first - yrange.second)) + 1 + std::min(yrange.first, yrange.second)); 
+    return vec2(xval, yval);
 }

@@ -4,8 +4,6 @@
 #include "Window/Window.hpp"
 
 #include <GLFW/glfw3.h>
-#include <climits>
-#include <exception>
 #include <iostream>
 
 #define PI 3.14159265358979323846

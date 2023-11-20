@@ -37,7 +37,6 @@ int Window::initializeWindow()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-
     // creates a GLFW window
     this->window = glfwCreateWindow(this->width, this->height, this->windowName, NULL, NULL);
     if (this->window == NULL)
@@ -58,6 +57,11 @@ int Window::initializeWindow()
         glfwTerminate();
         return -2;
     }
+
+    // enable colors opacity
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     return 0;
 }
 
