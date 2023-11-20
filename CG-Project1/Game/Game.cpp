@@ -93,7 +93,7 @@ void Game::init()
     scene.addShape2dToScene(player, shader);
     scene.addShape2dToScene(enemy, shader);
 
-    srandom(20);
+    srandom(20287462);
 
     for (int i = 0; i < 12; i++)
     {
