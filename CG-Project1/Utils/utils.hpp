@@ -20,10 +20,10 @@ class Helper
             this->velocity = 0.1f;
         }
 
-        void setYVelocity(float val) { this->velocity = val; }
-        
-        bool checkInRoadBound(float y);
+        float getVelocity() { return this->velocity; }
 
+        void setVelocity(float val) { this->velocity = val; }
+        
         void enemyMoveAction(vec3 direction, ComplexShape2D* entity);
 
         static void buildCircle(float cx, float cy, float raggiox, float raggioy, ComplexShape2D* fig);
@@ -31,5 +31,6 @@ class Helper
         // Generates random 2D coordinates by given ranges. If a range is (n, n), it retrieves
         // only the n number without doing random generation.
         vec2 static getRandomPosition2D(pair<int, int> xrange, pair<int, int> yrange);
+
 };
 

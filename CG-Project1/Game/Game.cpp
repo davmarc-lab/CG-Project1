@@ -18,6 +18,7 @@
 ComplexShape2D* enemy = new Shape2D(50);
 ComplexShape2D* player = new Square(color::RED);
 Shape2D gg = Shape2D(3);
+vector<Helper> helpers;
 
 Game::Game(unsigned int width, unsigned int height)
 {
@@ -94,7 +95,7 @@ void Game::init()
 
     srandom(20);
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 12; i++)
     {
         gg.setColor(color::WHITE);
         gg.setMidColor(color::WHITE);
@@ -102,9 +103,12 @@ void Game::init()
         gg.setSolid();
         gg.createVertexArray();
         auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
-        gg.setModelMatrix(translate(mat4(1.0f), vec3(pos, 0)));
+        gg.setModelMatrix(translate(mat4(1.0f), vec3(pos.x, pos.y, 0)));
         gg.scaleShape(vec3(25, 25, 1));
         scene.addShape2dToScene(new Shape2D((Shape2D)gg), shader, ShapeType::ENEMY);
+        auto tmp = Helper(vec2(WIDTH, HEIGHT));
+        tmp.setVelocity(((rand() % 9) + 6) * 0.03);
+        helpers.push_back(tmp);
     }
 
     this->state = GAME_ACTIVE;
@@ -144,13 +148,16 @@ void Game::processInput(float deltaTime, Window window)
 void Game::update(float deltaTime)
 {
 
-    for (auto elem: scene.getSceneElements())
+    int k = 0;
+    for (int i = 0; i < scene.getSceneElements().size(); i++)
     {
+        auto elem = scene.getSceneElements()[i];
         if (elem.type != ShapeType::ENEMY)
             continue;
-        Helper helper = Helper(vec2(WIDTH, HEIGHT));
-        helper.setYVelocity(9 * deltaTime);
-        helper.enemyMoveAction(vec3(-1, 0, 0), elem.shape);
+
+        helpers[k].enemyMoveAction(vec3(-1, 0, 0), elem.shape);
+        cout << to_string(elem.shape->getPosition()) << endl;
+        k++;
 
         if (player->checkCollision(elem.shape))
         {
