@@ -51,10 +51,6 @@ int main()
 
         game.render();
 
-        /* enemHelper.enemyMoveAction(enemy); */
-        /* // bananaHelper.enemyMoveAction(herm); */
-        /* rotateObject(herm); */
-
         // swap buffers and poll IO events
         glfwSwapBuffers(window.getWindow());
     }

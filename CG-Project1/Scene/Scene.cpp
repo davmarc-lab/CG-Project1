@@ -14,8 +14,8 @@ void Scene::drawScene()
 {
     for (int i = 0; i < this->getSceneElements().size(); i++)
     {
-        auto shape = this->getSceneElements()[i].first;
-        auto shader = this->getSceneElements()[i].second;
+        auto shape = this->getSceneElements()[i].shape;
+        auto shader = this->getSceneElements()[i].shader;
 
         if (shape->isAlive())
         {
@@ -35,7 +35,7 @@ void Scene::clear()
 {
     for (auto elem: this->getSceneElements())
     {
-        elem.first->clearShape();
-        elem.second.clearShader();
+        elem.shape->clearShape();
+        elem.shader.clearShader();
     }
 }

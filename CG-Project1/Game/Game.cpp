@@ -1,7 +1,9 @@
 #include "Game.hpp"
 
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
+#include <thread>
 
 #include "../Lib.hpp"
 #include "../Color/Color.hpp"
@@ -15,7 +17,7 @@
 
 ComplexShape2D* enemy = new Shape2D(50);
 ComplexShape2D* player = new Square(color::RED);
-ComplexShape2D* gg = new Shape2D(3);
+Shape2D gg = Shape2D(3);
 
 Game::Game(unsigned int width, unsigned int height)
 {
@@ -90,18 +92,20 @@ void Game::init()
     scene.addShape2dToScene(player, shader);
     scene.addShape2dToScene(enemy, shader);
 
-    srandom(time(NULL));
+    srandom(20);
 
-    gg->setColor(color::WHITE);
-    gg->setMidColor(color::WHITE);
-    Helper::buildCircle(0, 0, 1, 1, gg);
-    gg->setSolid();
-    gg->createVertexArray();
-    auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
-    gg->translateShape(vec3(pos.x, pos.y, 0));
-    gg->scaleShape(vec3(25, 25, 1));
-
-    scene.addShape2dToScene(gg, shader);
+    for (int i = 0; i < 4; i++)
+    {
+        gg.setColor(color::WHITE);
+        gg.setMidColor(color::WHITE);
+        Helper::buildCircle(0, 0, 1, 1, &gg);
+        gg.setSolid();
+        gg.createVertexArray();
+        auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
+        gg.setModelMatrix(translate(mat4(1.0f), vec3(pos, 0)));
+        gg.scaleShape(vec3(25, 25, 1));
+        scene.addShape2dToScene(new Shape2D((Shape2D)gg), shader, ShapeType::ENEMY);
+    }
 
     this->state = GAME_ACTIVE;
 
@@ -139,11 +143,22 @@ void Game::processInput(float deltaTime, Window window)
 
 void Game::update(float deltaTime)
 {
-    Helper ggHelper = Helper(vec2(WIDTH, HEIGHT));
-    ggHelper.setYVelocity(9 * deltaTime);
-    ggHelper.enemyMoveAction(vec3(-1, 0, 0), gg);
 
-    if (player->checkCollision(enemy) || player->checkCollision(gg))
+    for (auto elem: scene.getSceneElements())
+    {
+        if (elem.type != ShapeType::ENEMY)
+            continue;
+        Helper helper = Helper(vec2(WIDTH, HEIGHT));
+        helper.setYVelocity(9 * deltaTime);
+        helper.enemyMoveAction(vec3(-1, 0, 0), elem.shape);
+
+        if (player->checkCollision(elem.shape))
+        {
+            player->setDestroyed();
+        }
+    }
+
+    if (player->checkCollision(enemy) || player->checkCollision(&gg))
     {
         player->setDestroyed();
     }

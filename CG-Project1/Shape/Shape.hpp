@@ -19,6 +19,16 @@ public:
         this->nvertex = this->vertex.size();
     }
 
+    Shape2D(const Shape2D* shape)
+    {
+        this->ntriangle = shape->ntriangle;
+        this->vertex = shape->vertex;
+        this->colors = shape->colors;
+        this->model = mat4(1.0f);
+        this->createVertexArray();
+        this->nvertex = this->vertex.size();
+    }
+
     // Empty constructor
     Shape2D(int ntriangle)
     {
