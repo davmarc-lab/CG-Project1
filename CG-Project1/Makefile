@@ -1,5 +1,5 @@
 FLAGS = 
-LIBS = -lglfw -lGLU -lGL -lX11 -lXrandr -lpthread -lXi -ldl
+LIBS = -lglfw -lGLU -lGL -lX11 -lfreetype -lXrandr -lpthread -lXi -ldl
 
 glad = ./include/glad/glad.c
 gladh = ./include/glad/glad.h
@@ -20,17 +20,22 @@ herm = ./Math/Hermite.cpp
 hermh = ./Math/Hermite.hpp
 curve = ./Shape/Curve.cpp
 curveh = ./Shape/Curve.hpp
+text = ./Text/SimpleText.cpp
+texth = ./Text/SimpleText.hpp
 libh = Lib.hpp
 util = ./Utils/utils.cpp
 utilh = ./Utils/utils.hpp
 
 all: main.exe
 
-main.exe: main.o window.o shape.o shader.o scene.o helper.o game.o square.o curve.o glad.o
-	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o game.o shape.o glad.o curve.o shader.o scene.o ${LIBS}
+main.exe: main.o window.o shape.o shader.o scene.o helper.o game.o square.o curve.o text.o glad.o
+	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o game.o shape.o glad.o curve.o shader.o text.o scene.o ${LIBS}
 
 main.o: main.cpp ${gladh} ${libh} ${intsh} ${gameh}
 	gcc -c ${FLAGS} main.cpp -o main.o
+
+text.o: ${text} ${texth} ${libh} ${shaderh}
+	gcc -c ${FLAGS} ${text} -o text.o
 
 window.o: ${win} ${winh} ${libh} ${gladh}
 	gcc -c ${FLAGS} ${win} -o window.o

@@ -156,7 +156,7 @@ void Game::update(float deltaTime)
             continue;
 
         helpers[k].enemyMoveAction(vec3(-1, 0, 0), elem.shape);
-        cout << to_string(elem.shape->getPosition()) << endl;
+        /* cout << to_string(elem.shape->getPosition()) << endl; */
         k++;
 
         if (player->checkCollision(elem.shape))
