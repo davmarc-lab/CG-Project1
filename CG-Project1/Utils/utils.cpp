@@ -2,14 +2,15 @@
 #include <cstddef>
 #include <cstdlib>
 #include <ctime>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 void Helper::enemyMoveAction(vec3 direction, ComplexShape2D* entity)
 {
-    int pixel = 1;
     vec3 pos = vec3(entity->getModelMatrix()[3]);
 
-    direction = direction * (startDirection * pixel * this->velocity);
-    entity->translateShape(direction);
+    direction = direction * this->velocity;
+    entity->setModelMatrix(translate(entity->getModelMatrix(), vec3(pos.x + direction.x, pos.y + direction.y, 0)));
 }
 
 void Helper::buildCircle(float cx, float cy, float raggiox, float raggioy, ComplexShape2D* fig)
@@ -31,6 +32,19 @@ void Helper::buildCircle(float cx, float cy, float raggiox, float raggioy, Compl
         fig->addElementColors(fig->getColor().getColorVector());
     }
     fig->setVertexNum(fig->getTriangleNum());
+}
+
+void Helper::buildTriangle(ComplexShape2D* fig)
+{
+    fig->addElementVertex(vec3(-1, -1, 0));
+    fig->addElementColors(fig->getColor().getColorVector());
+    fig->addElementVertex(vec3(1, -1, 0));
+    fig->addElementColors(fig->getColor().getColorVector());
+    fig->addElementVertex(vec3(0, 1, 0));
+    fig->addElementColors(fig->getColor().getColorVector());
+
+    fig->setVertexNum(3);
+    fig->setTriangleNum(1);
 }
 
 vec2 Helper::getRandomPosition2D(pair<int, int> xrange, pair<int, int> yrange)

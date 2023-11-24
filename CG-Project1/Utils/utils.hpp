@@ -28,6 +28,8 @@ class Helper
 
         static void buildCircle(float cx, float cy, float raggiox, float raggioy, ComplexShape2D* fig);
 
+        static void buildTriangle(ComplexShape2D* fig);
+
         // Generates random 2D coordinates by given ranges. If a range is (n, n), it retrieves
         // only the n number without doing random generation.
         vec2 static getRandomPosition2D(pair<int, int> xrange, pair<int, int> yrange);

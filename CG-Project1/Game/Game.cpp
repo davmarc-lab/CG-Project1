@@ -17,7 +17,7 @@
 
 ComplexShape2D* enemy = new Shape2D(50);
 ComplexShape2D* player = new Square(color::RED);
-Shape2D gg = Shape2D(3);
+Shape2D enemies = Shape2D(3);
 vector<Helper> helpers;
 
 Game::Game(unsigned int width, unsigned int height)
@@ -80,9 +80,9 @@ void Game::init()
     /* rwheel->translateShape(vec3(200, 100, 0)); */
     /* rwheel->scaleShape(vec3(20, 20, 1)); */
 
-    enemy->setColor(color::BLACK);
+    enemy->setColor(color::YELLOW);
     enemy->setMidColor(color::WHITE);
-    Helper::buildCircle(0, 0, 1.0, 1.0, enemy);
+    Helper::buildTriangle(enemy);
     enemy->setSolid();
     enemy->createVertexArray();
     enemy->translateShape(vec3(1400, 200, 0));
@@ -95,17 +95,21 @@ void Game::init()
 
     srandom(20287462);
 
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 1; i++)
     {
-        gg.setColor(color::WHITE);
-        gg.setMidColor(color::WHITE);
-        Helper::buildCircle(0, 0, 1, 1, &gg);
-        gg.setSolid();
-        gg.createVertexArray();
-        auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
-        gg.setModelMatrix(translate(mat4(1.0f), vec3(pos.x, pos.y, 0)));
-        gg.scaleShape(vec3(25, 25, 1));
-        scene.addShape2dToScene(new Shape2D((Shape2D)gg), shader, ShapeType::ENEMY);
+        enemies.setColor(color::WHITE);
+        enemies.setMidColor(color::WHITE);
+        Helper::buildTriangle(&enemies);
+        enemies.setSolid();
+        enemies.createVertexArray();
+        auto pos = Helper::getRandomPosition2D(pair<int, int>(500, 500), pair<int, int>(80, 500));
+
+        enemies.setModelMatrix(mat4(1.0f));
+        enemies.translateShape(vec3(pos.x, pos.y, 0));
+        enemies.scaleShape(vec3(25, 25, 1));
+        enemies.rotateShape(vec3(0, 0, 1), 90);
+
+        scene.addShape2dToScene(new Shape2D((Shape2D)enemies), shader, ShapeType::ENEMY);
         auto tmp = Helper(vec2(WIDTH, HEIGHT));
         tmp.setVelocity(((rand() % 9) + 6) * 0.03);
         helpers.push_back(tmp);
@@ -155,8 +159,13 @@ void Game::update(float deltaTime)
         if (elem.type != ShapeType::ENEMY)
             continue;
 
-        helpers[k].enemyMoveAction(vec3(-1, 0, 0), elem.shape);
-        /* cout << to_string(elem.shape->getPosition()) << endl; */
+        auto pos = elem.shape->getPosition();
+
+        elem.shape->setModelMatrix(mat4(1.0f));
+        elem.shape->setModelMatrix(translate(elem.shape->getModelMatrix(), pos - vec3(helpers[k].getVelocity(), 0, 0)));
+        elem.shape->scaleShape(vec3(25, 25, 1));
+        elem.shape->rotateShape(vec3(0, 0, 1), 90);
+
         k++;
 
         if (player->checkCollision(elem.shape))
@@ -165,10 +174,11 @@ void Game::update(float deltaTime)
         }
     }
 
-    if (player->checkCollision(enemy) || player->checkCollision(&gg))
+    if (player->checkCollision(enemy) || player->checkCollision(&enemies))
     {
         player->setDestroyed();
     }
+
 }
 
 void Game::render()
