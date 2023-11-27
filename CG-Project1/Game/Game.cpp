@@ -9,6 +9,7 @@
 #include <iostream>
 #include <math.h>
 #include <thread>
+#include <vector>
 
 #include "../Lib.hpp"
 #include "../Color/Color.hpp"
@@ -24,7 +25,9 @@
 ComplexShape2D* goal;
 ComplexShape2D* player;
 vector<ComplexShape2D*> enemies;
+
 vector<Helper> helpers;
+vector<pair<Text, string>> textScene;
 
 unsigned int gameLevel = 0;
 
@@ -41,7 +44,6 @@ Game::Game(unsigned int width, unsigned int height)
 }
 
 mat4 projection = ortho(0.0f, (float)1600, 0.0f, (float)900);
-Text sampleText = Text(projection, 24);
 
 Scene scene = Scene(projection);
 /* Helper enemHelper = Helper(window.getResolution()); */
@@ -124,8 +126,14 @@ void Game::init()
         helpers.push_back(tmp);
     }
 
+    Text sampleText = Text(projection, 60);
     sampleText.initializeTextRender();
     sampleText.createVertexArray();
+
+    string text = "Level: ";
+    text.append(to_string(gameLevel));
+    
+    textScene.push_back(pair<Text, string>(sampleText, text));
 
     this->state = GAME_ACTIVE;
     gameLevel++;
@@ -179,10 +187,12 @@ void Game::update(float deltaTime)
         elem.shape->setModelMatrix(mat4(1.0f));
         elem.shape->setModelMatrix(translate(elem.shape->getModelMatrix(), pos - vec3(helpers[k].getVelocity(), 0, 0)));
         elem.shape->scaleShape(vec3(25, 25, 1));
+
         if (player->checkCollision(elem.shape))
         {
             player->setDestroyed();
         }
+
         elem.shape->rotateShape(vec3(0, 0, 1), 90);
 
         k++;
@@ -202,12 +212,22 @@ void Game::render()
 {
     Shader textShader = Shader("./resources/textVertexShader.vert", "./resources/textFragmentShader.frag");
     scene.drawScene();
-    sampleText.renderText(textShader, "Hello", 400, 400, 2, vec4(1, 0, 0, 1));
+
+    for (auto elem: textScene)
+    {
+        elem.first.renderText(textShader, elem.second, 40, 820, 1, vec4(1, 0, 0, 1));
+        
+    }
+
 }
 
 void Game::clear()
 {
     scene.clear();
     helpers.clear();
+    for (auto elem: textScene)
+    {
+        elem.first.clear();
+    }
 }
 

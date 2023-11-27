@@ -17,6 +17,7 @@ map<GLchar, Character> characters;
 Text::Text(mat4 projection, const int fontSize)
 {
     this->projection = projection;
+    this->fontSize = fontSize;
 
     // initialize freetype
     auto error = FT_Init_FreeType(&library);
@@ -41,9 +42,6 @@ Text::Text(mat4 projection, const int fontSize)
         cout << "Failed to load font fontFace for freetype." << endl;
         exit(-1);
     }
-
-    error = FT_Set_Pixel_Sizes(fontFace, 0, fontSize);
-
 }
 
 void Text::createVertexArray()
@@ -59,11 +57,12 @@ void Text::createVertexArray()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
 }
 
 void Text::initializeTextRender()
 {
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    FT_Set_Pixel_Sizes(fontFace, 0, this->fontSize);
     // load first 128 characters of ASCII set
     for (unsigned char c = 0; c < 128; c++)
     {
@@ -101,7 +100,6 @@ void Text::initializeTextRender()
         };
         characters.insert(pair<char, Character>(c, character));
     }
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     // destroy FreeType once we're finished
     FT_Done_Face(fontFace);
@@ -151,4 +149,12 @@ void Text::renderText(Shader shader, string text, float x, float y, float scale,
 
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Text::clear()
+{
+    characters.clear();
+    glDeleteTextures(1, &this->texture);
+    glDeleteVertexArrays(1, &this->vao);
+    glDeleteFramebuffers(1, &this->vbo);
 }

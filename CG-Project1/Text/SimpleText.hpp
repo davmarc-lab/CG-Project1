@@ -12,7 +12,7 @@ class Text
         GLuint vbo;
         GLuint texture;
         mat4 projection;
-        string text;
+        unsigned int fontSize;
         
     public:
         Text(mat4 projection, const int fontSize);
@@ -24,4 +24,6 @@ class Text
         void initializeTextRender();
 
         void renderText(Shader shader, string text, float x, float y, float scale, vec4 color);
+
+        void clear();
 };
