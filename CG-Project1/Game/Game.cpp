@@ -26,7 +26,6 @@ vector<ComplexShape2D*> enemies;
 vector<Helper> helpers;
 
 unsigned int gameLevel = 0;
-    ComplexShape2D* aa = new Shape2D(3);
 
 Game::Game(unsigned int width, unsigned int height)
 {
@@ -103,18 +102,6 @@ void Game::init()
     scene.addShape2dToScene(goal, shader);
     scene.addShape2dToScene(player, shader);
 
-        aa->setColor(color::WHITE);
-        Helper::buildTriangle(aa);
-        aa->createVertexArray();
-
-        aa->setModelMatrix(mat4(1.0f));
-        aa->translateShape(vec3(200, 200, 0));
-        aa->scaleShape(vec3(25, 25, 1));
-        aa->rotateShape(vec3(0, 0, 1), 90);
-        aa->setSolid();
-
-    scene.addShape2dToScene(aa, shader);
-
     for (int i = 0; i < gameLevel; i++)
     {
         ComplexShape2D* enem = new Shape2D(3);
@@ -189,47 +176,35 @@ void Game::processInput(float deltaTime, Window window)
 void Game::update(float deltaTime)
 {
 
-    /* // updates all enemies position and informations */
-    /* int k = 0; */
-    /* for (int i = 0; i < scene.getSceneElements().size(); i++) */
-    /* { */
-    /*     auto elem = scene.getSceneElements()[i]; */
-    /*     if (elem.type != ShapeType::ENEMY) */
-    /*         continue; */
-
-    /*     auto pos = elem.shape->getPosition(); */
-    /*     elem.shape->setModelMatrix(mat4(1.0f)); */
-    /*     elem.shape->setModelMatrix(translate(elem.shape->getModelMatrix(), pos - vec3(helpers[k].getVelocity(), 0, 0))); */
-    /*     elem.shape->scaleShape(vec3(25, 25, 1)); */
-    /*     elem.shape->rotateShape(vec3(0, 0, 1), 90); */
-
-    /*     k++; */
-
-    /*     if (player->checkCollision(elem.shape)) */
-    /*     { */
-    /*         player->setDestroyed(); */
-    /*     } */
-    /* } */
-    aa->setModelMatrix(mat4(1.0f));
-        aa->translateShape(vec3(200, 200, 0));
-        aa->scaleShape(vec3(25, 25, 1));
-        aa->rotateShape(vec3(0, 0, 1), 90);
-
-    if (player->checkCollision(aa))
+    // updates all enemies position and informations
+    int k = 0;
+    for (int i = 0; i < scene.getSceneElements().size(); i++)
     {
-        cout << "COOL" << endl;
-    } else {
-        cout << "NU" << endl;
+        auto elem = scene.getSceneElements()[i];
+        if (elem.type != ShapeType::ENEMY)
+            continue;
+
+        auto pos = elem.shape->getPosition();
+        elem.shape->setModelMatrix(mat4(1.0f));
+        elem.shape->setModelMatrix(translate(elem.shape->getModelMatrix(), pos - vec3(helpers[k].getVelocity(), 0, 0)));
+        elem.shape->scaleShape(vec3(25, 25, 1));
+        if (player->checkCollision(elem.shape))
+        {
+            player->setDestroyed();
+        }
+        elem.shape->rotateShape(vec3(0, 0, 1), 90);
+
+        k++;
     }
 
     // checks if player reach the goal
-    /* if (player->checkCollision(goal)) */
-    /* { */
-        /* player->setDestroyed(); */
-        /* this->clear(); */
-        /* this->init(); */
-        /* this->render(); */
-    /* } */
+    if (player->checkCollision(goal))
+    {
+        player->setDestroyed();
+        this->clear();
+        this->init();
+        this->render();
+    }
 }
 
 void Game::render()
