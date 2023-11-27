@@ -15,7 +15,7 @@ class Text
         string text;
         
     public:
-        Text(const char* fontPath, const int fontSize);
+        Text(mat4 projection, const int fontSize);
 
         Text();
 
@@ -23,5 +23,5 @@ class Text
 
         void initializeTextRender();
 
-        void renderText(Shader shader, float x, float y, float scale, vec4 color);
+        void renderText(Shader shader, string text, float x, float y, float scale, vec4 color);
 };

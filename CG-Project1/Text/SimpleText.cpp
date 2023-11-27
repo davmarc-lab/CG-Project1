@@ -6,19 +6,17 @@ FT_Library library;
 FT_Face fontFace;
 
 struct Character {
-	unsigned int TextureID; // ID handle of the glyph this->texture
-	ivec2   Size;      // Size of glyph
-	ivec2   Bearing;   // Offset from baseline to left/top of glyph
-	unsigned int Advance;   // Horizontal offset to advance to next glyph
+    unsigned int TextureID; // ID handle of the glyph this->texture
+    ivec2   Size;      // Size of glyph
+    ivec2   Bearing;   // Offset from baseline to left/top of glyph
+    unsigned int Advance;   // Horizontal offset to advance to next glyph
 };
 
 map<GLchar, Character> characters;
 
-Text::Text(const char* fontPath, const int fontSize)
+Text::Text(mat4 projection, const int fontSize)
 {
-    FT_Library library;
-    FT_Face fontFace;
-
+    this->projection = projection;
 
     // initialize freetype
     auto error = FT_Init_FreeType(&library);
@@ -30,7 +28,7 @@ Text::Text(const char* fontPath, const int fontSize)
     }
 
     error = FT_New_Face(library,
-            "./fonts/DejaVuSansMNerdFont-Regular.ttf",
+            "./fonts/arial.ttf",
             0,
             &fontFace);
     if (error == FT_Err_Unknown_File_Format)
@@ -45,6 +43,7 @@ Text::Text(const char* fontPath, const int fontSize)
     }
 
     error = FT_Set_Pixel_Sizes(fontFace, 0, fontSize);
+
 }
 
 void Text::createVertexArray()
@@ -56,8 +55,8 @@ void Text::createVertexArray()
     glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
-    
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
@@ -65,17 +64,14 @@ void Text::createVertexArray()
 
 void Text::initializeTextRender()
 {
-    // set size to load glyphs as
-    FT_Set_Pixel_Sizes(fontFace, 0, 48);
-
     // load first 128 characters of ASCII set
     for (unsigned char c = 0; c < 128; c++)
     {
         // Load character glyph 
         if (FT_Load_Char(fontFace, c, FT_LOAD_RENDER))
         {
-            /* printf("ERROR::FREETYTPE: Failed to load Glyph \n"); */
-            /* continue; */
+            cout << "ERROR::FREETYTPE: Failed to load Glyph." << endl;
+            continue;
         }
         // generate texture
         glGenTextures(1, &this->texture);
@@ -103,26 +99,26 @@ void Text::initializeTextRender()
             ivec2(fontFace->glyph->bitmap_left, fontFace->glyph->bitmap_top),
             static_cast<unsigned int>(fontFace->glyph->advance.x)
         };
-        characters.insert(std::pair<char, Character>(c, character));
+        characters.insert(pair<char, Character>(c, character));
     }
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     // destroy FreeType once we're finished
     FT_Done_Face(fontFace);
     FT_Done_FreeType(library);
 }
 
-void Text::renderText(Shader shader, float x, float y, float scale, vec4 color)
+void Text::renderText(Shader shader, string text, float x, float y, float scale, vec4 color)
 {
-    glUseProgram(shader.getId());
-    glUniform3fv(glGetUniformLocation(shader.getId(), "textColor"), 4, value_ptr(color));
-    glUniformMatrix4fv(glGetUniformLocation(shader.getId(), "projection"), 1, GL_FALSE, value_ptr(projection));
+    shader.use();
+    glUniform3fv(glGetUniformLocation(shader.getId(), "textColor"), 3, value_ptr(color));
+    glUniformMatrix4fv(glGetUniformLocation(shader.getId(), "projection"), 1, GL_FALSE, value_ptr(this->projection));
 
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(this->vao);
 
     std::string::const_iterator c;
-    for (c = this->text.begin(); c != this->text.end(); c++)
+    for (c = text.begin(); c != text.end(); c++)
     {
         Character ch = characters[*c];
 
@@ -152,7 +148,7 @@ void Text::renderText(Shader shader, float x, float y, float scale, vec4 color)
 
         x += (ch.Advance >> 6) * scale;
     }
-    
+
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }

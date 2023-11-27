@@ -19,6 +19,7 @@
 #include "../Shape/Curve.hpp"
 #include "../Scene/Scene.hpp"
 #include "../Utils/utils.hpp"
+#include "../Text/SimpleText.hpp"
 
 ComplexShape2D* goal;
 ComplexShape2D* player;
@@ -37,10 +38,10 @@ Game::Game(unsigned int width, unsigned int height)
 #define ROADLIMIT height - 300
 
     srand(time(NULL));
-
 }
 
 mat4 projection = ortho(0.0f, (float)1600, 0.0f, (float)900);
+Text sampleText = Text(projection, 24);
 
 Scene scene = Scene(projection);
 /* Helper enemHelper = Helper(window.getResolution()); */
@@ -93,7 +94,7 @@ void Game::init()
     /* rwheel->scaleShape(vec3(20, 20, 1)); */
 
     goal->createVertexArray();
-    goal->translateShape(vec3(500, 200, 0));
+    goal->translateShape(vec3(1400, 200, 0));
     goal->scaleShape(vec3(25, 25, 1));
     goal->setSolid();
 
@@ -116,25 +117,15 @@ void Game::init()
         enem->rotateShape(vec3(0, 0, 1), 90);
         enem->setSolid(); 
 
-        /* Shape2D aaa = Shape2D(3); */
-        /* aaa.setColor(color::WHITE); */
-        /* aaa.setMidColor(color::WHITE); */
-        /* Helper::buildTriangle(&aaa); */
-        /* aaa.createVertexArray(); */
-        /* auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500)); */
-
-        /* aaa.setModelMatrix(mat4(1.0f)); */
-        /* aaa.translateShape(vec3(pos.x, pos.y, 0)); */
-        /* aaa.scaleShape(vec3(25, 25, 1)); */
-        /* aaa.rotateShape(vec3(0, 0, 1), 90); */
-        /* aaa.setSolid(); */
-
         scene.addShape2dToScene(enem, shader, ShapeType::ENEMY);
         auto tmp = Helper(vec2(WIDTH, HEIGHT));
         // idk i need a random velocity generator
         tmp.setVelocity((pow(sin(glfwGetTime()), 2) * (rand() % 4)) + 6);
         helpers.push_back(tmp);
     }
+
+    sampleText.initializeTextRender();
+    sampleText.createVertexArray();
 
     this->state = GAME_ACTIVE;
     gameLevel++;
@@ -209,7 +200,9 @@ void Game::update(float deltaTime)
 
 void Game::render()
 {
+    Shader textShader = Shader("./resources/textVertexShader.vert", "./resources/textFragmentShader.frag");
     scene.drawScene();
+    sampleText.renderText(textShader, "Hello", 400, 400, 2, vec4(1, 0, 0, 1));
 }
 
 void Game::clear()

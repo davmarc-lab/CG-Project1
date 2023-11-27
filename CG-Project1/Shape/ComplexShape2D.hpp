@@ -106,10 +106,6 @@ class ComplexShape2D
                 collisionX = firstBotPos.x <= secondTopPos.x && firstTopPos.x >= secondBotPos.x;
                 collisionY = firstBotPos.y <= secondTopPos.y && firstTopPos.y >= secondBotPos.y;
 
-                cout << "---DEBUG---" << endl;
-                cout << to_string(firstTopPos) << ", " << to_string(firstBotPos) << endl;
-                cout << to_string(secondTopPos) << ", " << to_string(secondBotPos) << endl;
-
                 return collisionX && collisionY;
             }
             return false;
