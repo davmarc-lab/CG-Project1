@@ -22,8 +22,14 @@
 #include "../Utils/utils.hpp"
 #include "../Text/SimpleText.hpp"
 
+struct Player
+{
+    ComplexShape2D* shape;
+    unsigned int hp = 3;
+    unsigned int ammo = 0;
+} player;
+
 ComplexShape2D* goal;
-ComplexShape2D* player;
 vector<ComplexShape2D*> enemies;
 
 vector<Helper> helpers;
@@ -62,16 +68,16 @@ void Game::init()
 
     // Create all the shapes of the scene
     goal = new Square(color::YELLOW);
-    player = new Square(color::RED);
+    player.shape = new Square(color::RED);
     
     ComplexShape2D* road = new Square(color::WHITE);
     road->scaleShape(vec3(this->width, ROADLIMIT, 1));
     road->createVertexArray();
 
-    player->createVertexArray();
-    player->translateShape(vec3(200, 200, 0));
-    player->scaleShape(vec3(25, 25, 1));
-    player->setSolid();
+    player.shape->createVertexArray();
+    player.shape->translateShape(vec3(200, 200, 0));
+    player.shape->scaleShape(vec3(25, 25, 1));
+    player.shape->setSolid();
 
     /* // real player shape */
     /* ComplexShape2D* carBody = new Square(color::RED); */
@@ -103,7 +109,7 @@ void Game::init()
     // Creates the drawing scenes with the projection matrix
     scene.addShape2dToScene(road, roadShader);
     scene.addShape2dToScene(goal, shader);
-    scene.addShape2dToScene(player, shader);
+    scene.addShape2dToScene(player.shape, shader);
 
     for (int i = 0; i < gameLevel; i++)
     {
@@ -126,14 +132,25 @@ void Game::init()
         helpers.push_back(tmp);
     }
 
-    Text sampleText = Text(projection, 60);
-    sampleText.initializeTextRender();
-    sampleText.createVertexArray();
+    // Initialize texts in the window
+    Text textLevel = Text(projection, 60);
+    textLevel.setPosition(vec2(40, 820));
+    textLevel.initializeTextRender();
+    textLevel.createVertexArray();
 
-    string text = "Level: ";
-    text.append(to_string(gameLevel));
-    
-    textScene.push_back(pair<Text, string>(sampleText, text));
+    string level = "Level: ";
+    level.append(to_string(gameLevel));
+
+    Text textAmmo = Text(projection, 60);
+    textAmmo.setPosition(vec2(1300, 820));
+    textAmmo.initializeTextRender();
+    textAmmo.createVertexArray();
+
+    string ammo = "Ammo: ";
+    ammo.append(to_string(player.ammo));
+
+    textScene.push_back(pair<Text, string>(textLevel, level));
+    textScene.push_back(pair<Text, string>(textAmmo, ammo));
 
     this->state = GAME_ACTIVE;
     gameLevel++;
@@ -148,26 +165,26 @@ void Game::processInput(float deltaTime, Window window)
     if (this->state == GAME_ACTIVE)
     {
         float playerVelocity = 14 * deltaTime;
-        vec3 playerPos = player->getPosition();
+        vec3 playerPos = player.shape->getPosition();
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && (int)playerPos.y < ROADLIMIT - 50 - 25)
         {
-            player->translateShape(vec3(0, playerVelocity, 0));
+            player.shape->translateShape(vec3(0, playerVelocity, 0));
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS && playerPos.y > 50 + 25)
         {
-            player->translateShape(vec3(0, -playerVelocity, 0));
+            player.shape->translateShape(vec3(0, -playerVelocity, 0));
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS && playerPos.x > 0 + 25)
         {
-            player->translateShape(vec3(-playerVelocity, 0, 0));
+            player.shape->translateShape(vec3(-playerVelocity, 0, 0));
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS && playerPos.x < this->width - 25)
         {
-            player->translateShape(vec3(playerVelocity, 0, 0));
+            player.shape->translateShape(vec3(playerVelocity, 0, 0));
         }
     }
 }
@@ -188,9 +205,9 @@ void Game::update(float deltaTime)
         elem.shape->setModelMatrix(translate(elem.shape->getModelMatrix(), pos - vec3(helpers[k].getVelocity(), 0, 0)));
         elem.shape->scaleShape(vec3(25, 25, 1));
 
-        if (player->checkCollision(elem.shape))
+        if (player.shape->checkCollision(elem.shape))
         {
-            player->setDestroyed();
+            player.shape->setDestroyed();
         }
 
         elem.shape->rotateShape(vec3(0, 0, 1), 90);
@@ -199,9 +216,9 @@ void Game::update(float deltaTime)
     }
 
     // checks if player reach the goal
-    if (player->checkCollision(goal))
+    if (player.shape->checkCollision(goal))
     {
-        player->setDestroyed();
+        player.ammo++;
         this->clear();
         this->init();
         this->render();
@@ -215,8 +232,7 @@ void Game::render()
 
     for (auto elem: textScene)
     {
-        elem.first.renderText(textShader, elem.second, 40, 820, 1, vec4(1, 0, 0, 1));
-        
+        elem.first.renderText(textShader, elem.second, elem.first.getPosition().x, elem.first.getPosition().y, 1, vec4(1, 0, 0, 1));
     }
 
 }
