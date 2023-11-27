@@ -72,7 +72,7 @@ void Shader::use()
 
 void Shader::clearShader()
 {
-    glDeleteProgram(this->id);
+    glDeleteShader(this->id);
 }
 
 void Shader::setBool(const string &name, bool value)

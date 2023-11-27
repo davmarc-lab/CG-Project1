@@ -38,4 +38,5 @@ void Scene::clear()
         elem.shape->clearShape();
         elem.shader.clearShader();
     }
+    this->shapes.clear();
 }

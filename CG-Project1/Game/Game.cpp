@@ -1,8 +1,13 @@
 #include "Game.hpp"
 
+#include <GLFW/glfw3.h>
+#include <cstdlib>
+#include <ctime>
+#include <glm/common.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
+#include <math.h>
 #include <thread>
 
 #include "../Lib.hpp"
@@ -15,10 +20,12 @@
 #include "../Scene/Scene.hpp"
 #include "../Utils/utils.hpp"
 
-ComplexShape2D* enemy = new Shape2D(50);
-ComplexShape2D* player = new Square(color::RED);
+ComplexShape2D* goal;
+ComplexShape2D* player;
 Shape2D enemies = Shape2D(3);
 vector<Helper> helpers;
+
+unsigned int gameLevel = 0;
 
 Game::Game(unsigned int width, unsigned int height)
 {
@@ -28,6 +35,8 @@ Game::Game(unsigned int width, unsigned int height)
 #define WIDTH width
 #define HEIGHT height
 #define ROADLIMIT height - 300
+
+    srand(time(NULL));
 
 }
 
@@ -49,14 +58,17 @@ void Game::init()
     Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
 
     // Create all the shapes of the scene
+    goal = new Square(color::YELLOW);
+    player = new Square(color::RED);
+    
     ComplexShape2D* road = new Square(color::WHITE);
     road->scaleShape(vec3(this->width, ROADLIMIT, 1));
     road->createVertexArray();
 
-    player->setSolid();
     player->createVertexArray();
     player->translateShape(vec3(200, 200, 0));
     player->scaleShape(vec3(25, 25, 1));
+    player->setSolid();
 
     /* // real player shape */
     /* ComplexShape2D* carBody = new Square(color::RED); */
@@ -80,43 +92,42 @@ void Game::init()
     /* rwheel->translateShape(vec3(200, 100, 0)); */
     /* rwheel->scaleShape(vec3(20, 20, 1)); */
 
-    enemy->setColor(color::YELLOW);
-    enemy->setMidColor(color::WHITE);
-    Helper::buildTriangle(enemy);
-    enemy->setSolid();
-    enemy->createVertexArray();
-    enemy->translateShape(vec3(1400, 200, 0));
-    enemy->scaleShape(vec3(25, 25, 1));
+    goal->createVertexArray();
+    goal->translateShape(vec3(500, 200, 0));
+    goal->scaleShape(vec3(25, 25, 1));
+    goal->setSolid();
 
     // Creates the drawing scenes with the projection matrix
     scene.addShape2dToScene(road, roadShader);
+    scene.addShape2dToScene(goal, shader);
     scene.addShape2dToScene(player, shader);
-    scene.addShape2dToScene(enemy, shader);
 
-    srandom(20287462);
-
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < gameLevel; i++)
     {
         enemies.setColor(color::WHITE);
         enemies.setMidColor(color::WHITE);
         Helper::buildTriangle(&enemies);
-        enemies.setSolid();
         enemies.createVertexArray();
-        auto pos = Helper::getRandomPosition2D(pair<int, int>(500, 500), pair<int, int>(80, 500));
+        auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
 
         enemies.setModelMatrix(mat4(1.0f));
         enemies.translateShape(vec3(pos.x, pos.y, 0));
         enemies.scaleShape(vec3(25, 25, 1));
         enemies.rotateShape(vec3(0, 0, 1), 90);
+        enemies.setSolid();
 
         scene.addShape2dToScene(new Shape2D((Shape2D)enemies), shader, ShapeType::ENEMY);
         auto tmp = Helper(vec2(WIDTH, HEIGHT));
-        tmp.setVelocity(((rand() % 9) + 6) * 0.03);
+        // idk i need a random velocity generator
+        tmp.setVelocity(((rand() % 4) + 5) * fract(pow(sin(glfwGetTime()), 2)) * 2);
         helpers.push_back(tmp);
     }
 
     this->state = GAME_ACTIVE;
+    gameLevel++;
 
+    glDeleteShader(shader.getId());
+    glDeleteShader(roadShader.getId());
     /* bananaHelper.setYVelocity(0.05f); */
 }
 
@@ -152,6 +163,7 @@ void Game::processInput(float deltaTime, Window window)
 void Game::update(float deltaTime)
 {
 
+    // updates all enemies position and informations
     int k = 0;
     for (int i = 0; i < scene.getSceneElements().size(); i++)
     {
@@ -174,11 +186,20 @@ void Game::update(float deltaTime)
         }
     }
 
-    if (player->checkCollision(enemy) || player->checkCollision(&enemies))
+    // checks if player collides with enemies
+    if (player->checkCollision(&enemies))
     {
         player->setDestroyed();
     }
 
+    // checks if player reach the goal
+    if (player->checkCollision(goal))
+    {
+        /* player->setDestroyed(); */
+        this->clear();
+        this->init();
+        this->render();
+    }
 }
 
 void Game::render()
