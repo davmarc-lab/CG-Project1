@@ -92,13 +92,23 @@ class ComplexShape2D
         {
             if (shape->isSolid)
             {
-                auto firstPos = this->getPosition();
-                auto firstSize = this->getSize();
-                auto secondPos = shape->getPosition();
-                auto secondSize = shape->getSize();
+                bool collisionX, collisionY;
+                auto top = this->model * vec4(1, 1, 0, 1);
+                auto firstTopPos = ivec2(top.x, top.y);
+                auto bot = this->model * vec4(-1, -1, 0, 1);
+                auto firstBotPos = ivec2(bot.x, bot.y);
 
-                bool collisionX = firstPos.x + firstSize.x * 2 >= secondPos.x && secondPos.x + secondSize.x * 2 >= firstPos.x;
-                bool collisionY = firstPos.y + firstSize.y * 2 >= secondPos.y && secondPos.y + secondSize.y * 2 >= firstPos.y;
+                top = shape->getModelMatrix() * vec4(1, 1, 0, 1);
+                auto secondTopPos = ivec2(top.x, top.y);
+                bot = shape->getModelMatrix() * vec4(-1, -1, 0, 1);
+                auto secondBotPos = ivec2(bot.x, bot.y);
+
+                collisionX = firstBotPos.x <= secondTopPos.x && firstTopPos.x >= secondBotPos.x;
+                collisionY = firstBotPos.y <= secondTopPos.y && firstTopPos.y >= secondBotPos.y;
+
+                cout << "---DEBUG---" << endl;
+                cout << to_string(firstTopPos) << ", " << to_string(firstBotPos) << endl;
+                cout << to_string(secondTopPos) << ", " << to_string(secondBotPos) << endl;
 
                 return collisionX && collisionY;
             }
@@ -110,6 +120,8 @@ class ComplexShape2D
         void setAlive() { this->isDestroyed = false; }
 
         bool isAlive() { return !this->isDestroyed; }
+
+        bool isColiision() { return this->isSolid; }
 
         // This method transform the model matrix for scaling puropose.
         void scaleShape(vec3 mod) { this->setModelMatrix(scale(this->getModelMatrix(), mod)); }
