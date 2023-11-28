@@ -26,14 +26,16 @@ struct Player
 {
     ComplexShape2D* shape;
     unsigned int hp = 3;
-    unsigned int ammo = 0;
+    int ammo = 0;
 } player;
 
 ComplexShape2D* goal;
 vector<ComplexShape2D*> enemies;
 
 vector<Helper> helpers;
-vector<pair<Text, string>> textScene;
+vector<Text> textScene;
+
+string textAmmoFormat = "Ammo: ";
 
 unsigned int gameLevel = 0;
 
@@ -133,24 +135,22 @@ void Game::init()
     }
 
     // Initialize texts in the window
-    Text textLevel = Text(projection, 60);
+    Text textLevel = Text(projection, "Level: ", 60);
     textLevel.setPosition(vec2(40, 820));
     textLevel.initializeTextRender();
     textLevel.createVertexArray();
 
-    string level = "Level: ";
-    level.append(to_string(gameLevel));
+    textLevel.appendText(to_string(gameLevel));
 
-    Text textAmmo = Text(projection, 60);
+    Text textAmmo = Text(projection, textAmmoFormat, 60);
     textAmmo.setPosition(vec2(1300, 820));
     textAmmo.initializeTextRender();
     textAmmo.createVertexArray();
 
-    string ammo = "Ammo: ";
-    ammo.append(to_string(player.ammo));
+    textAmmo.appendText(to_string(player.ammo));
 
-    textScene.push_back(pair<Text, string>(textLevel, level));
-    textScene.push_back(pair<Text, string>(textAmmo, ammo));
+    textScene.push_back(textLevel);
+    textScene.push_back(textAmmo);
 
     this->state = GAME_ACTIVE;
     gameLevel++;
@@ -158,6 +158,19 @@ void Game::init()
     glDeleteShader(shader.getId());
     glDeleteShader(roadShader.getId());
     /* bananaHelper.setYVelocity(0.05f); */
+}
+
+void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    {
+        player.ammo--;
+        string result = textAmmoFormat;
+        result.append(to_string(player.ammo));
+        textScene[1].setText(result);
+        cout << "SHOOT DUDE!" << endl;
+    }
 }
 
 void Game::processInput(float deltaTime, Window window)
@@ -186,6 +199,9 @@ void Game::processInput(float deltaTime, Window window)
         {
             player.shape->translateShape(vec3(playerVelocity, 0, 0));
         }
+
+        glfwSetKeyCallback(window.getWindow(), playerShoot);
+
     }
 }
 
@@ -232,7 +248,7 @@ void Game::render()
 
     for (auto elem: textScene)
     {
-        elem.first.renderText(textShader, elem.second, elem.first.getPosition().x, elem.first.getPosition().y, 1, vec4(1, 0, 0, 1));
+        elem.renderText(textShader, elem.getPosition().x, elem.getPosition().y, 1, vec4(1, 0, 0, 1));
     }
 
 }
@@ -241,9 +257,6 @@ void Game::clear()
 {
     scene.clear();
     helpers.clear();
-    for (auto elem: textScene)
-    {
-        elem.first.clear();
-    }
+    textScene.clear();
 }
 

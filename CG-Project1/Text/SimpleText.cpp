@@ -14,9 +14,10 @@ struct Character {
 
 map<GLchar, Character> characters;
 
-Text::Text(mat4 projection, const int fontSize)
+Text::Text(mat4 projection, string text, const int fontSize)
 {
     this->projection = projection;
+    this->text = text;
     this->fontSize = fontSize;
 
     // initialize freetype
@@ -106,7 +107,7 @@ void Text::initializeTextRender()
     FT_Done_FreeType(library);
 }
 
-void Text::renderText(Shader shader, string text, float x, float y, float scale, vec4 color)
+void Text::renderText(Shader shader, float x, float y, float scale, vec4 color)
 {
     shader.use();
     glUniform3fv(glGetUniformLocation(shader.getId(), "textColor"), 3, value_ptr(color));
@@ -116,7 +117,7 @@ void Text::renderText(Shader shader, string text, float x, float y, float scale,
     glBindVertexArray(this->vao);
 
     std::string::const_iterator c;
-    for (c = text.begin(); c != text.end(); c++)
+    for (c = this->text.begin(); c != this->text.end(); c++)
     {
         Character ch = characters[*c];
 
