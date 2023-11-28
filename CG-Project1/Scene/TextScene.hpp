@@ -18,7 +18,7 @@ class TextScene
 
         void addTextToScene(Text text, Shader shader) { this->scene.push_back(pair<Text, Shader>(text, shader)); }
 
-        vector<pair<Text, Shader>> getSceneElements() { return this->scene; }
+        vector<pair<Text, Shader>>& getSceneElements() { return this->scene; }
 
         void drawScene();
 

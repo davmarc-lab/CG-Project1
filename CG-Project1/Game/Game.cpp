@@ -156,7 +156,6 @@ void Game::init()
 
     glDeleteShader(shader.getId());
     glDeleteShader(roadShader.getId());
-    /* bananaHelper.setYVelocity(0.05f); */
 }
 
 void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -167,7 +166,6 @@ void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods
         player.ammo--;
         string result = textAmmoPrefix;
         result.append(to_string(player.ammo));
-        /* textScene[1].setText(result); */
         textScene.getSceneElements()[1].first.setText(result);
         cout << "SHOOT DUDE!" << endl;
     }
@@ -225,7 +223,6 @@ void Game::update(float deltaTime)
         {
             player.shape->setDestroyed();
         }
-
         elem.shape->rotateShape(vec3(0, 0, 1), 90);
 
         k++;
