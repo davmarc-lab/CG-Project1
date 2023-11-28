@@ -2,7 +2,6 @@
 
 #include "../Lib.hpp"
 #include "ComplexShape2D.hpp"
-#include <vector>
 
 class Square : public ComplexShape2D
 {

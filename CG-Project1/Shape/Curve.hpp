@@ -2,7 +2,6 @@
 
 #include "../Lib.hpp"
 #include "ComplexShape2D.hpp"
-#include <vector>
 
 #define PHI0(t) (2.0 * t * t * t - 3.0 * t * t + 1)
 #define PHI1(t) (t * t * t - 2.0 * t * t + t)

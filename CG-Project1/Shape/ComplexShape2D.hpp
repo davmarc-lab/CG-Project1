@@ -4,8 +4,6 @@
 #include "../Color/Color.hpp"
 #include "../Shader/Shader.hpp"
 #include "../Collision/Collision.hpp"
-#include <vector>
-#include <glm/gtx/string_cast.hpp>
 
 /*
  * This abstract class provides a standard base for the most of basic shapes using VAO, geometry and

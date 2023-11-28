@@ -4,7 +4,6 @@
 #include "../Shader/Shader.hpp"
 #include <algorithm>
 #include <cstddef>
-#include <glm/ext/matrix_clip_space.hpp>
 #include <iostream>
 #include <utility>
 

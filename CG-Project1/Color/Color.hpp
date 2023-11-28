@@ -1,6 +1,5 @@
 #pragma once
 #include "../Lib.hpp"
-#include <vector>
 
 /*
  * This class provides a structure to store RGBA colors using normalized values (0-1), also is possible

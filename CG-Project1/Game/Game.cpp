@@ -4,12 +4,9 @@
 #include <cstdlib>
 #include <ctime>
 #include <glm/common.hpp>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <math.h>
 #include <thread>
-#include <vector>
 
 #include "../Lib.hpp"
 #include "../Color/Color.hpp"
@@ -19,8 +16,8 @@
 #include "../Shape/Square.hpp"
 #include "../Shape/Curve.hpp"
 #include "../Scene/Scene.hpp"
+#include "../Scene/TextScene.hpp"
 #include "../Utils/utils.hpp"
-#include "../Text/SimpleText.hpp"
 
 struct Player
 {
@@ -33,9 +30,8 @@ ComplexShape2D* goal;
 vector<ComplexShape2D*> enemies;
 
 vector<Helper> helpers;
-vector<Text> textScene;
 
-string textAmmoFormat = "Ammo: ";
+string textAmmoPrefix = "Ammo: ";
 
 unsigned int gameLevel = 0;
 
@@ -53,7 +49,8 @@ Game::Game(unsigned int width, unsigned int height)
 
 mat4 projection = ortho(0.0f, (float)1600, 0.0f, (float)900);
 
-Scene scene = Scene(projection);
+Scene shapeScene = Scene(projection);
+TextScene textScene = TextScene(projection);
 /* Helper enemHelper = Helper(window.getResolution()); */
 /* Helper boomerangHelper = Helper(window.getResolution()); */
 
@@ -109,9 +106,9 @@ void Game::init()
     goal->setSolid();
 
     // Creates the drawing scenes with the projection matrix
-    scene.addShape2dToScene(road, roadShader);
-    scene.addShape2dToScene(goal, shader);
-    scene.addShape2dToScene(player.shape, shader);
+    shapeScene.addShape2dToScene(road, roadShader);
+    shapeScene.addShape2dToScene(goal, shader);
+    shapeScene.addShape2dToScene(player.shape, shader);
 
     for (int i = 0; i < gameLevel; i++)
     {
@@ -127,7 +124,7 @@ void Game::init()
         enem->rotateShape(vec3(0, 0, 1), 90);
         enem->setSolid(); 
 
-        scene.addShape2dToScene(enem, shader, ShapeType::ENEMY);
+        shapeScene.addShape2dToScene(enem, shader, ShapeType::ENEMY);
         auto tmp = Helper(vec2(WIDTH, HEIGHT));
         // idk i need a random velocity generator
         tmp.setVelocity((pow(sin(glfwGetTime()), 2) * (rand() % 4)) + 6);
@@ -142,15 +139,17 @@ void Game::init()
 
     textLevel.appendText(to_string(gameLevel));
 
-    Text textAmmo = Text(projection, textAmmoFormat, 60);
+    Text textAmmo = Text(projection, textAmmoPrefix, 60);
     textAmmo.setPosition(vec2(1300, 820));
     textAmmo.initializeTextRender();
     textAmmo.createVertexArray();
 
     textAmmo.appendText(to_string(player.ammo));
 
-    textScene.push_back(textLevel);
-    textScene.push_back(textAmmo);
+    Shader textShader = Shader("./resources/textVertexShader.vert", "./resources/textFragmentShader.frag");
+
+    textScene.addTextToScene(textLevel, textShader);
+    textScene.addTextToScene(textAmmo, textShader);
 
     this->state = GAME_ACTIVE;
     gameLevel++;
@@ -166,9 +165,10 @@ void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
         player.ammo--;
-        string result = textAmmoFormat;
+        string result = textAmmoPrefix;
         result.append(to_string(player.ammo));
-        textScene[1].setText(result);
+        /* textScene[1].setText(result); */
+        textScene.getSceneElements()[1].first.setText(result);
         cout << "SHOOT DUDE!" << endl;
     }
 }
@@ -210,9 +210,9 @@ void Game::update(float deltaTime)
 
     // updates all enemies position and informations
     int k = 0;
-    for (int i = 0; i < scene.getSceneElements().size(); i++)
+    for (int i = 0; i < shapeScene.getSceneElements().size(); i++)
     {
-        auto elem = scene.getSceneElements()[i];
+        auto elem = shapeScene.getSceneElements()[i];
         if (elem.type != ShapeType::ENEMY)
             continue;
 
@@ -243,19 +243,13 @@ void Game::update(float deltaTime)
 
 void Game::render()
 {
-    Shader textShader = Shader("./resources/textVertexShader.vert", "./resources/textFragmentShader.frag");
-    scene.drawScene();
-
-    for (auto elem: textScene)
-    {
-        elem.renderText(textShader, elem.getPosition().x, elem.getPosition().y, 1, vec4(1, 0, 0, 1));
-    }
-
+    shapeScene.drawScene();
+    textScene.drawScene();
 }
 
 void Game::clear()
 {
-    scene.clear();
+    shapeScene.clear();
     helpers.clear();
     textScene.clear();
 }

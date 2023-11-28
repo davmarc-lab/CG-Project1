@@ -14,6 +14,8 @@ shape = ./Shape/Shape.cpp
 shapeh = ./Shape/Shape.hpp
 scene = ./Scene/Scene.cpp
 sceneh = ./Scene/Scene.hpp
+tscene = ./Scene/TextScene.cpp
+tsceneh = ./Scene/TextScene.hpp
 shader = ./Shader/Shader.cpp
 shaderh = ./Shader/Shader.hpp
 herm = ./Math/Hermite.cpp
@@ -28,8 +30,8 @@ utilh = ./Utils/utils.hpp
 
 all: main.exe
 
-main.exe: main.o window.o shape.o shader.o scene.o helper.o game.o square.o curve.o text.o glad.o
-	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o game.o shape.o glad.o curve.o shader.o text.o scene.o ${LIBS}
+main.exe: main.o window.o shape.o shader.o scene.o tscene.o helper.o game.o square.o curve.o text.o glad.o
+	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o game.o shape.o glad.o curve.o shader.o text.o tscene.o scene.o ${LIBS}
 
 main.o: main.cpp ${gladh} ${libh} ${intsh} ${gameh}
 	gcc -c ${FLAGS} main.cpp -o main.o
@@ -51,6 +53,9 @@ shader.o: ${shader} ${shaderh} ${shapeh} ${gladh}
 
 scene.o: ${scene} ${sceneh} ${libh} ${gladh}
 	gcc -c ${FLAGS} ${scene} -o scene.o
+
+tscene.o: ${tscene} ${tsceneh} ${libh}
+	gcc -c ${FLAGS} ${tscene} -o tscene.o
 
 square.o: ${square} ${squareh} ${libh} ${gladh} ${intsh} ${shaderh}
 	gcc -c ${FLAGS} ${square} -o square.o

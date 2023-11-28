@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include "../Lib.hpp"
 #include "../Color/Color.hpp"
 #include "ComplexShape2D.hpp"

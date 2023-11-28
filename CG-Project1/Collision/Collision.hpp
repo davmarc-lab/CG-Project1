@@ -2,8 +2,6 @@
 
 #include "../Lib.hpp"
 
-#include <vector>
-
 class Collision
 {
     private:
