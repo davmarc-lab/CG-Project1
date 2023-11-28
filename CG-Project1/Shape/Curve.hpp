@@ -25,7 +25,7 @@ class Curve : public ComplexShape2D
         void hermiteInterpolation(float *t, vec4 color_top, vec4 color_bot, Curve* fig);
 
     public:
-        void buildHermite(vec4 color_top, vec4 color_bot, Curve* forma);
+        void buildHermite(vec4 color_top, vec4 color_bot);
 
         void readDataFromFile(const char* pathFile);
 

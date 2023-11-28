@@ -7,6 +7,7 @@
 #include <iostream>
 #include <math.h>
 #include <thread>
+#include <vector>
 
 #include "../Lib.hpp"
 #include "../Color/Color.hpp"
@@ -26,7 +27,7 @@ struct Player
     int ammo = 0;
 } player;
 
-ComplexShape2D* goal;
+Curve* goal;
 vector<ComplexShape2D*> enemies;
 
 vector<Helper> helpers;
@@ -54,6 +55,30 @@ TextScene textScene = TextScene(projection);
 /* Helper enemHelper = Helper(window.getResolution()); */
 /* Helper boomerangHelper = Helper(window.getResolution()); */
 
+void buildBullet(vec2 pos)
+{
+    ComplexShape2D* base = new Square(color::BLACK);
+    base->createVertexArray();
+
+    base->translateShape(vec3(pos, 0));
+    base->scaleShape(vec3(35, 25, 1));
+    base->setSolid();
+
+    ComplexShape2D* peak = new Shape2D(50);
+    peak->setColor(color::BLACK);
+    peak->setMidColor(color::BLACK);
+    Helper::buildCircle(0, 0, 1, 1, peak);
+    peak->createVertexArray();
+
+    peak->translateShape(vec3(pos.x - 30, pos.y, 0));
+    peak->scaleShape(vec3(50, 25, 1));
+    peak->setSolid();
+
+    Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
+    shapeScene.addShape2dToScene(base, shader, ShapeType::ENEMY);
+    shapeScene.addShape2dToScene(peak, shader, ShapeType::ENEMY);
+}
+
 void Game::init()
 {
     // Create the background shader and set the window resolution for drawing purpose
@@ -66,7 +91,7 @@ void Game::init()
     Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
 
     // Create all the shapes of the scene
-    goal = new Square(color::YELLOW);
+    goal = new Curve();
     player.shape = new Square(color::RED);
     
     ComplexShape2D* road = new Square(color::WHITE);
@@ -100,6 +125,8 @@ void Game::init()
     /* rwheel->translateShape(vec3(200, 100, 0)); */
     /* rwheel->scaleShape(vec3(20, 20, 1)); */
 
+    goal->readDataFromFile("./resources/hermite/bullet.txt");
+    goal->buildHermite(color::YELLOW, color::YELLOW);
     goal->createVertexArray();
     goal->translateShape(vec3(1400, 200, 0));
     goal->scaleShape(vec3(25, 25, 1));
@@ -112,19 +139,8 @@ void Game::init()
 
     for (int i = 0; i < gameLevel; i++)
     {
-        ComplexShape2D* enem = new Shape2D(3);
-        enem->setColor(color::WHITE);
-        Helper::buildTriangle(enem);
-        enem->createVertexArray();
-
         auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
-        enem->setModelMatrix(mat4(1.0f));
-        enem->translateShape(vec3(pos.x, pos.y, 0));
-        enem->scaleShape(vec3(25, 25, 1));
-        enem->rotateShape(vec3(0, 0, 1), 90);
-        enem->setSolid(); 
-
-        shapeScene.addShape2dToScene(enem, shader, ShapeType::ENEMY);
+        buildBullet(pos);
         auto tmp = Helper(vec2(WIDTH, HEIGHT));
         // idk i need a random velocity generator
         tmp.setVelocity((pow(sin(glfwGetTime()), 2) * (rand() % 4)) + 6);

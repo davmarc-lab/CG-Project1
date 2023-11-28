@@ -73,7 +73,7 @@ void Curve::hermiteInterpolation(float* t, vec4 color_top, vec4 color_bot, Curve
 	}
 }
 
-void Curve::buildHermite(vec4 color_top, vec4 color_bot, Curve* forma)
+void Curve::buildHermite(vec4 color_top, vec4 color_bot)
 {
 	Poligonale.CP = Curva.CP;
 	Poligonale.colCP = Curva.colCP;

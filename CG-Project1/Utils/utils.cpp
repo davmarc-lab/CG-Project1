@@ -19,7 +19,6 @@ void Helper::buildCircle(float cx, float cy, float raggiox, float raggioy, Compl
     float t, xx, yy;
 
     fig->addElementVertex(vec3(cx, cy, 0.0));
-
     fig->addElementColors(fig->getMidColor().getColorVector());
 
     for (int i = 0; i <= fig->getTriangleNum(); i++)
@@ -31,7 +30,7 @@ void Helper::buildCircle(float cx, float cy, float raggiox, float raggioy, Compl
         fig->addElementVertex(vec3(xx, yy, 0.0));
         fig->addElementColors(fig->getColor().getColorVector());
     }
-    fig->setVertexNum(fig->getTriangleNum());
+    fig->setVertexNum(fig->getTriangleNum() + 2);
 }
 
 void Helper::buildTriangle(ComplexShape2D* fig)

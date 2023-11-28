@@ -32,7 +32,7 @@ void Shape2D::draw(Shader shader) {
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(this->getModelMatrix()));
 
     glBindVertexArray(this->getVertexArrayObject());
-    glDrawArrays(GL_TRIANGLES, 0, this->getVertexNum());
+    glDrawArrays(GL_TRIANGLE_FAN, 0, this->getVertexNum());
     glBindVertexArray(0);
 }
 
