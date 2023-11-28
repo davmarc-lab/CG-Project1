@@ -4,6 +4,7 @@
 #include "../Color/Color.hpp"
 #include "../Shader/Shader.hpp"
 #include "../Collision/Collision.hpp"
+#include "Action.hpp"
 
 /*
  * This abstract class provides a standard base for the most of basic shapes using VAO, geometry and
@@ -32,6 +33,8 @@ class ComplexShape2D
         int nvertex = 0;
         // Number of triangles of the shape.
         int ntriangle = 0;
+
+        vector<Action> actions;
 
         // Says if the shape is solid or not
         bool isSolid = false;
@@ -83,6 +86,16 @@ class ComplexShape2D
 
         // This metod sets the model matrix.
         void setModelMatrix(mat4 model) { this->model = mat4(model); }
+
+        void addAction(Action action) { this->actions.push_back(action); }
+
+        void runAllActions()
+        {
+            for (auto action: this->actions)
+            {
+                action.run();
+            }
+        }
 
         void setSolid() { this->isSolid = true; }
 

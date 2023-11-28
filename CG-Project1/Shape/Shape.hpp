@@ -2,6 +2,7 @@
 
 #include "../Lib.hpp"
 #include "../Color/Color.hpp"
+#include "Action.hpp"
 #include "ComplexShape2D.hpp"
 
 class Shape2D : public ComplexShape2D

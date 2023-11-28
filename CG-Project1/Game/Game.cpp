@@ -55,28 +55,56 @@ TextScene textScene = TextScene(projection);
 /* Helper enemHelper = Helper(window.getResolution()); */
 /* Helper boomerangHelper = Helper(window.getResolution()); */
 
+ComplexShape2D* base;
+ComplexShape2D* peak;
+float velocity;
 void buildBullet(vec2 pos)
 {
-    ComplexShape2D* base = new Square(color::BLACK);
+    base = new Square(color::BLACK);
     base->createVertexArray();
 
+    base->setModelMatrix(mat4(1.0f));
     base->translateShape(vec3(pos, 0));
     base->scaleShape(vec3(35, 25, 1));
     base->setSolid();
 
-    ComplexShape2D* peak = new Shape2D(50);
+    peak = new Shape2D(50);
     peak->setColor(color::BLACK);
     peak->setMidColor(color::BLACK);
     Helper::buildCircle(0, 0, 1, 1, peak);
     peak->createVertexArray();
 
+    peak->setModelMatrix(mat4(1.0f));
     peak->translateShape(vec3(pos.x - 30, pos.y, 0));
     peak->scaleShape(vec3(50, 25, 1));
     peak->setSolid();
 
+    velocity = (pow(sin(glfwGetTime()), 2) * (rand() % 4)) + 6;
+    Action action = Action();
+    action.execute = [] {
+        /* cout << velocity << endl; */
+        auto pos = base->getPosition();
+        base->setModelMatrix(mat4(1.0f));
+        base->setModelMatrix(translate(base->getModelMatrix(), pos - vec3(velocity, 0, 0)));
+        base->scaleShape(vec3(25, 25, 1));
+
+        pos = peak->getPosition();
+        peak->setModelMatrix(mat4(1.0f));
+        peak->setModelMatrix(translate(peak->getModelMatrix(), pos - vec3(velocity, 0, 0)));
+        peak->scaleShape(vec3(25, 25, 1));
+
+        if (player.shape->checkCollision(peak) || player.shape->checkCollision(base))
+        {
+            player.shape->setDestroyed();
+        }
+    };
+
+    base->addAction(action);
+    peak->addAction(action);
+
     Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
-    shapeScene.addShape2dToScene(base, shader, ShapeType::ENEMY);
-    shapeScene.addShape2dToScene(peak, shader, ShapeType::ENEMY);
+    shapeScene.addShape2dToScene(base, shader);
+    shapeScene.addShape2dToScene(peak, shader);
 }
 
 void Game::init()
@@ -93,7 +121,7 @@ void Game::init()
     // Create all the shapes of the scene
     goal = new Curve();
     player.shape = new Square(color::RED);
-    
+
     ComplexShape2D* road = new Square(color::WHITE);
     road->scaleShape(vec3(this->width, ROADLIMIT, 1));
     road->createVertexArray();
@@ -128,9 +156,11 @@ void Game::init()
     goal->readDataFromFile("./resources/hermite/bullet.txt");
     goal->buildHermite(color::YELLOW, color::YELLOW);
     goal->createVertexArray();
-    goal->translateShape(vec3(1400, 200, 0));
+    goal->translateShape(vec3(400, 200, 0));
     goal->scaleShape(vec3(25, 25, 1));
     goal->setSolid();
+
+
 
     // Creates the drawing scenes with the projection matrix
     shapeScene.addShape2dToScene(road, roadShader);
@@ -223,26 +253,9 @@ void Game::update(float deltaTime)
 {
 
     // updates all enemies position and informations
-    int k = 0;
-    for (int i = 0; i < shapeScene.getSceneElements().size(); i++)
-    {
-        auto elem = shapeScene.getSceneElements()[i];
-        if (elem.type != ShapeType::ENEMY)
-            continue;
 
-        auto pos = elem.shape->getPosition();
-        elem.shape->setModelMatrix(mat4(1.0f));
-        elem.shape->setModelMatrix(translate(elem.shape->getModelMatrix(), pos - vec3(helpers[k].getVelocity(), 0, 0)));
-        elem.shape->scaleShape(vec3(25, 25, 1));
-
-        if (player.shape->checkCollision(elem.shape))
-        {
-            player.shape->setDestroyed();
-        }
-        elem.shape->rotateShape(vec3(0, 0, 1), 90);
-
-        k++;
-    }
+    for (auto elem: shapeScene.getSceneElements())
+        elem.shape->runAllActions();
 
     // checks if player reach the goal
     if (player.shape->checkCollision(goal))

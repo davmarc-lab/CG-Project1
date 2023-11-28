@@ -24,6 +24,7 @@ curve = ./Shape/Curve.cpp
 curveh = ./Shape/Curve.hpp
 text = ./Text/SimpleText.cpp
 texth = ./Text/SimpleText.hpp
+actionh = ./Shape/Action.hpp
 libh = Lib.hpp
 util = ./Utils/utils.cpp
 utilh = ./Utils/utils.hpp
@@ -42,10 +43,10 @@ text.o: ${text} ${texth} ${libh} ${shaderh}
 window.o: ${win} ${winh} ${libh} ${gladh}
 	gcc -c ${FLAGS} ${win} -o window.o
 
-shape.o: ${shape} ${shapeh} ${libh} ${gladh} ${intsh} ${shaderh}
+shape.o: ${shape} ${shapeh} ${libh} ${gladh} ${intsh} ${shaderh} ${action}
 	gcc -c ${FLAGS} ${shape} -o shape.o
 
-game.o: ${game} ${gameh}
+game.o: ${game} ${gameh} ${action}
 	gcc -c ${FLAGS} ${game} -o game.o
 
 shader.o: ${shader} ${shaderh} ${shapeh} ${gladh}
@@ -57,10 +58,10 @@ scene.o: ${scene} ${sceneh} ${libh} ${gladh}
 tscene.o: ${tscene} ${tsceneh} ${libh}
 	gcc -c ${FLAGS} ${tscene} -o tscene.o
 
-square.o: ${square} ${squareh} ${libh} ${gladh} ${intsh} ${shaderh}
+square.o: ${square} ${squareh} ${libh} ${gladh} ${intsh} ${shaderh} ${action}
 	gcc -c ${FLAGS} ${square} -o square.o
 
-curve.o: ${curve} ${curveh} ${libh} ${gladh} ${intsh} ${shaderh}
+curve.o: ${curve} ${curveh} ${libh} ${gladh} ${intsh} ${shaderh} ${action}
 	gcc -c ${FLAGS} ${curve} -o curve.o
 
 helper.o: ${util} ${utilh}
