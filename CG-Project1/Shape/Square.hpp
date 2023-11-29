@@ -8,7 +8,7 @@ class Square : public ComplexShape2D
 private:
 
 	GLuint ebo;
-	float vertex[12] = {
+	float vertices[12] = {
 		-1.0f, -1.0f, 0.0f,		// bottom left
 		-1.0f, 1.0f, 0.0f,		// top left
 		1.0f, 1.0f, 0.0f,		// top right
@@ -19,6 +19,9 @@ private:
 public:
 	Square(Color color) 
     {
+        for (int i = 0; i < 12; i += 3)
+            this->vertex.push_back(vec3(vertices[i], vertices[i+1], vertices[i+2]));
+
         for (int i = 0; i < 4; i++)
         {
             this->colors.push_back(color.getColorVector());

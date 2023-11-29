@@ -10,7 +10,7 @@ void Square::createVertexArray()
     glBindVertexArray(this->vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, this->vbo_g);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(this->vertex), this->vertex, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(this->vertices), this->vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(this->indices), this->indices, GL_STATIC_DRAW);

@@ -9,13 +9,19 @@ class Bullet : public ComplexShape2D
         vector<ComplexShape2D*> shapes;
 
         float velocity = 1;
+
     public:
         Bullet(vec2 pos);
 
         Bullet();
 
-
         vector<ComplexShape2D*> getElements() { return this->shapes; }
+
+        bool checkShapesCollision(ComplexShape2D* shape);
+
+        vec2 getTopCorner();
+
+        vec2 getBotCorner();
 
         virtual void clearShape() override;
 

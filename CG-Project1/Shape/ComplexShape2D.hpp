@@ -5,6 +5,7 @@
 #include "../Shader/Shader.hpp"
 #include "../Collision/Collision.hpp"
 #include "Action.hpp"
+#include <glm/gtx/string_cast.hpp>
 
 /*
  * This abstract class provides a standard base for the most of basic shapes using VAO, geometry and

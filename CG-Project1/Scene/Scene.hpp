@@ -11,7 +11,7 @@ using namespace std;
 
 enum ShapeType
 {
-    ENEMY,
+    BULLET,
     TRIAG,
     PLAYER,
     NONE

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <glm/common.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <math.h>
 #include <thread>
@@ -35,7 +36,7 @@ vector<Helper> helpers;
 
 string textAmmoPrefix = "Ammo: ";
 
-unsigned int gameLevel = 0;
+unsigned int gameLevel = 1;
 
 Game::Game(unsigned int width, unsigned int height)
 {
@@ -56,7 +57,7 @@ TextScene textScene = TextScene(projection);
 /* Helper enemHelper = Helper(window.getResolution()); */
 /* Helper boomerangHelper = Helper(window.getResolution()); */
 
-ComplexShape2D* bullet;
+Bullet* bullet;
 
 void buildBullet(vec2 pos)
 {
@@ -64,7 +65,7 @@ void buildBullet(vec2 pos)
     bullet->createVertexArray();
 
     Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
-    shapeScene.addShape2dToScene(bullet, shader);
+    shapeScene.addShape2dToScene(bullet, shader, ShapeType::BULLET);
 }
 
 void Game::init()
@@ -211,7 +212,14 @@ void Game::update(float deltaTime)
 
     for (auto elem: shapeScene.getSceneElements())
     {
-        elem.shape->runAction();
+        if (elem.type == ShapeType::BULLET)
+        {
+            if (((Bullet*)elem.shape)->checkShapesCollision(player.shape))
+            {
+                player.shape->setDestroyed();
+            }
+            elem.shape->runAction();
+        }
     }
 
     // checks if player reach the goal
