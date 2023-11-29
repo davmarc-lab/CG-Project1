@@ -25,14 +25,16 @@ curveh = ./Shape/Curve.hpp
 text = ./Text/SimpleText.cpp
 texth = ./Text/SimpleText.hpp
 actionh = ./Shape/Action.hpp
+bullet = ./Shape/Bullet.cpp
+bulleth = ./Shape/Bullet.hpp
 libh = Lib.hpp
 util = ./Utils/utils.cpp
 utilh = ./Utils/utils.hpp
 
 all: main.exe
 
-main.exe: main.o window.o shape.o shader.o scene.o tscene.o helper.o game.o square.o curve.o text.o glad.o
-	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o game.o shape.o glad.o curve.o shader.o text.o tscene.o scene.o ${LIBS}
+main.exe: main.o window.o shape.o shader.o scene.o tscene.o helper.o game.o square.o curve.o bullet.o text.o glad.o
+	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o game.o shape.o glad.o curve.o shader.o text.o bullet.o tscene.o scene.o ${LIBS}
 
 main.o: main.cpp ${gladh} ${libh} ${intsh} ${gameh}
 	gcc -c ${FLAGS} main.cpp -o main.o
@@ -54,6 +56,9 @@ shader.o: ${shader} ${shaderh} ${shapeh} ${gladh}
 
 scene.o: ${scene} ${sceneh} ${libh} ${gladh}
 	gcc -c ${FLAGS} ${scene} -o scene.o
+
+bullet.o: ${bullet} ${bulleth} ${intsh}
+	gcc -c ${FLAGS} ${bullet} -o bullet.o
 
 tscene.o: ${tscene} ${tsceneh} ${libh}
 	gcc -c ${FLAGS} ${tscene} -o tscene.o

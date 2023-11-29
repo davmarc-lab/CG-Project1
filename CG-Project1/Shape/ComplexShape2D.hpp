@@ -34,8 +34,6 @@ class ComplexShape2D
         // Number of triangles of the shape.
         int ntriangle = 0;
 
-        vector<Action> actions;
-
         // Says if the shape is solid or not
         bool isSolid = false;
 
@@ -86,16 +84,6 @@ class ComplexShape2D
 
         // This metod sets the model matrix.
         void setModelMatrix(mat4 model) { this->model = mat4(model); }
-
-        void addAction(Action action) { this->actions.push_back(action); }
-
-        void runAllActions()
-        {
-            for (auto action: this->actions)
-            {
-                action.run();
-            }
-        }
 
         void setSolid() { this->isSolid = true; }
 
@@ -162,4 +150,6 @@ class ComplexShape2D
 
         // Create all vertex and color VBO, enable them and draw in the windows
         virtual void draw(Shader shader) = 0;
+
+        virtual void runAction() = 0;
 };

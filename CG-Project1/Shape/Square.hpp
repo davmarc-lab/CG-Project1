@@ -32,4 +32,6 @@ public:
 
     virtual void clearShape() override;
 
+    virtual void runAction() override {}
+
 };

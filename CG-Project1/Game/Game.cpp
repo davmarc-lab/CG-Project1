@@ -16,6 +16,7 @@
 #include "../Shape/Shape.hpp"
 #include "../Shape/Square.hpp"
 #include "../Shape/Curve.hpp"
+#include "../Shape/Bullet.hpp"
 #include "../Scene/Scene.hpp"
 #include "../Scene/TextScene.hpp"
 #include "../Utils/utils.hpp"
@@ -55,56 +56,15 @@ TextScene textScene = TextScene(projection);
 /* Helper enemHelper = Helper(window.getResolution()); */
 /* Helper boomerangHelper = Helper(window.getResolution()); */
 
-ComplexShape2D* base;
-ComplexShape2D* peak;
-float velocity;
+ComplexShape2D* bullet;
+
 void buildBullet(vec2 pos)
 {
-    base = new Square(color::BLACK);
-    base->createVertexArray();
-
-    base->setModelMatrix(mat4(1.0f));
-    base->translateShape(vec3(pos, 0));
-    base->scaleShape(vec3(35, 25, 1));
-    base->setSolid();
-
-    peak = new Shape2D(50);
-    peak->setColor(color::BLACK);
-    peak->setMidColor(color::BLACK);
-    Helper::buildCircle(0, 0, 1, 1, peak);
-    peak->createVertexArray();
-
-    peak->setModelMatrix(mat4(1.0f));
-    peak->translateShape(vec3(pos.x - 30, pos.y, 0));
-    peak->scaleShape(vec3(50, 25, 1));
-    peak->setSolid();
-
-    velocity = (pow(sin(glfwGetTime()), 2) * (rand() % 4)) + 6;
-    Action action = Action();
-    action.execute = [] {
-        /* cout << velocity << endl; */
-        auto pos = base->getPosition();
-        base->setModelMatrix(mat4(1.0f));
-        base->setModelMatrix(translate(base->getModelMatrix(), pos - vec3(velocity, 0, 0)));
-        base->scaleShape(vec3(25, 25, 1));
-
-        pos = peak->getPosition();
-        peak->setModelMatrix(mat4(1.0f));
-        peak->setModelMatrix(translate(peak->getModelMatrix(), pos - vec3(velocity, 0, 0)));
-        peak->scaleShape(vec3(25, 25, 1));
-
-        if (player.shape->checkCollision(peak) || player.shape->checkCollision(base))
-        {
-            player.shape->setDestroyed();
-        }
-    };
-
-    base->addAction(action);
-    peak->addAction(action);
+    bullet = new Bullet(pos);
+    bullet->createVertexArray();
 
     Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
-    shapeScene.addShape2dToScene(base, shader);
-    shapeScene.addShape2dToScene(peak, shader);
+    shapeScene.addShape2dToScene(bullet, shader);
 }
 
 void Game::init()
@@ -170,11 +130,8 @@ void Game::init()
     for (int i = 0; i < gameLevel; i++)
     {
         auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
+
         buildBullet(pos);
-        auto tmp = Helper(vec2(WIDTH, HEIGHT));
-        // idk i need a random velocity generator
-        tmp.setVelocity((pow(sin(glfwGetTime()), 2) * (rand() % 4)) + 6);
-        helpers.push_back(tmp);
     }
 
     // Initialize texts in the window
@@ -252,10 +209,10 @@ void Game::processInput(float deltaTime, Window window)
 void Game::update(float deltaTime)
 {
 
-    // updates all enemies position and informations
-
     for (auto elem: shapeScene.getSceneElements())
-        elem.shape->runAllActions();
+    {
+        elem.shape->runAction();
+    }
 
     // checks if player reach the goal
     if (player.shape->checkCollision(goal))

@@ -34,4 +34,6 @@ class Curve : public ComplexShape2D
         virtual void draw(Shader shader) override;
 
         virtual void clearShape() override;
+
+        virtual void runAction() override {}
 };
