@@ -117,7 +117,7 @@ void Game::init()
     goal->readDataFromFile("./resources/hermite/bullet.txt");
     goal->buildHermite(color::YELLOW, color::YELLOW);
     goal->createVertexArray();
-    goal->translateShape(vec3(400, 200, 0));
+    goal->translateShape(vec3(1400, 200, 0));
     goal->scaleShape(vec3(25, 25, 1));
     goal->setSolid();
 

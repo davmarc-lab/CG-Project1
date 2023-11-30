@@ -58,6 +58,8 @@ int Window::initializeWindow()
         return -2;
     }
 
+    glViewport(0, 0, this->width, this->height);
+
     // enable colors opacity
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
