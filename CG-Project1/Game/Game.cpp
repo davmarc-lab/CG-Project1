@@ -29,7 +29,7 @@ struct Player
     int ammo = 0;
 } player;
 
-Curve* goal;
+ComplexShape2D* goal;
 vector<ComplexShape2D*> enemies;
 
 vector<Helper> helpers;
@@ -114,10 +114,10 @@ void Game::init()
     /* rwheel->translateShape(vec3(200, 100, 0)); */
     /* rwheel->scaleShape(vec3(20, 20, 1)); */
 
-    goal->readDataFromFile("./resources/hermite/bullet.txt");
-    goal->buildHermite(color::YELLOW, color::YELLOW);
+    goal = new Square(color::YELLOW);
     goal->createVertexArray();
-    goal->translateShape(vec3(1400, 200, 0));
+    auto pos = Helper::getRandomPosition2D(pair<int, int>(1500, 1500), pair<int, int>(80, ROADLIMIT - 100));
+    goal->translateShape(vec3(pos, 0));
     goal->scaleShape(vec3(25, 25, 1));
     goal->setSolid();
 
