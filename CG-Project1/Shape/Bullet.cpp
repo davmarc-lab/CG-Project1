@@ -34,44 +34,66 @@ Bullet::Bullet(vec2 pos)
 
 vec2 Bullet::getTopCorner()
 {
-    float xmax = -1, ymax = -1;
-    vec4 point;
+    vec4 xmax = vec4(-1), ymax = vec4(-1);
+    vec2 point = vec2(0);
 
     for (auto elem: this->shapes)
     {
         // all normalized points!
         auto points = elem->getVertexArray();
 
+        // this method transform the normalized points in world space coordinates and find the max.
         for (int i = 0; i < points.size(); i++)
-            xmax = xmax <= points[i].x ? points[i].x : xmax;
+        {
+            auto var = elem->getModelMatrix() * vec4(points[i], 1);
+            xmax = xmax.x <= var.x ? var : xmax;
+        }
         for (int i = 0; i < points.size(); i++)
-            ymax = ymax <= points[i].y ? points[i].y : ymax;
+        {
+            auto var = elem->getModelMatrix() * vec4(points[i], 1);
+            ymax = ymax.y <= var.y ? var : ymax;
+        } 
 
-        point = elem->getModelMatrix() * vec4(xmax, ymax, 0, 1);
     }
+    point = vec2(xmax.x, ymax.y);
 
-    return vec2(point.x, point.y);
+    return point;
 }
 
 vec2 Bullet::getBotCorner()
 {
-    float xmin = 1, ymin = 1;
-    vec4 point;
+    vec4 xmin = vec4(-1), ymin = vec4(-1);
+    vec2 point = vec2(0);
 
     for (auto elem: this->shapes)
     {
         // all normalized points!
         auto points = elem->getVertexArray();
 
+        // this method transform the normalized points in world space coordinates and find the min.
         for (int i = 0; i < points.size(); i++)
-            xmin = xmin >= points[i].x ? points[i].x : xmin;
+        {
+            auto var = elem->getModelMatrix() * vec4(points[i], 1);
+            if (xmin.x == -1)
+                xmin = var;
+            else
+                xmin = xmin.x >= var.x ? var : xmin;
+        }
         for (int i = 0; i < points.size(); i++)
-            ymin = ymin >= points[i].y ? points[i].y : ymin;
+        {
+            auto var = elem->getModelMatrix() * vec4(points[i], 1);
+            if (ymin.y == -1)
+                ymin = var;
+            else
+                ymin = ymin.y >= var.y ? var : ymin;
+        } 
 
-        point = elem->getModelMatrix() * vec4(xmin, ymin, 0, 1);
     }
+    point = vec2(xmin.x, ymin.y);
 
-    return vec2(point.x, point.y);
+    return point;
+
+    return point;
 }
 
 bool Bullet::checkShapesCollision(ComplexShape2D* shape)
@@ -86,7 +108,7 @@ bool Bullet::checkShapesCollision(ComplexShape2D* shape)
         auto secondTopPos = vec2(top.x, top.y);
         auto bot = shape->getModelMatrix() * vec4(-1, -1, 0, 1);
         auto secondBotPos = vec2(bot.x, bot.y);
-        
+
         collisionX = firstBotPos.x <= secondTopPos.x && firstTopPos.x >= secondBotPos.x;
         collisionY = firstBotPos.y <= secondTopPos.y && firstTopPos.y >= secondBotPos.y;
 
