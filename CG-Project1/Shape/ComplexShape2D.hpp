@@ -86,6 +86,61 @@ class ComplexShape2D
         // This metod sets the model matrix.
         void setModelMatrix(mat4 model) { this->model = mat4(model); }
 
+        vec2 getTopCorner()
+        {
+            vec4 xmax = vec4(-1), ymax = vec4(-1);
+            vec2 point = vec2(0);
+            auto points = this->getVertexArray();
+
+            // this method transform the normalized points in world space coordinates and find the max.
+            for (int i = 0; i < points.size(); i++)
+            {
+                auto var = this->getModelMatrix() * vec4(points[i], 1);
+                xmax = xmax.x <= var.x ? var : xmax;
+            }
+            for (int i = 0; i < points.size(); i++)
+            {
+                auto var = this->getModelMatrix() * vec4(points[i], 1);
+                ymax = ymax.y <= var.y ? var : ymax;
+            } 
+
+            point = vec2(xmax.x, ymax.y);
+
+            return point;
+        }
+
+        vec2 getBotCorner()
+        {
+            vec4 xmin = vec4(-1), ymin = vec4(-1);
+            vec2 point = vec2(0);
+
+            // all normalized points!
+            auto points = this->getVertexArray();
+
+            // this method transform the normalized points in world space coordinates and find the min.
+            for (int i = 0; i < points.size(); i++)
+            {
+                auto var = this->getModelMatrix() * vec4(points[i], 1);
+                if (xmin.x == -1)
+                    xmin = var;
+                else
+                    xmin = xmin.x >= var.x ? var : xmin;
+            }
+            for (int i = 0; i < points.size(); i++)
+            {
+                auto var = this->getModelMatrix() * vec4(points[i], 1);
+                if (ymin.y == -1)
+                    ymin = var;
+                else
+                    ymin = ymin.y >= var.y ? var : ymin;
+            } 
+
+            point = vec2(xmin.x, ymin.y);
+
+            return point;
+        }
+
+
         void setSolid() { this->isSolid = true; }
 
         bool checkCollision(ComplexShape2D* shape)

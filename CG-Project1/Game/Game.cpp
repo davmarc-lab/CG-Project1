@@ -232,10 +232,10 @@ void Game::update(float deltaTime)
     {
         if (elem.type == ShapeType::BULLET)
         {
-            /* if (((Bullet*)elem.shape)->checkShapesCollision(player.shape)) */
-            /* { */
-            /*     player.shape->setDestroyed(); */
-            /* } */
+            if (((Bullet*)elem.shape)->checkShapesCollision(player.shape))
+            {
+                player.shape->setDestroyed();
+            }
             elem.shape->runAction();
         }
 
@@ -246,7 +246,6 @@ void Game::update(float deltaTime)
                 if (plpro.type == ShapeType::BULLET)
                 {
                     // checks collisions with the player projectile
-                    cout << "---START---" << endl;
                     if (((Bullet*)plpro.shape)->checkShapesCollision(elem.shape))
                     {
                         plpro.shape->setDestroyed();

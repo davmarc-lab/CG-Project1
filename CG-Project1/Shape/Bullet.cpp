@@ -93,8 +93,6 @@ vec2 Bullet::getBotCorner()
     point = vec2(xmin.x, ymin.y);
 
     return point;
-
-    return point;
 }
 
 bool Bullet::checkShapesCollision(ComplexShape2D* shape)
@@ -105,16 +103,11 @@ bool Bullet::checkShapesCollision(ComplexShape2D* shape)
         auto firstTopPos = getTopCorner();
         auto firstBotPos = getBotCorner();
 
-        auto top = shape->getModelMatrix() * vec4(1, 1, 0, 1);
-        auto secondTopPos = vec2(top.x, top.y);
-        auto bot = shape->getModelMatrix() * vec4(-1, -1, 0, 1);
-        auto secondBotPos = vec2(bot.x, bot.y);
+        auto secondTopPos = shape->getTopCorner();
+        auto secondBotPos = shape->getBotCorner();
 
         collisionX = firstBotPos.x <= secondTopPos.x && firstTopPos.x >= secondBotPos.x;
         collisionY = firstBotPos.y <= secondTopPos.y && firstTopPos.y >= secondBotPos.y;
-
-        cout << to_string(firstTopPos) << ", " << to_string(firstBotPos) << endl;
-        cout << to_string(secondTopPos) << ", " << to_string(secondBotPos) << endl;
 
         return collisionX && collisionY;
     }
