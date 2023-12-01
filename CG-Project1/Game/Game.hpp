@@ -8,7 +8,7 @@ enum GameState
     GAME_NONE,
     GAME_MENU,
     GAME_ACTIVE,
-    GAME_WIN
+    GAME_END
 };
 
 class Game
@@ -28,5 +28,7 @@ class Game
         void render();
 
         void clear();
+
+        GameState getState() { return this->state; }
 };
 

@@ -30,7 +30,7 @@ int main()
     float lastFrame = 0.0f;
 
     // Start of window loop
-    while (!glfwWindowShouldClose(window.getWindow()))
+    while (!glfwWindowShouldClose(window.getWindow()) && game.getState() != GameState::GAME_END)
     {
         // manage frames time
         float currentFrame = glfwGetTime();

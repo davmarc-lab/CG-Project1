@@ -89,6 +89,10 @@ void Curve::buildHermite(vec4 color_top, vec4 color_bot)
 		this->hermiteInterpolation(t, color_top, color_bot, &Curva);
         this->setVertexNum(this->vertex.size());
 	}
+
+    Curva.clearShape();
+    Derivata.clearShape();
+    Poligonale.clearShape();
 }
 
 void Curve::readDataFromFile(const char* path)
@@ -171,6 +175,8 @@ void Curve::clearShape()
     this->CP.clear();
     this->colCP.clear();
 
+    // delete other garbage
+    
     // Clearing memory for VAO, VBO buffers
     glDeleteVertexArrays(1, &this->vao);
     glDeleteBuffers(1, &this->vbo_g);

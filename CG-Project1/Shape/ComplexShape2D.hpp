@@ -145,7 +145,7 @@ class ComplexShape2D
 
         bool checkCollision(ComplexShape2D* shape)
         {
-            if (shape->isSolid)
+            if (shape->isSolid && shape->isAlive() && this->isAlive())
             {
                 bool collisionX, collisionY;
                 auto top = this->model * vec4(1, 1, 0, 1);

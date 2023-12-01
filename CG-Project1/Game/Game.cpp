@@ -29,7 +29,7 @@ struct Player
     int ammo = 0;
 } player;
 
-ComplexShape2D* goal;
+Curve* goal;
 vector<ComplexShape2D*> enemies;
 
 vector<Helper> helpers;
@@ -114,7 +114,9 @@ void Game::init()
     /* rwheel->translateShape(vec3(200, 100, 0)); */
     /* rwheel->scaleShape(vec3(20, 20, 1)); */
 
-    goal = new Square(color::YELLOW);
+    goal = new Curve();
+    goal->readDataFromFile("./resources/hermite/bullet.txt");
+    goal->buildHermite(color::YELLOW, color::YELLOW);
     goal->createVertexArray();
     auto pos = Helper::getRandomPosition2D(pair<int, int>(1500, 1500), pair<int, int>(80, ROADLIMIT - 100));
     goal->translateShape(vec3(pos, 0));
@@ -131,7 +133,6 @@ void Game::init()
     for (int i = 0; i < gameLevel; i++)
     {
         auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
-
         buildBullet(pos);
     }
 
@@ -167,7 +168,7 @@ void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods
 
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
-        if (player.ammo <= 0)
+        if (player.ammo > 0)
         {
             player.ammo--;
 
@@ -235,6 +236,7 @@ void Game::update(float deltaTime)
             if (((Bullet*)elem.shape)->checkShapesCollision(player.shape))
             {
                 player.shape->setDestroyed();
+                this->state = GameState::GAME_END; 
             }
             elem.shape->runAction();
         }
