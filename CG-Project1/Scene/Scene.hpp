@@ -12,7 +12,7 @@ using namespace std;
 enum ShapeType
 {
     BULLET,
-    TRIAG,
+    PROJ,
     PLAYER,
     NONE
 };

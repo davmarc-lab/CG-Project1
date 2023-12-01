@@ -167,11 +167,29 @@ void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods
 
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
-        player.ammo--;
-        string result = textAmmoPrefix;
-        result.append(to_string(player.ammo));
-        textScene.getSceneElements()[1].first.setText(result);
-        cout << "SHOOT DUDE!" << endl;
+        if (player.ammo <= 0)
+        {
+            player.ammo--;
+
+            // shoot projectile
+            Curve* proj = new Curve();
+            proj->readDataFromFile("./resources/hermite/boomerang.txt");
+            proj->buildHermite(color::BLUE, color::BLUE);
+            proj->createVertexArray();
+
+            auto pos = player.shape->getPosition();
+            proj->translateShape(vec3(pos.x + 50, pos.y, 0));
+            proj->scaleShape(vec3(150, 150, 1));
+            proj->setSolid();
+    
+            Shader shader("./resources/vertexShader.vert", "./resources/fragmentShader.frag");
+            shapeScene.addShape2dToScene(proj, shader, ShapeType::PROJ);
+
+            // text rendering
+            string result = textAmmoPrefix;
+            result.append(to_string(player.ammo));
+            textScene.getSceneElements()[1].first.setText(result);
+        }
     }
 }
 
@@ -214,13 +232,34 @@ void Game::update(float deltaTime)
     {
         if (elem.type == ShapeType::BULLET)
         {
-            if (((Bullet*)elem.shape)->checkShapesCollision(player.shape))
-            {
-                player.shape->setDestroyed();
-            }
+            /* if (((Bullet*)elem.shape)->checkShapesCollision(player.shape)) */
+            /* { */
+            /*     player.shape->setDestroyed(); */
+            /* } */
             elem.shape->runAction();
         }
+
+        if (elem.type == ShapeType::PROJ)
+        {
+            for (auto plpro: shapeScene.getSceneElements())
+            {
+                if (plpro.type == ShapeType::BULLET)
+                {
+                    // checks collisions with the player projectile
+                    cout << "---START---" << endl;
+                    if (((Bullet*)plpro.shape)->checkShapesCollision(elem.shape))
+                    {
+                        plpro.shape->setDestroyed();
+                        elem.shape->setDestroyed();
+                    }
+                }
+            }
+
+        }
+
     }
+
+
 
     // checks if player reach the goal
     if (player.shape->checkCollision(goal))

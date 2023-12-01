@@ -4,6 +4,7 @@
 #include "Shape.hpp"
 #include "../Utils/utils.hpp"
 #include <glm/gtx/string_cast.hpp>
+#include <string>
 
 Bullet::Bullet(vec2 pos)
 {
@@ -111,6 +112,9 @@ bool Bullet::checkShapesCollision(ComplexShape2D* shape)
 
         collisionX = firstBotPos.x <= secondTopPos.x && firstTopPos.x >= secondBotPos.x;
         collisionY = firstBotPos.y <= secondTopPos.y && firstTopPos.y >= secondBotPos.y;
+
+        cout << to_string(firstTopPos) << ", " << to_string(firstBotPos) << endl;
+        cout << to_string(secondTopPos) << ", " << to_string(secondBotPos) << endl;
 
         return collisionX && collisionY;
     }
