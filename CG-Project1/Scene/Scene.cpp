@@ -25,10 +25,13 @@ void Scene::drawScene()
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, value_ptr(this->projection));
             shape->draw(shader);
         }
-        else {
-            
-        }
     }
+}
+
+// DOESNT WORK
+void Scene::removeElement(int index)
+{
+    this->shapes.erase(this->shapes.begin() + index);
 }
 
 void Scene::clear()

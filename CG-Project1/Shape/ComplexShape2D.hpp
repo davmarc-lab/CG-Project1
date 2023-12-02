@@ -166,7 +166,11 @@ class ComplexShape2D
             return false;
         }
 
-        void setDestroyed() { this->isDestroyed = true; }
+        void setDestroyed() 
+        {
+            this->isDestroyed = true;
+            this->clearShape();
+        }
 
         void setAlive() { this->isDestroyed = false; }
 

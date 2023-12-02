@@ -29,6 +29,8 @@ class Game
 
         void clear();
 
+        bool isOutOfBounds(vec2 pos);
+
         GameState getState() { return this->state; }
 };
 

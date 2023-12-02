@@ -3,8 +3,6 @@
 #include <GLFW/glfw3.h>
 #include <cstdlib>
 #include <ctime>
-#include <glm/common.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <math.h>
 #include <thread>
@@ -21,6 +19,9 @@
 #include "../Scene/Scene.hpp"
 #include "../Scene/TextScene.hpp"
 #include "../Utils/utils.hpp"
+
+// constant used to indicate the x and y tollerance out of the screen shapes position.
+#define TOL 500
 
 struct Player
 {
@@ -119,7 +120,7 @@ void Game::init()
     goal->buildHermite(color::YELLOW, color::YELLOW);
     goal->createVertexArray();
     auto pos = Helper::getRandomPosition2D(pair<int, int>(1500, 1500), pair<int, int>(80, ROADLIMIT - 100));
-    goal->translateShape(vec3(pos, 0));
+    goal->translateShape(vec3(300, 200, 0));
     goal->scaleShape(vec3(25, 25, 1));
     goal->setSolid();
 
@@ -226,13 +227,25 @@ void Game::processInput(float deltaTime, Window window)
     }
 }
 
+bool Game::isOutOfBounds(vec2 pos)
+{
+    return pos.x < 0 - TOL || pos.x > WIDTH + TOL || pos.y < 0 - TOL || pos.y > HEIGHT + TOL;
+}
+
 void Game::update(float deltaTime)
 {
-
+    int index = 0;
+    auto count = 0;
     for (auto elem: shapeScene.getSceneElements())
     {
         if (elem.type == ShapeType::BULLET)
         {
+            if (this->isOutOfBounds(((Bullet*)elem.shape)->getTopCorner()) || 
+                    this->isOutOfBounds(((Bullet*)elem.shape)->getBotCorner()))
+            {
+                elem.shape->clearShape();
+                elem.shape->setDestroyed();
+            }
             if (((Bullet*)elem.shape)->checkShapesCollision(player.shape))
             {
                 player.shape->setDestroyed();
@@ -255,12 +268,15 @@ void Game::update(float deltaTime)
                     }
                 }
             }
-
         }
 
+        if (!elem.shape->isAlive())
+        {
+            shapeScene.removeElement(index - count++);
+        }
+        
+        index++;
     }
-
-
 
     // checks if player reach the goal
     if (player.shape->checkCollision(goal))
@@ -274,6 +290,7 @@ void Game::update(float deltaTime)
 
 void Game::render()
 {
+    /* cout << shapeScene.getSceneElements().size() << endl; */
     shapeScene.drawScene();
     textScene.drawScene();
 }

@@ -56,6 +56,8 @@ class Scene
         // Add to the scene a given shape and his shader.
         void addShape2dToScene(ComplexShape2D* shape, Shader shader, ShapeType type) { this->shapes.push_back(Element(shape, shader, type)); }
 
+        void removeElement(int index);
+
         // Retrieves all the element of the scene in a vector<pair<ComplexShape2D*, Shader>>.
         vector<Element> getSceneElements() { return this->shapes; }
 
