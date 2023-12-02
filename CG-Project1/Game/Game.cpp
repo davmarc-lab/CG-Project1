@@ -69,13 +69,18 @@ void buildBullet(vec2 pos)
     shapeScene.addShape2dToScene(bullet, shader, ShapeType::BULLET);
 }
 
+Shader roadShader;
+GLuint timeLoc;
+
 void Game::init()
 {
     // Create the background shader and set the window resolution for drawing purpose
-    Shader roadShader("resources/vertexShader.vert", "resources/backFragShader.frag");
+    roadShader = Shader("resources/vertexShader.vert", "resources/backFragShader.glsl");
     roadShader.use();
     GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
     glUniform2f(resLoc, this->width, ROADLIMIT);
+    timeLoc = glGetUniformLocation(roadShader.getId(), "iTime");
+    glUniform1f(timeLoc, glfwGetTime());
 
     // Creates the shapes shader
     Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
@@ -85,7 +90,7 @@ void Game::init()
     player.shape = new Square(color::RED);
 
     ComplexShape2D* road = new Square(color::WHITE);
-    road->scaleShape(vec3(this->width, ROADLIMIT, 1));
+    road->scaleShape(vec3(this->width, this->height, 1));
     road->createVertexArray();
 
     player.shape->createVertexArray();
@@ -240,6 +245,8 @@ bool Game::isOutOfBounds(vec2 pos)
 
 void Game::update(float deltaTime)
 {
+    roadShader.use();
+    glUniform1f(timeLoc, glfwGetTime());
     int index = 0;
     auto count = 0;
     for (auto elem: shapeScene.getSceneElements())
