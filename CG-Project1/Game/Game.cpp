@@ -16,6 +16,7 @@
 #include "../Shape/Square.hpp"
 #include "../Shape/Curve.hpp"
 #include "../Shape/Bullet.hpp"
+#include "../Shape/MultiShape.hpp"
 #include "../Scene/Scene.hpp"
 #include "../Scene/TextScene.hpp"
 #include "../Utils/utils.hpp"
@@ -32,8 +33,7 @@ struct Player
 
 Curve* goal;
 vector<ComplexShape2D*> enemies;
-
-vector<Helper> helpers;
+MultiShape* car = new MultiShape();
 
 string textAmmoPrefix = "Ammo: ";
 
@@ -93,34 +93,38 @@ void Game::init()
     player.shape->scaleShape(vec3(25, 25, 1));
     player.shape->setSolid();
 
-    /* // real player shape */
-    /* ComplexShape2D* carBody = new Square(color::RED); */
-    /* carBody->createVertexArray(); */
-    /* carBody->translateShape(vec3(160, 140, 0)); */
-    /* carBody->scaleShape(vec3(94, 40, 1)); */
+    // real player shape
+    ComplexShape2D* carBody = new Square(color::RED);
+    carBody->createVertexArray();
+    carBody->translateShape(vec3(160, 140, 0));
+    carBody->scaleShape(vec3(94, 40, 1));
 
-    /* ComplexShape2D* fwheel = new Shape2D(50); */
-    /* fwheel->setColor(color::BLACK); */
-    /* fwheel->setMidColor(color::WHITE); */
-    /* Helper::buildCircle(0, 0, 1, 1, fwheel); */
-    /* fwheel->createVertexArray(); */
-    /* fwheel->translateShape(vec3(100, 100, 0)); */
-    /* fwheel->scaleShape(vec3(20, 20, 1)); */
+    ComplexShape2D* fwheel = new Shape2D(50);
+    fwheel->setColor(color::BLACK);
+    fwheel->setMidColor(color::WHITE);
+    Helper::buildCircle(0, 0, 1, 1, fwheel);
+    fwheel->createVertexArray();
+    fwheel->translateShape(vec3(100, 100, 0));
+    fwheel->scaleShape(vec3(20, 20, 1));
 
-    /* ComplexShape2D* rwheel = new Shape2D(50); */
-    /* rwheel->setColor(color::BLACK); */
-    /* rwheel->setMidColor(color::WHITE); */
-    /* Helper::buildCircle(0, 0, 1, 1, rwheel); */
-    /* rwheel->createVertexArray(); */
-    /* rwheel->translateShape(vec3(200, 100, 0)); */
-    /* rwheel->scaleShape(vec3(20, 20, 1)); */
+    ComplexShape2D* rwheel = new Shape2D(50);
+    rwheel->setColor(color::BLACK);
+    rwheel->setMidColor(color::WHITE);
+    Helper::buildCircle(0, 0, 1, 1, rwheel);
+    rwheel->createVertexArray();
+    rwheel->translateShape(vec3(200, 100, 0));
+    rwheel->scaleShape(vec3(20, 20, 1));
+
+    car->addShape(carBody);
+    car->addShape(fwheel);
+    car->addShape(rwheel);
 
     goal = new Curve();
     goal->readDataFromFile("./resources/hermite/bullet.txt");
     goal->buildHermite(color::YELLOW, color::YELLOW);
     goal->createVertexArray();
     auto pos = Helper::getRandomPosition2D(pair<int, int>(1500, 1500), pair<int, int>(80, ROADLIMIT - 100));
-    goal->translateShape(vec3(300, 200, 0));
+    goal->translateShape(vec3(pos, 0));
     goal->scaleShape(vec3(25, 25, 1));
     goal->setSolid();
 
@@ -129,7 +133,7 @@ void Game::init()
     // Creates the drawing scenes with the projection matrix
     shapeScene.addShape2dToScene(road, roadShader);
     shapeScene.addShape2dToScene(goal, shader);
-    shapeScene.addShape2dToScene(player.shape, shader);
+    shapeScene.addShape2dToScene(car, shader);
 
     for (int i = 0; i < gameLevel; i++)
     {
@@ -204,12 +208,16 @@ void Game::processInput(float deltaTime, Window window)
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && (int)playerPos.y < ROADLIMIT - 50 - 25)
         {
-            player.shape->translateShape(vec3(0, playerVelocity, 0));
+            car->transformShapes(vec3(0, playerVelocity, 0),
+                    vec3(1, 1, 1), vec3(0, 0, 0));
+            /* player.shape->translateShape(vec3(0, playerVelocity, 0)); */
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS && playerPos.y > 50 + 25)
         {
-            player.shape->translateShape(vec3(0, -playerVelocity, 0));
+            car->transformShapes(vec3(0, -playerVelocity, 0),
+                    vec3(1, 1, 1), vec3(0, 0, 0));
+            /* player.shape->translateShape(vec3(0, -playerVelocity, 0)); */
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS && playerPos.x > 0 + 25)
@@ -229,7 +237,7 @@ void Game::processInput(float deltaTime, Window window)
 
 bool Game::isOutOfBounds(vec2 pos)
 {
-    return pos.x < 0 - TOL || pos.x > WIDTH + TOL || pos.y < 0 - TOL || pos.y > HEIGHT + TOL;
+    return pos.x < 0 || pos.x > WIDTH || pos.y < 0 || pos.y > HEIGHT;
 }
 
 void Game::update(float deltaTime)
@@ -240,7 +248,7 @@ void Game::update(float deltaTime)
     {
         if (elem.type == ShapeType::BULLET)
         {
-            if (this->isOutOfBounds(((Bullet*)elem.shape)->getTopCorner()) || 
+            if (this->isOutOfBounds(((Bullet*)elem.shape)->getTopCorner()) && 
                     this->isOutOfBounds(((Bullet*)elem.shape)->getBotCorner()))
             {
                 elem.shape->clearShape();
@@ -248,8 +256,8 @@ void Game::update(float deltaTime)
             }
             if (((Bullet*)elem.shape)->checkShapesCollision(player.shape))
             {
-                player.shape->setDestroyed();
-                this->state = GameState::GAME_END; 
+                /* player.shape->setDestroyed(); */
+                /* this->state = GameState::GAME_END;  */
             }
             elem.shape->runAction();
         }
@@ -298,7 +306,6 @@ void Game::render()
 void Game::clear()
 {
     shapeScene.clear();
-    helpers.clear();
     textScene.clear();
 }
 

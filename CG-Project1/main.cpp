@@ -10,12 +10,6 @@
 
 const int WIDTH = 1600, HEIGHT = 900;
 
-void rotateObject(ComplexShape2D* shape)
-{
-    float velocity = 3.5f;
-    shape->rotateShape(vec3(0, 0, 1), velocity);
-}
-
 int main()
 {
 

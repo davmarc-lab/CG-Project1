@@ -10,6 +10,8 @@ winh = ./Window/Window.hpp
 intsh = ./Shape/ComplexShape2D.hpp
 square = ./Shape/Square.cpp
 squareh = ./Shape/Square.hpp
+mshape = ./Shape/MultiShape.cpp
+mshapeh = ./Shape/MultiShape.hpp
 shape = ./Shape/Shape.cpp
 shapeh = ./Shape/Shape.hpp
 scene = ./Scene/Scene.cpp
@@ -33,8 +35,8 @@ utilh = ./Utils/utils.hpp
 
 all: main.exe
 
-main.exe: main.o window.o shape.o shader.o scene.o tscene.o helper.o game.o square.o curve.o bullet.o text.o glad.o
-	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o game.o shape.o glad.o curve.o shader.o text.o bullet.o tscene.o scene.o ${LIBS}
+main.exe: main.o window.o shape.o shader.o scene.o tscene.o helper.o game.o square.o curve.o bullet.o multi.o text.o glad.o
+	g++ ${FLAGS} -o main.exe main.o window.o square.o helper.o game.o shape.o glad.o curve.o shader.o text.o bullet.o multi.o tscene.o scene.o ${LIBS}
 
 main.o: main.cpp ${gladh} ${libh} ${intsh} ${gameh}
 	gcc -c ${FLAGS} main.cpp -o main.o
@@ -68,6 +70,9 @@ square.o: ${square} ${squareh} ${libh} ${gladh} ${intsh} ${shaderh} ${action}
 
 curve.o: ${curve} ${curveh} ${libh} ${gladh} ${intsh} ${shaderh} ${action}
 	gcc -c ${FLAGS} ${curve} -o curve.o
+
+multi.o: ${mshape} ${mshapeh} ${intsh}
+	gcc -c ${FLAGS} ${mshape} -o multi.o
 
 helper.o: ${util} ${utilh}
 	gcc -c ${FLAGS} ${util} -o helper.o
