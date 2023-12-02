@@ -104,7 +104,7 @@ void Game::init()
     fwheel->setMidColor(color::WHITE);
     Helper::buildCircle(0, 0, 1, 1, fwheel);
     fwheel->createVertexArray();
-    fwheel->translateShape(vec3(100, 100, 0));
+    fwheel->translateShape(vec3(200, 100, 0));
     fwheel->scaleShape(vec3(20, 20, 1));
 
     ComplexShape2D* rwheel = new Shape2D(50);
@@ -112,12 +112,12 @@ void Game::init()
     rwheel->setMidColor(color::WHITE);
     Helper::buildCircle(0, 0, 1, 1, rwheel);
     rwheel->createVertexArray();
-    rwheel->translateShape(vec3(200, 100, 0));
+    rwheel->translateShape(vec3(100, 100, 0));
     rwheel->scaleShape(vec3(20, 20, 1));
 
     car->addShape(carBody);
-    car->addShape(fwheel);
     car->addShape(rwheel);
+    car->addShape(fwheel);
 
     goal = new Curve();
     goal->readDataFromFile("./resources/hermite/bullet.txt");
@@ -127,8 +127,6 @@ void Game::init()
     goal->translateShape(vec3(pos, 0));
     goal->scaleShape(vec3(25, 25, 1));
     goal->setSolid();
-
-
 
     // Creates the drawing scenes with the projection matrix
     shapeScene.addShape2dToScene(road, roadShader);
@@ -208,26 +206,26 @@ void Game::processInput(float deltaTime, Window window)
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && (int)playerPos.y < ROADLIMIT - 50 - 25)
         {
-            car->transformShapes(vec3(0, playerVelocity, 0),
-                    vec3(1, 1, 1), vec3(0, 0, 0));
-            /* player.shape->translateShape(vec3(0, playerVelocity, 0)); */
+            car->transformShapes(vec3(0, 1, 0),
+                    vec3(1), vec3(0), playerVelocity);
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS && playerPos.y > 50 + 25)
         {
-            car->transformShapes(vec3(0, -playerVelocity, 0),
-                    vec3(1, 1, 1), vec3(0, 0, 0));
-            /* player.shape->translateShape(vec3(0, -playerVelocity, 0)); */
+           car->transformShapes(vec3(0, -1, 0),
+                    vec3(1), vec3(0), playerVelocity); 
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS && playerPos.x > 0 + 25)
         {
-            player.shape->translateShape(vec3(-playerVelocity, 0, 0));
+           car->transformShapes(vec3(-1, 0, 0),
+                    vec3(1), vec3(0), playerVelocity); 
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS && playerPos.x < this->width - 25)
         {
-            player.shape->translateShape(vec3(playerVelocity, 0, 0));
+           car->transformShapes(vec3(1, 0, 0),
+                    vec3(1), vec3(0), playerVelocity);  
         }
 
         glfwSetKeyCallback(window.getWindow(), playerShoot);

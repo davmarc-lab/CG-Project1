@@ -15,7 +15,7 @@ class MultiShape : public ComplexShape2D
 
         vector<ComplexShape2D*> getShapes() { return this->shapes; }
 
-        void transformShapes(vec3 transalte, vec3 scale, vec3 rotate);
+        void transformShapes(vec3 translateVector, vec3 scaleVector, vec3 rotationVector, float value);
 
         virtual void createVertexArray() override;
 
