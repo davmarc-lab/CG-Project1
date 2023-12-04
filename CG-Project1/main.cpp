@@ -14,7 +14,7 @@ int main()
 {
 
     Game game = Game(WIDTH, HEIGHT);
-    Window window = Window("Mario Kart", WIDTH, HEIGHT);
+    Window window = Window("Kart", WIDTH, HEIGHT);
 
     // Initialize all game object and window
     game.init();

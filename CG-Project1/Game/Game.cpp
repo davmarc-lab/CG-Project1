@@ -121,12 +121,12 @@ void Game::init()
     player.car->addShape(fwheel);
 
     goal = new Curve();
-    goal->readDataFromFile("./resources/hermite/bullet.txt");
+    goal->readDataFromFile("./resources/hermite/star.txt");
     goal->buildHermite(color::YELLOW, color::YELLOW);
     goal->createVertexArray();
     auto pos = Helper::getRandomPosition2D(pair<int, int>(1500, 1500), pair<int, int>(80, ROADLIMIT - 100));
     goal->translateShape(vec3(pos, 0));
-    goal->scaleShape(vec3(25, 25, 1));
+    goal->scaleShape(vec3(35, 35, 1));
     goal->setSolid();
 
     // Creates the drawing scenes with the projection matrix
@@ -289,6 +289,7 @@ void Game::update(float deltaTime)
             }
             // rotate boomerang
             auto pos = elem.shape->getPosition();
+            pos.x += 400 * deltaTime;
             elem.shape->setModelMatrix(mat4(1));
             elem.shape->translateShape(pos);
             elem.shape->scaleShape(vec3(150));
