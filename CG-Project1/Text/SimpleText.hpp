@@ -1,5 +1,6 @@
 #include "../Lib.hpp"
 #include "../Shader/Shader.hpp"
+#include "../Color/Color.hpp"
 
 #include <map>
 #include <ft2build.h>
@@ -16,6 +17,7 @@ class Text
 
         string text;
         vec2 position = vec2(0, 0);
+        Color color = Color(vec4(0));
         
     public:
         Text(mat4 projection, string text, const int fontSize);
@@ -26,11 +28,15 @@ class Text
 
         void initializeTextRender();
 
-        void renderText(Shader shader, float x, float y, float scale, vec4 color);
+        void renderText(Shader shader, float x, float y, float scale);
 
         void setPosition(vec2 position) { this->position = position; }
 
         vec2 getPosition() { return this->position; }
+
+        void setColor(Color color) { this->color = color; }
+
+        vec4 getColorValues() { return this->color.getColorVector(); }
 
         void setText(string text) { this->text = text; }
 

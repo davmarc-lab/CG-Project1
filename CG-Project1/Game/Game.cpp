@@ -147,6 +147,7 @@ void Game::init()
     // Initialize texts in the window
     Text textLevel = Text(projection, "Level: ", 60);
     textLevel.setPosition(vec2(40, 820));
+    textLevel.setColor(color::WHITE);
     textLevel.initializeTextRender();
     textLevel.createVertexArray();
 
@@ -154,6 +155,7 @@ void Game::init()
 
     Text textAmmo = Text(projection, textAmmoPrefix, 60);
     textAmmo.setPosition(vec2(1300, 820));
+    textAmmo.setColor(color::WHITE);
     textAmmo.initializeTextRender();
     textAmmo.createVertexArray();
 

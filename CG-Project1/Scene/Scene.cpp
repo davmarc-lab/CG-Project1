@@ -28,7 +28,6 @@ void Scene::drawScene()
     }
 }
 
-// DOESNT WORK
 void Scene::removeElement(int index)
 {
     this->shapes.erase(this->shapes.begin() + index);

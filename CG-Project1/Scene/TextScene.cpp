@@ -13,7 +13,7 @@ void TextScene::drawScene()
         auto shader = elem.second;
 
         shader.use();
-        text.renderText(shader, elem.first.getPosition().x, elem.first.getPosition().y, 1, vec4(1, 1, 1, 1));
+        text.renderText(shader, elem.first.getPosition().x, elem.first.getPosition().y, 1);
     }
 }
 

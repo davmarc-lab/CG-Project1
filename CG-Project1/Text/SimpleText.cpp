@@ -1,6 +1,7 @@
 #include "SimpleText.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <string>
 
 FT_Library library;
 FT_Face fontFace;
@@ -107,10 +108,11 @@ void Text::initializeTextRender()
     FT_Done_FreeType(library);
 }
 
-void Text::renderText(Shader shader, float x, float y, float scale, vec4 color)
+void Text::renderText(Shader shader, float x, float y, float scale)
 {
     shader.use();
-    glUniform3fv(glGetUniformLocation(shader.getId(), "textColor"), 3, value_ptr(color));
+    auto color = vec3(this->getColorValues());
+    glUniform3fv(glGetUniformLocation(shader.getId(), "textColor"), 1, value_ptr(color));
     glUniformMatrix4fv(glGetUniformLocation(shader.getId(), "projection"), 1, GL_FALSE, value_ptr(this->projection));
 
     glActiveTexture(GL_TEXTURE0);
