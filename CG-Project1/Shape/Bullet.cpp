@@ -106,6 +106,8 @@ bool Bullet::checkShapesCollision(ComplexShape2D* shape)
         auto secondTopPos = shape->getTopCorner();
         auto secondBotPos = shape->getBotCorner();
 
+        /* cout << to_string(secondBotPos) << ", " << to_string(secondTopPos) << endl; */
+
         collisionX = firstBotPos.x <= secondTopPos.x && firstTopPos.x >= secondBotPos.x;
         collisionY = firstBotPos.y <= secondTopPos.y && firstTopPos.y >= secondBotPos.y;
 
