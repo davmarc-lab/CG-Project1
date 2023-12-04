@@ -109,6 +109,5 @@ void MultiShape::clearShape()
     {
         elem->clearShape();
     }
-
     this->shapes.clear();
 }

@@ -40,6 +40,8 @@ class ComplexShape2D
 
         // Says if the shape is destroyed or alive
         bool isDestroyed = false;
+        
+        float rotVal = 0;
 
         // Add element to vertex vector3.
         void addElementVertex(vec3 elem) { this->vertex.push_back(elem); }

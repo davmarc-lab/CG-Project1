@@ -171,7 +171,6 @@ void Game::init()
 
 void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
         if (player.ammo > 0)
@@ -184,8 +183,8 @@ void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods
             proj->buildHermite(color::BLUE, color::BLUE);
             proj->createVertexArray();
 
-            auto pos = player.car->getShapes()[0]->getPosition();
-            proj->translateShape(vec3(pos.x + 50, pos.y, 0));
+            auto pos = player.car->getBoundingBox();
+            proj->translateShape(vec3(pos.second.x + 50, (pos.second.y - pos.first.y) / 2 + pos.first.y, 0));
             proj->scaleShape(vec3(150, 150, 1));
             proj->setSolid();
     
@@ -205,7 +204,7 @@ void Game::processInput(float deltaTime, Window window)
 {
     if (this->state == GAME_ACTIVE)
     {
-        float playerVelocity = 14 * deltaTime;
+        float playerVelocity = 7 * deltaTime;
         auto points = player.car->getBoundingBox();
         auto botLeft = points.first;
         auto topRight = points.second;
@@ -243,6 +242,8 @@ bool Game::isOutOfBounds(vec2 pos)
 {
     return pos.x < 0 || pos.x > WIDTH || pos.y < 0 || pos.y > HEIGHT;
 }
+
+static float rotVal = 0;
 
 void Game::update(float deltaTime)
 {
@@ -286,6 +287,12 @@ void Game::update(float deltaTime)
                     }
                 }
             }
+            // rotate boomerang
+            auto pos = elem.shape->getPosition();
+            elem.shape->setModelMatrix(mat4(1));
+            elem.shape->translateShape(pos);
+            elem.shape->scaleShape(vec3(150));
+            elem.shape->rotateShape(vec3(0, 0, 1), elem.shape->rotVal += 10);
         }
 
         if (!elem.shape->isAlive())
@@ -311,7 +318,6 @@ void Game::update(float deltaTime)
 
 void Game::render()
 {
-    /* cout << shapeScene.getSceneElements().size() << endl; */
     shapeScene.drawScene();
     textScene.drawScene();
 }
