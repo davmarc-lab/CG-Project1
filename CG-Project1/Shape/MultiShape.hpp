@@ -1,7 +1,10 @@
 #pragma once
 
+#include "../Lib.hpp"
+
 #include "ComplexShape2D.hpp"
-#include <vector>
+
+#define ANCHOR 0
 
 class MultiShape : public ComplexShape2D
 {
