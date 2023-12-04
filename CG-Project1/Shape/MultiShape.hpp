@@ -20,6 +20,8 @@ class MultiShape : public ComplexShape2D
 
         void transformShapes(vec3 translateVector, vec3 scaleVector, vec3 rotationVector, float value);
 
+        pair<vec3, vec3> getBoundingBox();
+
         virtual void createVertexArray() override;
 
         virtual void draw(Shader shader) override;

@@ -50,6 +50,35 @@ void MultiShape::transformShapes(vec3 translateVector, vec3 scaleVector, vec3 ro
     }
 }
 
+vec3 getMaxPoint(vec3 first, vec3 second)
+{
+    return vec3(
+            first.x >= second.x ? first.x : second.x,
+            first.y >= second.y ? first.y : second.y,
+            0
+            );
+}
+
+pair<vec3, vec3> MultiShape::getBoundingBox()
+{
+    auto bot = vec3(-2);
+    auto top = vec3(-2);
+    bool set = false;
+    for(auto shape: this->shapes)
+    {
+        vec3 botCorner, topCorner;
+        if (!set)
+        {
+            botCorner = vec3(shape->getBotCorner(), 0);
+            topCorner = vec3(shape->getTopCorner(), 0);
+            set = true;
+        }
+        bot = getMaxPoint(bot, botCorner);
+        top = getMaxPoint(top, topCorner);
+    }
+    return pair(bot, top);
+}
+
 void MultiShape::createVertexArray()
 {
     for (auto elem: this->shapes)

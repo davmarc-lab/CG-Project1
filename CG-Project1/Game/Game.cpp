@@ -200,32 +200,35 @@ void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods
     }
 }
 
+
 void Game::processInput(float deltaTime, Window window)
 {
     if (this->state == GAME_ACTIVE)
     {
         float playerVelocity = 14 * deltaTime;
-        vec3 playerPos = vec3(100, 100, 0);
+        auto points = player.car->getBoundingBox();
+        auto botLeft = points.first;
+        auto topRight = points.second;
 
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && (int)playerPos.y < ROADLIMIT - 50 - 25)
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && topRight.y < ROADLIMIT - 50)
         {
             player.car->transformShapes(vec3(0, 1, 0),
                     vec3(1), vec3(0), playerVelocity);
         }
 
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS && playerPos.y > 50 + 25)
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS && botLeft.y > 0 + 50 + 25)
         {
            player.car->transformShapes(vec3(0, -1, 0),
                     vec3(1), vec3(0), playerVelocity); 
         }
 
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS && playerPos.x > 0 + 25)
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS && botLeft.x > 0)
         {
            player.car->transformShapes(vec3(-1, 0, 0),
                     vec3(1), vec3(0), playerVelocity); 
         }
 
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS && playerPos.x < this->width - 25)
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS && topRight.x < this->width)
         {
            player.car->transformShapes(vec3(1, 0, 0),
                     vec3(1), vec3(0), playerVelocity);  
