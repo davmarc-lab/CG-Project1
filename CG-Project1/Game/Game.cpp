@@ -94,8 +94,8 @@ void Game::init()
     // real player shape
     ComplexShape2D* carBody = new Square(color::RED);
     carBody->createVertexArray();
-    carBody->translateShape(vec3(160, 140, 0));
-    carBody->scaleShape(vec3(94, 40, 1));
+    carBody->translateShape(vec3(153, 140, 0));
+    carBody->scaleShape(vec3(89, 40, 1));
     carBody->setSolid();
 
     ComplexShape2D* fwheel = new Shape2D(50);
@@ -116,7 +116,23 @@ void Game::init()
     rwheel->scaleShape(vec3(20, 20, 1));
     rwheel->setSolid();
 
+    ComplexShape2D* carWindow = new Square(Color(0.78f, 0.96f, 0.94f, 1.0f));
+    carWindow->createVertexArray();
+    carWindow->translateShape(vec3(170, 150, 0));
+    carWindow->scaleShape(vec3(40, 20, 1));
+
+    ComplexShape2D* wheel = new Shape2D(50);
+    wheel->setColor(color::BLACK);
+    wheel->setMidColor(color::BLACK);
+    Helper::buildCircle(0, 0, 1, 1, wheel);
+    wheel->createVertexArray();
+    wheel->translateShape(vec3(204, 143, 0));
+    wheel->scaleShape(vec3(10, 10, 14));
+    wheel->rotateShape(vec3(0, 1, 1), -15);
+
     player.car->addShape(carBody);
+    player.car->addShape(carWindow);
+    player.car->addShape(wheel);
     player.car->addShape(rwheel);
     player.car->addShape(fwheel);
 
