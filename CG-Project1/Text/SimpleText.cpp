@@ -3,18 +3,6 @@
 #include <iostream>
 #include <string>
 
-FT_Library library;
-FT_Face fontFace;
-
-struct Character {
-    unsigned int TextureID; // ID handle of the glyph this->texture
-    ivec2   Size;      // Size of glyph
-    ivec2   Bearing;   // Offset from baseline to left/top of glyph
-    unsigned int Advance;   // Horizontal offset to advance to next glyph
-};
-
-map<GLchar, Character> characters;
-
 Text::Text(mat4 projection, string text, const int fontSize)
 {
     this->projection = projection;
@@ -103,6 +91,18 @@ void Text::initializeTextRender()
         characters.insert(pair<char, Character>(c, character));
     }
 
+    std::string::const_iterator c;
+    for (c = this->text.begin(); c != this->text.end(); c++)
+    {
+        Character ch = characters[*c];
+
+        float width = ch.Size.x;
+        float height = ch.Size.y;
+
+        this->totalWidth += width;
+        this->totalHeight += height;
+    }
+
     // destroy FreeType once we're finished
     FT_Done_Face(fontFace);
     FT_Done_FreeType(library);
@@ -127,7 +127,7 @@ void Text::renderText(Shader shader, float x, float y, float scale)
         float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
 
         float width = ch.Size.x * scale;
-        float height= ch.Size.y * scale;
+        float height = ch.Size.y * scale;
 
         float vertices[6][4] = {
             { xpos, ypos + height, 0.0f, 0.0f },

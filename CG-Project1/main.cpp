@@ -2,6 +2,7 @@
 #include "Lib.hpp"
 #include "Shape/ComplexShape2D.hpp"
 #include "Window/Window.hpp"
+#include "Game/Game.hpp"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -14,14 +15,40 @@ int main()
 {
 
     Game game = Game(WIDTH, HEIGHT);
-    Window window = Window("Kart", WIDTH, HEIGHT);
-
-    // Initialize all game object and window
-    game.init();
+    Window window = Window(GAME_NAME, WIDTH, HEIGHT);
 
     // time variables
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
+
+    // Initialize menu screen
+    game.initMenu();
+
+    // Game main menu load
+    while (!glfwWindowShouldClose(window.getWindow()) && game.getState() == GameState::GAME_NONE)
+    {
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        glfwPollEvents();
+
+        // process user input
+        window.processCloseInput();
+        game.processMouseInput(deltaTime, window);
+
+        // render
+        glClearColor(0.78f, 0.96f, 0.94f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        game.renderMenu();
+        game.updateMenu(deltaTime);
+
+        // render main menu
+        glfwSwapBuffers(window.getWindow());
+    }
+
+    // Initialize all game object and window
+    game.initGame();
 
     // Start of window loop
     while (!glfwWindowShouldClose(window.getWindow()) && game.getState() != GameState::GAME_END)
@@ -34,21 +61,21 @@ int main()
 
         // input
         window.processCloseInput();
-        game.processInput(deltaTime, window);
+        game.processGameInput(deltaTime, window);
 
         // update game state
-        game.update(deltaTime);
+        game.updateGame(deltaTime);
 
         // render
         glClearColor(0.78f, 0.96f, 0.94f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        game.render();
+        game.renderGame();
 
-        // swap buffers and poll IO events
+        // swap buffers
         glfwSwapBuffers(window.getWindow());
     }
-    game.clear();
+    game.clearGame();
     window.terminateWindow();
     return 0;
 }

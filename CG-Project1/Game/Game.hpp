@@ -3,6 +3,8 @@
 #include "../Lib.hpp"
 #include "../Window/Window.hpp"
 
+#define GAME_NAME "Kart"
+
 enum GameState
 {
     GAME_NONE,
@@ -19,15 +21,23 @@ class Game
         
         Game(unsigned int width, unsigned int height);
 
-        void init();
-        
-        void processInput(float deltaTime, Window window);
-        
-        void update(float deltaTime);
-        
-        void render();
+        void initGame();
 
-        void clear();
+        void initMenu();
+        
+        void processGameInput(float deltaTime, Window window);
+
+        void processMouseInput(float deltaTime, Window window);
+        
+        void updateGame(float deltaTime);
+
+        void updateMenu(float deltaTime);
+        
+        void renderGame();
+
+        void renderMenu();
+
+        void clearGame();
 
         bool isOutOfBounds(vec2 pos);
 

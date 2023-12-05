@@ -64,17 +64,17 @@ void buildBullet(vec2 pos)
     bullet = new Bullet(pos);
     bullet->createVertexArray();
 
-    Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
+    Shader shader("resources/vertexShader.glsl", "resources/fragmentShader.glsl");
     shapeScene.addShape2dToScene(bullet, shader, ShapeType::BULLET);
 }
 
 Shader roadShader;
 GLuint timeLoc;
 
-void Game::init()
+void Game::initGame()
 {
     // Create the background shader and set the window resolution for drawing purpose
-    roadShader = Shader("resources/vertexShader.vert", "resources/backFragShader.glsl");
+    roadShader = Shader("resources/vertexShader.glsl", "resources/backFragShader.glsl");
     roadShader.use();
     GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
     glUniform2f(resLoc, this->width, ROADLIMIT);
@@ -82,7 +82,7 @@ void Game::init()
     glUniform1f(timeLoc, glfwGetTime());
 
     // Creates the shapes shader
-    Shader shader("resources/vertexShader.vert", "resources/fragmentShader.frag");
+    Shader shader("resources/vertexShader.glsl", "resources/fragmentShader.glsl");
 
     // Create all the shapes of the scene
     goal = new Curve();
@@ -130,9 +130,18 @@ void Game::init()
     wheel->scaleShape(vec3(10, 10, 14));
     wheel->rotateShape(vec3(0, 1, 1), -15);
 
+    Curve* human = new Curve();
+    human->setColor(vec4(0.94, 0.76, 0.49, 1));
+    human->readDataFromFile("resources/hermite/human.txt");
+    human->buildHermite(vec4(0.94, 0.76, 0.49, 1), vec4(0.94, 0.76, 0.49, 1));
+    human->createVertexArray();
+    human->translateShape(vec3(170, 150, 0));
+    human->scaleShape(vec3(32, 42, 1));
+
     player.car->addShape(carBody);
     player.car->addShape(carWindow);
     player.car->addShape(wheel);
+    player.car->addShape(human);
     player.car->addShape(rwheel);
     player.car->addShape(fwheel);
 
@@ -173,7 +182,7 @@ void Game::init()
 
     textAmmo.appendText(to_string(player.ammo));
 
-    Shader textShader = Shader("./resources/textVertexShader.vert", "./resources/textFragmentShader.frag");
+    Shader textShader = Shader("./resources/textVertexShader.glsl", "./resources/textFragmentShader.glsl");
 
     textScene.addTextToScene(textLevel, textShader);
     textScene.addTextToScene(textAmmo, textShader);
@@ -204,7 +213,7 @@ void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods
             proj->scaleShape(vec3(150, 150, 1));
             proj->setSolid();
     
-            Shader shader("./resources/vertexShader.vert", "./resources/fragmentShader.frag");
+            Shader shader("./resources/vertexShader.glsl", "./resources/fragmentShader.glsl");
             shapeScene.addShape2dToScene(proj, shader, ShapeType::PROJ);
 
             // text rendering
@@ -215,8 +224,7 @@ void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods
     }
 }
 
-
-void Game::processInput(float deltaTime, Window window)
+void Game::processGameInput(float deltaTime, Window window)
 {
     if (this->state == GAME_ACTIVE)
     {
@@ -261,7 +269,7 @@ bool Game::isOutOfBounds(vec2 pos)
 
 static float rotVal = 0;
 
-void Game::update(float deltaTime)
+void Game::updateGame(float deltaTime)
 {
     roadShader.use();
     glUniform1f(timeLoc, glfwGetTime());
@@ -326,22 +334,86 @@ void Game::update(float deltaTime)
         if (shape->checkCollision(goal))
         {
             player.ammo++;
-            this->clear();
-            this->init();
-            this->render();
+            this->clearGame();
+            this->initGame();
+            this->renderGame();
         }
     }
 }
 
-void Game::render()
+void Game::renderGame()
 {
     shapeScene.drawScene();
     textScene.drawScene();
 }
 
-void Game::clear()
+void Game::clearGame()
 {
     shapeScene.clear();
     textScene.clear();
+}
+
+void Game::initMenu()
+{
+    ComplexShape2D* road = new Square(color::WHITE);
+    road->scaleShape(vec3(this->width, this->height, 1));
+    road->createVertexArray(); 
+
+    // Create the background shader and set the window resolution for drawing purpose
+    roadShader = Shader("resources/vertexShader.glsl", "resources/backFragShader.glsl");
+    roadShader.use();
+    GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
+    glUniform2f(resLoc, this->width, ROADLIMIT);
+    timeLoc = glGetUniformLocation(roadShader.getId(), "iTime");
+    glUniform1f(timeLoc, glfwGetTime());
+
+    Text textGameName = Text(projection, GAME_NAME, 80);
+    textGameName.setPosition(vec2(720, 800));
+    textGameName.initializeTextRender();
+    textGameName.createVertexArray();
+
+    Text textPlay = Text(projection, "Play", 60);
+    textPlay.setPosition(vec2(730, 260));
+    textPlay.initializeTextRender();
+    textPlay.createVertexArray();
+
+    Text textQuit = Text(projection, "Quit", 60);
+    textQuit.setPosition(vec2(730, 160));
+    textQuit.initializeTextRender();
+    textQuit.createVertexArray();
+
+    Shader textShader = Shader("./resources/textVertexShader.glsl", "./resources/textFragmentShader.glsl");
+
+    textScene.addTextToScene(textGameName, textShader);
+    textScene.addTextToScene(textPlay, textShader);
+    textScene.addTextToScene(textQuit, textShader);
+
+    // buttons for the clickable texts
+    ComplexShape2D* playButton = new Square(color::BLACK);
+    playButton->createVertexArray();
+    playButton->translateShape(vec3(730, 260, 0));
+    playButton->scaleShape(vec3(50, 20, 0));
+
+    Shader shader("resources/vertexShader.glsl", "resources/fragmentShader.glsl");
+
+    shapeScene.addShape2dToScene(road, roadShader);
+    shapeScene.addShape2dToScene(playButton, shader);
+}
+
+void Game::updateMenu(float deltaTime)
+{
+    roadShader.use();
+    glUniform1f(timeLoc, glfwGetTime());
+}
+
+void Game::renderMenu()
+{
+    shapeScene.drawScene();
+    textScene.drawScene();
+}
+
+void Game::processMouseInput(float deltaTime, Window window)
+{
+
 }
 

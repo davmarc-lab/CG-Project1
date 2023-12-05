@@ -6,6 +6,13 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+struct Character {
+    unsigned int TextureID; // ID handle of the glyph this->texture
+    ivec2   Size;      // Size of glyph
+    ivec2   Bearing;   // Offset from baseline to left/top of glyph
+    unsigned int Advance;   // Horizontal offset to advance to next glyph
+};
+
 class Text
 {
     private:
@@ -15,10 +22,17 @@ class Text
         mat4 projection;
         unsigned int fontSize = 20;
 
+        FT_Library library;
+        FT_Face fontFace;
+        map<GLchar, Character> characters;
+
         string text;
         vec2 position = vec2(0, 0);
         Color color = Color(vec4(0));
-        
+
+        float totalWidth = 0;
+        float totalHeight = 0;
+
     public:
         Text(mat4 projection, string text, const int fontSize);
 
@@ -33,6 +47,8 @@ class Text
         void setPosition(vec2 position) { this->position = position; }
 
         vec2 getPosition() { return this->position; }
+
+        float getTotalWidth() { return this->totalWidth; }
 
         void setColor(Color color) { this->color = color; }
 
