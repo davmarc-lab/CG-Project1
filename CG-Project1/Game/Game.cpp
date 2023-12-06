@@ -214,7 +214,7 @@ void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods
             proj->translateShape(vec3(pos.second.x + 50, (pos.second.y - pos.first.y) / 2 + pos.first.y, 0));
             proj->scaleShape(vec3(150, 150, 1));
             proj->setSolid();
-    
+
             Shader shader("./resources/vertexShader.glsl", "./resources/fragmentShader.glsl");
             shapeScene.addShape2dToScene(proj, shader, ShapeType::PROJ);
 
@@ -243,25 +243,39 @@ void Game::processGameInput(float deltaTime, Window window)
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS && botLeft.y > 0 + 50 + 25)
         {
-           player.car->transformShapes(vec3(0, -1, 0),
+            player.car->transformShapes(vec3(0, -1, 0),
                     vec3(1), vec3(0), playerVelocity); 
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS && botLeft.x > 0)
         {
-           player.car->transformShapes(vec3(-1, 0, 0),
+            player.car->transformShapes(vec3(-1, 0, 0),
                     vec3(1), vec3(0), playerVelocity); 
         }
 
         if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS && topRight.x < this->width)
         {
-           player.car->transformShapes(vec3(1, 0, 0),
+            player.car->transformShapes(vec3(1, 0, 0),
                     vec3(1), vec3(0), playerVelocity);  
         }
-
         glfwSetKeyCallback(window.getWindow(), playerShoot);
-
     }
+    else 
+    {
+        glfwSetKeyCallback(window.getWindow(), NULL);
+    }
+}
+
+void waitForUserInput(Game* game)
+{
+    Text textGameOver = Text(projection, "Game Over!", 60);
+    textGameOver.setPosition(vec2(630, 720));
+    textGameOver.initializeTextRender();
+    textGameOver.createVertexArray();
+
+    Shader shader = Shader("resources/textVertexShader.glsl", "resources/textFragmentShader.glsl");
+    textScene.addTextToScene(textGameOver, shader);
+    game->state = GameState::GAME_PAUSE;
 }
 
 bool Game::isOutOfBounds(vec2 pos)
@@ -292,7 +306,8 @@ void Game::updateGame(float deltaTime)
                 if (((Bullet*)elem.shape)->checkShapesCollision(shape))
                 {
                     player.car->setDestroyed();
-                    this->state = GAME_END;
+                    this->state = GAME_PAUSE;
+                    waitForUserInput(this);
                 }
 
             }
@@ -326,7 +341,7 @@ void Game::updateGame(float deltaTime)
         {
             shapeScene.removeElement(index - count++);
         }
-        
+
         index++;
     }
 

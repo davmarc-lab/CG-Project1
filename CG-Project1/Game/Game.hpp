@@ -10,6 +10,7 @@ enum GameState
     GAME_NONE,
     GAME_MENU,
     GAME_ACTIVE,
+    GAME_PAUSE,
     GAME_END
 };
 

@@ -31,7 +31,6 @@ int main()
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        glfwPollEvents();
 
         // process user input
         window.processCloseInput();
@@ -46,6 +45,7 @@ int main()
 
         // render main menu
         glfwSwapBuffers(window.getWindow());
+        glfwPollEvents();
     }
     game.clearMenu();
 
@@ -64,14 +64,15 @@ int main()
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        glfwPollEvents();
-
+        
         // input
-        window.processCloseInput();
         game.processGameInput(deltaTime, window);
 
-        // update game state
-        game.updateGame(deltaTime);
+        if (game.getState() != GameState::GAME_PAUSE)
+        {
+            // update game state
+            game.updateGame(deltaTime);
+        }
 
         // render
         glClearColor(0.78f, 0.96f, 0.94f, 1.0f);
@@ -79,8 +80,12 @@ int main()
 
         game.renderGame();
 
+        // input for closing window
+        window.processCloseInput();
+        
         // swap buffers
         glfwSwapBuffers(window.getWindow());
+        glfwPollEvents();
     }
     game.clearGame();
     window.terminateWindow();
