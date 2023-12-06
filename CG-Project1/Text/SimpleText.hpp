@@ -50,6 +50,8 @@ class Text
 
         float getTotalWidth() { return this->totalWidth; }
 
+        float getTotalHeight() { return this->totalHeight; }
+
         void setColor(Color color) { this->color = color; }
 
         vec4 getColorValues() { return this->color.getColorVector(); }

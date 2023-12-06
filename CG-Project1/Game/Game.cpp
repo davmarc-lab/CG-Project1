@@ -391,13 +391,24 @@ void Game::initMenu()
     // buttons for the clickable texts
     ComplexShape2D* playButton = new Square(color::BLACK);
     playButton->createVertexArray();
-    playButton->translateShape(vec3(730, 260, 0));
-    playButton->scaleShape(vec3(50, 20, 0));
+    auto playWidth = textPlay.getTotalWidth();
+    auto playHeight = textPlay.getTotalHeight();
+    playButton->translateShape(vec3(740 + playWidth / 2, 260 + playHeight / 2, 0));
+    playButton->scaleShape(vec3(playWidth / 2, playHeight / 2, 0));
+
+    ComplexShape2D* quitButton = new Square(color::BLACK);
+    quitButton->createVertexArray();
+    auto quitWidth = textQuit.getTotalWidth();
+    auto quitHeight = textQuit.getTotalHeight();
+
+    quitButton->translateShape(vec3(740 + quitWidth / 2, 160 + quitHeight / 2, 0));
+    quitButton->scaleShape(vec3(quitWidth / 2, quitHeight / 2, 0));
 
     Shader shader("resources/vertexShader.glsl", "resources/fragmentShader.glsl");
 
     shapeScene.addShape2dToScene(road, roadShader);
     shapeScene.addShape2dToScene(playButton, shader);
+    shapeScene.addShape2dToScene(quitButton, shader);
 }
 
 void Game::updateMenu(float deltaTime)

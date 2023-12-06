@@ -100,7 +100,7 @@ void Text::initializeTextRender()
         float height = ch.Size.y;
 
         this->totalWidth += width;
-        this->totalHeight += height;
+        this->totalHeight = this->totalHeight > height ? this->totalHeight : height;
     }
 
     // destroy FreeType once we're finished
