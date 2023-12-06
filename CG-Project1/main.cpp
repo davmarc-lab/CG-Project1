@@ -24,6 +24,8 @@ int main()
     // Initialize menu screen
     game.initMenu();
 
+    glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
     // Game main menu load
     while (!glfwWindowShouldClose(window.getWindow()) && game.getState() == GameState::GAME_NONE)
     {

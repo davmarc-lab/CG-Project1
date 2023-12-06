@@ -423,8 +423,19 @@ void Game::renderMenu()
     textScene.drawScene();
 }
 
+void mouseClick(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        double x, y;
+        glfwGetCursorPos(window, &x, &y);
+
+        cout << x << ", " << y << endl;
+    }
+}
+
 void Game::processMouseInput(float deltaTime, Window window)
 {
-
+    glfwSetMouseButtonCallback(window.getWindow(), mouseClick);
 }
 
