@@ -4,7 +4,6 @@
 #include "Window/Window.hpp"
 #include "Game/Game.hpp"
 
-#include <GLFW/glfw3.h>
 #include <iostream>
 
 #define PI 3.14159265358979323846
@@ -21,13 +20,13 @@ int main()
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
-    // Initialize menu screen
+    /* // Initialize menu screen */
     game.initMenu();
 
     glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     // Game main menu load
-    while (!glfwWindowShouldClose(window.getWindow()) && game.getState() == GameState::GAME_NONE)
+    while (!glfwWindowShouldClose(window.getWindow()) && game.getState() == GameState::GAME_MENU)
     {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -47,6 +46,12 @@ int main()
 
         // render main menu
         glfwSwapBuffers(window.getWindow());
+    }
+    game.clearMenu();
+
+    if (game.getState() == GameState::GAME_END)
+    {
+        return 0;
     }
 
     // Initialize all game object and window

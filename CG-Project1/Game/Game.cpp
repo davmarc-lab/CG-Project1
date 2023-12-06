@@ -24,6 +24,8 @@
 // constant used to indicate the x and y tollerance out of the screen shapes position.
 #define TOL 500
 
+int wHeight, wWidth;
+
 struct Player
 {
     MultiShape* car = new MultiShape();
@@ -353,8 +355,13 @@ void Game::clearGame()
     textScene.clear();
 }
 
+ComplexShape2D* playButton;
+ComplexShape2D* quitButton;
+
 void Game::initMenu()
 {
+    wWidth = this->width;
+    wHeight = this->height;
     ComplexShape2D* road = new Square(color::WHITE);
     road->scaleShape(vec3(this->width, this->height, 1));
     road->createVertexArray(); 
@@ -389,14 +396,14 @@ void Game::initMenu()
     textScene.addTextToScene(textQuit, textShader);
 
     // buttons for the clickable texts
-    ComplexShape2D* playButton = new Square(color::BLACK);
+    playButton = new Square(color::NONE);
     playButton->createVertexArray();
     auto playWidth = textPlay.getTotalWidth();
     auto playHeight = textPlay.getTotalHeight();
     playButton->translateShape(vec3(740 + playWidth / 2, 260 + playHeight / 2, 0));
     playButton->scaleShape(vec3(playWidth / 2, playHeight / 2, 0));
 
-    ComplexShape2D* quitButton = new Square(color::BLACK);
+    quitButton = new Square(color::NONE);
     quitButton->createVertexArray();
     auto quitWidth = textQuit.getTotalWidth();
     auto quitHeight = textQuit.getTotalHeight();
@@ -409,6 +416,8 @@ void Game::initMenu()
     shapeScene.addShape2dToScene(road, roadShader);
     shapeScene.addShape2dToScene(playButton, shader);
     shapeScene.addShape2dToScene(quitButton, shader);
+
+    this->state = GAME_MENU;
 }
 
 void Game::updateMenu(float deltaTime)
@@ -423,19 +432,41 @@ void Game::renderMenu()
     textScene.drawScene();
 }
 
+bool isMouseInButton(ComplexShape2D* button, int x, int y)
+{
+    bool collisionX, collisionY;
+    collisionX = x >= button->getBotCorner().x && x <= button->getTopCorner().x;
+    collisionY = y >= button->getBotCorner().y && y <= button->getTopCorner().y;
+    return collisionX && collisionY;
+}
+
+bool playGame = false;
+bool quitGame = false;
+
 void mouseClick(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
+        // adapting mouse coordinates to viewport coordinates
+        y = wHeight - y;
 
-        cout << x << ", " << y << endl;
+        // mouse clicked play button
+        playGame = isMouseInButton(playButton, x, y);
+        quitGame = isMouseInButton(quitButton, x, y);
     }
 }
 
 void Game::processMouseInput(float deltaTime, Window window)
 {
     glfwSetMouseButtonCallback(window.getWindow(), mouseClick);
+    this->state = playGame ? GAME_ACTIVE : this->state;
+    this->state = quitGame ? GAME_END : this->state;
 }
 
+void Game::clearMenu()
+{
+    shapeScene.clear();
+    textScene.clear();
+}

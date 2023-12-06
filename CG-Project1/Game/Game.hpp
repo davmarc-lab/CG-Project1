@@ -28,7 +28,7 @@ class Game
         void processGameInput(float deltaTime, Window window);
 
         void processMouseInput(float deltaTime, Window window);
-        
+
         void updateGame(float deltaTime);
 
         void updateMenu(float deltaTime);
@@ -38,6 +38,8 @@ class Game
         void renderMenu();
 
         void clearGame();
+
+        void clearMenu();
 
         bool isOutOfBounds(vec2 pos);
 
