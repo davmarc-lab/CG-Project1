@@ -76,7 +76,7 @@ pair<vec3, vec3> MultiShape::getBoundingBox()
         bot = getMaxPoint(bot, botCorner);
         top = getMaxPoint(top, topCorner);
     }
-    return pair(bot, top);
+    return pair<vec3, vec3> (bot, top);
 }
 
 void MultiShape::createVertexArray()
