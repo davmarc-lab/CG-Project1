@@ -66,7 +66,7 @@ pair<vec3, vec3> MultiShape::getBoundingBox()
     bool set = false;
     for(auto shape: this->shapes)
     {
-        vec3 botCorner, topCorner;
+        vec3 botCorner = vec3(0), topCorner = vec3(0);
         if (!set)
         {
             botCorner = vec3(shape->getBotCorner(), 0);
