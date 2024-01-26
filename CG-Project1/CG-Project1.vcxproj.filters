@@ -42,9 +42,6 @@
     <ClCompile Include="Utils\utils.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Collision\Collision.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Game.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
@@ -104,16 +101,10 @@
     <ClInclude Include="Utils\utils.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Collision\Collision.hpp">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Game.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="Scene\TextScene.hpp">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="Shape\Action.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="Shape\Bullet.hpp">
