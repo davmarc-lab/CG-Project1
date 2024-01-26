@@ -3,9 +3,6 @@
 #include "../Lib.hpp"
 #include "../Color/Color.hpp"
 #include "../Shader/Shader.hpp"
-#include "../Collision/Collision.hpp"
-#include "Action.hpp"
-#include <glm/gtx/string_cast.hpp>
 
 /*
  * This abstract class provides a standard base for the most of basic shapes using VAO, geometry and
@@ -88,6 +85,7 @@ class ComplexShape2D
         // This metod sets the model matrix.
         void setModelMatrix(mat4 model) { this->model = mat4(model); }
 
+        // Retrieves the top right corner of the shape.
         vec2 getTopCorner()
         {
             vec4 xmax = vec4(-1), ymax = vec4(-1);
@@ -111,12 +109,12 @@ class ComplexShape2D
             return point;
         }
 
+        // Retrieves the bottom left corner of the shape.
         vec2 getBotCorner()
         {
             vec4 xmin = vec4(-1), ymin = vec4(-1);
             vec2 point = vec2(0);
 
-            // all normalized points!
             auto points = this->getVertexArray();
 
             // this method transform the normalized points in world space coordinates and find the min.
@@ -142,9 +140,13 @@ class ComplexShape2D
             return point;
         }
 
-
+        // Sets the shape as solid, so needs to be checked on collision system
         void setSolid() { this->isSolid = true; }
 
+        /*
+         * Collision system based on AABB collisions.
+         * Retrieves if this shape is in collision with another one given.
+         */
         bool checkCollision(ComplexShape2D* shape)
         {
             if (shape->isSolid && shape->isAlive() && this->isAlive())
@@ -168,16 +170,20 @@ class ComplexShape2D
             return false;
         }
 
+        // Destroy this shape.
         void setDestroyed() 
         {
             this->isDestroyed = true;
             this->clearShape();
         }
 
+        // Sets this shape to alive state.
         void setAlive() { this->isDestroyed = false; }
 
+        // Retrieves if the shape is alive.
         bool isAlive() { return !this->isDestroyed; }
 
+        // Retrieves if the shape is collidable.
         bool isColiision() { return this->isSolid; }
 
         // This method transform the model matrix for scaling puropose.
@@ -195,9 +201,8 @@ class ComplexShape2D
         // Retrieves the vector of colors for each vertex.
         vector<vec4> getColorsArray() { return this->colors; }
 
+        // Return the world coordinates of the shape.
         vec3 getPosition() { return this->model[3]; }
-
-        vec3 getSize() { return vec3(this->model[0][0], this->model[1][1], this->model[2][2]); }
 
         // This method clear the vertex vector.
         void clearVertexArray() { this->vertex.clear(); }
@@ -205,6 +210,7 @@ class ComplexShape2D
         // This method clear the color vector.
         void clearColorArray() { this->colors.clear(); }
 
+        // Clears the shape entity.
         virtual void clearShape() = 0;
 
         // Creates the VAO of the shape
@@ -213,5 +219,6 @@ class ComplexShape2D
         // Create all vertex and color VBO, enable them and draw in the windows
         virtual void draw(Shader shader) = 0;
 
+        // Defines a constant action done by the shape.
         virtual void runAction() = 0;
 };

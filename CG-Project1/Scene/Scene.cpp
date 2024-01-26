@@ -17,6 +17,7 @@ void Scene::drawScene()
         auto shape = this->getSceneElements()[i].shape;
         auto shader = this->getSceneElements()[i].shader;
 
+        // draw all alive shapes
         if (shape->isAlive())
         {
             shader.use();

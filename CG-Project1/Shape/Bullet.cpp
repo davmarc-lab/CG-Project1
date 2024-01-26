@@ -8,6 +8,7 @@
 
 Bullet::Bullet(vec2 pos)
 {
+    // Creates the bullet shape
     ComplexShape2D* base = new Square(color::BLACK);
     ComplexShape2D* peak = new Shape2D(50);
     base->createVertexArray();
@@ -40,7 +41,6 @@ vec2 Bullet::getTopCorner()
 
     for (auto elem: this->shapes)
     {
-        // all normalized points!
         auto points = elem->getVertexArray();
 
         // this method transform the normalized points in world space coordinates and find the max.
@@ -68,7 +68,6 @@ vec2 Bullet::getBotCorner()
 
     for (auto elem: this->shapes)
     {
-        // all normalized points!
         auto points = elem->getVertexArray();
 
         // this method transform the normalized points in world space coordinates and find the min.
@@ -117,6 +116,7 @@ bool Bullet::checkShapesCollision(ComplexShape2D* shape)
 
 void Bullet::runAction()
 {
+    // execute the shape motion every frame.
     for (auto elem: this->shapes)
     {
         auto pos = elem->getPosition();

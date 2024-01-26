@@ -8,6 +8,7 @@
 #define PSI0(t) (-2.0 * t * t * t + 3.0 * t * t)
 #define PSI1(t) (t * t * t - t * t)
 
+// This class creates a shape doing hermite interpolation of control points written in a file.
 class Curve : public ComplexShape2D
 {
     public:
@@ -25,8 +26,10 @@ class Curve : public ComplexShape2D
         void hermiteInterpolation(float *t, vec4 color_top, vec4 color_bot, Curve* fig);
 
     public:
+        // Creates the shapes from the already read text file.
         void buildHermite(vec4 color_top, vec4 color_bot);
 
+        // Read the text file given and store all the data.
         void readDataFromFile(const char* pathFile);
 
         virtual void createVertexArray() override;

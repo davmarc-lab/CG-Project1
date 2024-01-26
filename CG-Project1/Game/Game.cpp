@@ -21,15 +21,12 @@
 #include "../Scene/TextScene.hpp"
 #include "../Utils/utils.hpp"
 
-// constant used to indicate the x and y tollerance out of the screen shapes position.
-#define TOL 500
-
 int wHeight, wWidth;
 
+// player struct to manage some informations.
 struct Player
 {
     MultiShape* car = new MultiShape();
-    unsigned int hp = 3;
     int ammo = 1;
 } player;
 
@@ -39,6 +36,15 @@ vector<ComplexShape2D*> enemies;
 string textAmmoPrefix = "Ammo: ";
 
 unsigned int gameLevel = 1;
+mat4 projection = mat4(1.0f);
+
+Scene shapeScene;
+TextScene textScene;
+
+Bullet* bullet;
+
+Shader roadShader;
+GLuint timeLoc;
 
 Game::Game(unsigned int width, unsigned int height)
 {
@@ -47,20 +53,17 @@ Game::Game(unsigned int width, unsigned int height)
     this->height = height;
 #define WIDTH width
 #define HEIGHT height
+    // defines the y limit of the road in the game
 #define ROADLIMIT height - 300
 
+    projection = ortho(0.0f, (float)WIDTH, 0.0f, (float)HEIGHT);
+    // initialize scenes
+    shapeScene = Scene(projection);
+    textScene = TextScene(projection);
     srand(time(NULL));
 }
 
-mat4 projection = ortho(0.0f, (float)1600, 0.0f, (float)900);
-
-Scene shapeScene = Scene(projection);
-TextScene textScene = TextScene(projection);
-/* Helper enemHelper = Helper(window.getResolution()); */
-/* Helper boomerangHelper = Helper(window.getResolution()); */
-
-Bullet* bullet;
-
+// Creates a bullet in a given 2D position.
 void buildBullet(vec2 pos)
 {
     bullet = new Bullet(pos);
@@ -69,9 +72,6 @@ void buildBullet(vec2 pos)
     Shader shader("resources/vertexShader.glsl", "resources/fragmentShader.glsl");
     shapeScene.addShape2dToScene(bullet, shader, ShapeType::BULLET);
 }
-
-Shader roadShader;
-GLuint timeLoc;
 
 void Game::initGame()
 {
@@ -87,13 +87,13 @@ void Game::initGame()
     Shader shader("resources/vertexShader.glsl", "resources/fragmentShader.glsl");
 
     // Create all the shapes of the scene
-    goal = new Curve();
 
+    // Init road entity in the background
     ComplexShape2D* road = new Square(color::WHITE);
     road->scaleShape(vec3(this->width, this->height, 1));
     road->createVertexArray();
 
-    // real player shape
+    // Init player entity
     ComplexShape2D* carBody = new Square(color::RED);
     carBody->createVertexArray();
     carBody->translateShape(vec3(153, 140, 0));
@@ -140,6 +140,7 @@ void Game::initGame()
     human->translateShape(vec3(170, 150, 0));
     human->scaleShape(vec3(32, 42, 1));
 
+    // add all shapes to the player
     player.car->addShape(carBody);
     player.car->addShape(carWindow);
     player.car->addShape(wheel);
@@ -147,6 +148,7 @@ void Game::initGame()
     player.car->addShape(rwheel);
     player.car->addShape(fwheel);
 
+    // Initialize the goal entity
     goal = new Curve();
     goal->readDataFromFile("./resources/hermite/star.txt");
     goal->buildHermite(color::YELLOW, color::YELLOW);
@@ -161,6 +163,7 @@ void Game::initGame()
     shapeScene.addShape2dToScene(goal, shader);
     shapeScene.addShape2dToScene(player.car, shader);
 
+    // creates the bullets
     for (int i = 0; i < gameLevel; i++)
     {
         auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
@@ -189,6 +192,7 @@ void Game::initGame()
     textScene.addTextToScene(textLevel, textShader);
     textScene.addTextToScene(textAmmo, textShader);
 
+    // sets the new game state and start levels counter
     this->state = GAME_ACTIVE;
     gameLevel++;
 
@@ -196,20 +200,23 @@ void Game::initGame()
     glDeleteShader(roadShader.getId());
 }
 
+// Action made by the user thats shoot a boomerang from the car entity.
 void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
+        // check if players has ammos
         if (player.ammo > 0)
         {
             player.ammo--;
 
-            // shoot projectile
+            // creates the projectile
             Curve* proj = new Curve();
             proj->readDataFromFile("./resources/hermite/boomerang.txt");
             proj->buildHermite(color::BLUE, color::BLUE);
             proj->createVertexArray();
 
+            // spawns the projectile in the front of the car in the middle y
             auto pos = player.car->getBoundingBox();
             proj->translateShape(vec3(pos.second.x + 50, (pos.second.y - pos.first.y) / 2 + pos.first.y, 0));
             proj->scaleShape(vec3(150, 150, 1));
@@ -235,6 +242,7 @@ void Game::processGameInput(float deltaTime, Window window)
         auto botLeft = points.first;
         auto topRight = points.second;
 
+        // player movement
         if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && topRight.y < ROADLIMIT - 50)
         {
             player.car->transformShapes(vec3(0, 1, 0),
@@ -266,7 +274,7 @@ void Game::processGameInput(float deltaTime, Window window)
     }
 }
 
-void waitForUserInput(Game* game)
+void bulletCollision(Game* game)
 {
     Text textGameOver = Text(projection, "Game Over!", 60);
     textGameOver.setPosition(vec2(630, 720));
@@ -293,6 +301,7 @@ void Game::updateGame(float deltaTime)
     auto count = 0;
     for (auto elem: shapeScene.getSceneElements())
     {
+        // collisions of the bullets with the player or out of bound
         if (elem.type == ShapeType::BULLET)
         {
             if (this->isOutOfBounds(((Bullet*)elem.shape)->getTopCorner()) && 
@@ -307,13 +316,14 @@ void Game::updateGame(float deltaTime)
                 {
                     player.car->setDestroyed();
                     this->state = GAME_PAUSE;
-                    waitForUserInput(this);
+                    bulletCollision(this);
                 }
 
             }
             elem.shape->runAction();
         }
 
+        // collisions of the projectile with the bullets
         if (elem.type == ShapeType::PROJ)
         {
             for (auto plpro: shapeScene.getSceneElements())
@@ -328,7 +338,7 @@ void Game::updateGame(float deltaTime)
                     }
                 }
             }
-            // rotate boomerang
+            // constant action to rotate the boomerang
             auto pos = elem.shape->getPosition();
             pos.x += 400 * deltaTime;
             elem.shape->setModelMatrix(mat4(1));
@@ -337,6 +347,7 @@ void Game::updateGame(float deltaTime)
             elem.shape->rotateShape(vec3(0, 0, 1), elem.shape->rotVal += 10);
         }
 
+        // remove all null shapes
         if (!elem.shape->isAlive())
         {
             shapeScene.removeElement(index - count++);
@@ -447,6 +458,7 @@ void Game::renderMenu()
     textScene.drawScene();
 }
 
+// Checks mouse position.
 bool isMouseInButton(ComplexShape2D* button, int x, int y)
 {
     bool collisionX, collisionY;
@@ -458,6 +470,7 @@ bool isMouseInButton(ComplexShape2D* button, int x, int y)
 bool playGame = false;
 bool quitGame = false;
 
+// Everytime a left click is detected checks if it happened in a button.
 void mouseClick(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)

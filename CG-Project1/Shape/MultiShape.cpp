@@ -2,6 +2,7 @@
 #include "ComplexShape2D.hpp"
 #include <glm/gtx/string_cast.hpp>
 
+// old position of the anchor
 vec3 prePos;
 
 void moveAnchor(ComplexShape2D* anchor, vec3 translateVector, vec3 scaleVector, vec3 rotationVector, float value)
@@ -25,12 +26,14 @@ void moveAnchor(ComplexShape2D* anchor, vec3 translateVector, vec3 scaleVector, 
 
 void MultiShape::transformShapes(vec3 translateVector, vec3 scaleVector, vec3 rotationVector, float value)
 {
+    // moves the anchor entity
     auto anchor = shapes[ANCHOR];
     moveAnchor(this->shapes[ANCHOR], translateVector, scaleVector, rotationVector, value);
 
     auto base = mat4(1.0f);
     auto rotVal = value;
 
+    // moves the other items
     auto posAnchor = anchor->getPosition();
     for (int i = 1; i < shapes.size(); i++)
     {
@@ -97,10 +100,7 @@ void MultiShape::draw(Shader shader)
 
 void MultiShape::runAction()
 {
-    for (auto elem: this->shapes)
-    {
 
-    }
 }
 
 void MultiShape::clearShape()

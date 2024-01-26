@@ -55,8 +55,6 @@ void Curve::hermiteInterpolation(float* t, vec4 color_top, vec4 color_bot, Curve
 
 	Fig->vertex.clear();
 	Fig->colors.clear();
-    /*this->addElementVertex(vec3(0, 0, 0));
-    this->addElementColors(color_bot);*/
 
 	for (tg = 0; tg <= 1; tg += passotg)
 	{
@@ -175,8 +173,6 @@ void Curve::clearShape()
     this->CP.clear();
     this->colCP.clear();
 
-    // delete other garbage
-    
     // Clearing memory for VAO, VBO buffers
     glDeleteVertexArrays(1, &this->vao);
     glDeleteBuffers(1, &this->vbo_g);

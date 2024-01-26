@@ -26,7 +26,6 @@ curve = ./Shape/Curve.cpp
 curveh = ./Shape/Curve.hpp
 text = ./Text/SimpleText.cpp
 texth = ./Text/SimpleText.hpp
-actionh = ./Shape/Action.hpp
 bullet = ./Shape/Bullet.cpp
 bulleth = ./Shape/Bullet.hpp
 libh = Lib.hpp

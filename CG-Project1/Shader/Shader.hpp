@@ -60,7 +60,7 @@ public:
 
     void clearShader();
 
-    //---List of method for uniform values---
+    //---List of method to set uniform values in shaders ---
 
     void setBool(const string &name, bool value);
     void setInt(const string &name, bool value);
