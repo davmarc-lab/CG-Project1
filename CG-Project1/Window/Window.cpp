@@ -4,9 +4,6 @@
 
 using namespace std;
 
-/*
-    This constructor creates a window with width w and height h
-*/
 Window::Window(const char *name, int w, int h)
 {
     this->width = w;
@@ -20,9 +17,6 @@ Window::Window(const char *name, int w, int h)
     }
 }
 
-/*
-    Update vieport dimension, usually used after resize window event
-*/
 void framebuffer_size_callback(GLFWwindow *window, int w, int h)
 {
     glViewport(0, 0, w, h);

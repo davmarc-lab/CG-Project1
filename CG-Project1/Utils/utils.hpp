@@ -6,6 +6,9 @@
 
 #define PI 3.14159265358979323846
 
+/*
+ * This helper class gives some method in common.
+ */
 class Helper
 {
     int wheight;
@@ -26,8 +29,10 @@ class Helper
         
         void enemyMoveAction(vec3 direction, ComplexShape2D* entity);
 
+        // Calculate the vertex position for a circle and store in ComplexShape2D* param given.
         static void buildCircle(float cx, float cy, float raggiox, float raggioy, ComplexShape2D* fig);
 
+        // Calculate the vertex position for a triangle and store in ComplexShape2D* param given.
         static void buildTriangle(ComplexShape2D* fig);
 
         // Generates random 2D coordinates by given ranges. If a range is (n, n), it retrieves

@@ -3,30 +3,41 @@
 #include <string.h>
 #include "../Lib.hpp"
 
+/*
+ * This class instance a GLFWwindow with a default close option.
+ */
 class Window
 {
-private:
-    GLFWwindow *window;
-    int width;
-    int height;
-    const char *windowName;
-    vec2 resolution;
+    private:
+        GLFWwindow *window;
+        int width;
+        int height;
+        const char *windowName;
+        vec2 resolution;
 
-public:
-    Window(const char *windowName, int w, int h);
+    public:
+        // Constructs a window with window name, width and height given.
+        Window(const char *windowName, int w, int h);
 
-    int initializeWindow();
+        // Initialize the window.
+        int initializeWindow();
 
-    void closeWindow();
+        // Closes the window.
+        void closeWindow();
 
-    void terminateWindow();
+        // Terminates the window process and clears automatically all buffers used.
+        void terminateWindow();
 
-    void processCloseInput();
+        // Callback function for close window input.
+        void processCloseInput();
 
-    char *getWindowName() { return (char *)this->windowName; };
+        // Retrieves the window name.
+        char *getWindowName() { return (char *)this->windowName; };
 
-    GLFWwindow *getWindow() { return this->window; };
+        // Retrieves the GLFWwindow window.
+        GLFWwindow *getWindow() { return this->window; };
 
-    vec2 getResolution() { return this->resolution; }
+        // Retrieves the resolution of the window.
+        vec2 getResolution() { return this->resolution; }
 
 };
