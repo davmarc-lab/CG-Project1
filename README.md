@@ -31,9 +31,13 @@ If you use linux you must have installed the following libraries:
  - `gcc` installed
 These library can easly be installed using a normal package manager (apt, pacman, etc.)
 
-Next you need to go in the CG-Project1 folder and you should see a MakeFile, and you can easily run the following code:
+Next you need to go in the CG-Project1 folder and you should see a MakeFile, and you can easily run the following code to compile the program on your machine:
 ```
 make
+```
+or
+```
+make -j 6
 ```
 If you want to apply some modification you can also use this command to remove other compiled files and recompile your modification (`-j 6` means make uses 6 threads, in my laptop was the optimal value):
 ```
