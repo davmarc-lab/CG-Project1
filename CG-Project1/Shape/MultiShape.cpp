@@ -103,6 +103,11 @@ void MultiShape::runAction()
 
 }
 
+void MultiShape::runAction(const float deltaTime)
+{
+    this->transformShapes(vec3(1, 0, 0), vec3(1, 1, 1), vec3(0), -this->velocity * deltaTime);
+}
+
 void MultiShape::clearShape()
 {
     for (auto elem: this->shapes)
