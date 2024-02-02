@@ -135,7 +135,7 @@ void Game::initGame() {
     rwheel->scaleShape(vec3(20, 20, 1));
     rwheel->setSolid();
 
-    ComplexShape2D *carWindow = new Square(Color(0.78f, 0.96f, 0.94f, 0.8f));
+    ComplexShape2D *carWindow = new Square(Color(0.78f, 0.96f, 0.94f, 1.0f));
     carWindow->createVertexArray();
     carWindow->translateShape(vec3(170, 150, 0));
     carWindow->scaleShape(vec3(40, 20, 1));
@@ -196,8 +196,7 @@ void Game::initGame() {
 
     textAmmo.appendText(to_string(player.ammo));
 
-    Shader textShader = Shader("./resources/textVertexShader.glsl",
-            "./resources/textFragmentShader.glsl");
+    Shader textShader = Shader("./resources/textVertexShader.glsl", "./resources/textFragmentShader.glsl");
 
     textScene.addTextToScene(textLevel, textShader);
     textScene.addTextToScene(textAmmo, textShader);
