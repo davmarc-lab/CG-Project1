@@ -118,11 +118,7 @@ void Game::initGame()
     rwheel->scaleShape(vec3(20, 20, 1));
     rwheel->setSolid();
 
-<<<<<<< HEAD
-    ComplexShape2D *carWindow = new Square(Color(0.78f, 0.96f, 0.94f, 1.0f));
-=======
     ComplexShape2D* carWindow = new Square(Color(0.78f, 0.96f, 0.94f, 1.0f));
->>>>>>> parent of 318dd34 (changed bullet object)
     carWindow->createVertexArray();
     carWindow->translateShape(vec3(170, 150, 0));
     carWindow->scaleShape(vec3(40, 20, 1));
