@@ -13,14 +13,10 @@ class MultiShape : public ComplexShape2D
 {
     private:
         vector<ComplexShape2D*> shapes;
-        float velocity = 1;
 
     public:
         // Construct an empty shape.
-        MultiShape()
-        {
-            this->velocity = (pow(sin(glfwGetTime()), 2) * (rand() % 6)) + 12;
-        }
+        MultiShape() {}
 
         // Adds entities to the shape.
         void addShape(ComplexShape2D* elem) { this->shapes.push_back(elem); }
@@ -31,7 +27,7 @@ class MultiShape : public ComplexShape2D
         // Transform all the entities of the shape.
         void transformShapes(vec3 translateVector, vec3 scaleVector, vec3 rotationVector, float value);
 
-        // Retrieves world coordinates of the total bounding box (bot, top).
+        // Retrieves world coordinates of the total bounding box.
         pair<vec3, vec3> getBoundingBox();
 
         virtual void createVertexArray() override;
@@ -39,8 +35,6 @@ class MultiShape : public ComplexShape2D
         virtual void draw(Shader shader) override;
 
         virtual void runAction() override;
-
-        void runAction(const float deltaTime);
 
         virtual void clearShape() override;
 };

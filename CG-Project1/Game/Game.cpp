@@ -3,31 +3,35 @@
 #include <GLFW/glfw3.h>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+#include <math.h>
+#include <thread>
 #include <vector>
 
-#include "../Color/Color.hpp"
 #include "../Lib.hpp"
-#include "../Scene/Scene.hpp"
-#include "../Scene/TextScene.hpp"
-#include "../Shape/Bullet.hpp"
+#include "../Color/Color.hpp"
+#include "../Window/Window.hpp"
 #include "../Shape/ComplexShape2D.hpp"
-#include "../Shape/Curve.hpp"
-#include "../Shape/MultiShape.hpp"
 #include "../Shape/Shape.hpp"
 #include "../Shape/Square.hpp"
+#include "../Shape/Curve.hpp"
+#include "../Shape/Bullet.hpp"
+#include "../Shape/MultiShape.hpp"
+#include "../Scene/Scene.hpp"
+#include "../Scene/TextScene.hpp"
 #include "../Utils/utils.hpp"
-#include "../Window/Window.hpp"
 
 int wHeight, wWidth;
 
 // player struct to manage some informations.
-struct Player {
-    MultiShape *car = new MultiShape();
+struct Player
+{
+    MultiShape* car = new MultiShape();
     int ammo = 1;
 } player;
 
-Curve *goal;
-vector<ComplexShape2D *> enemies;
+Curve* goal;
+vector<ComplexShape2D*> enemies;
 
 string textAmmoPrefix = "Ammo: ";
 
@@ -37,12 +41,13 @@ mat4 projection = mat4(1.0f);
 Scene shapeScene;
 TextScene textScene;
 
-MultiShape *bullet;
+Bullet* bullet;
 
 Shader roadShader;
 GLuint timeLoc;
 
-Game::Game(unsigned int width, unsigned int height) {
+Game::Game(unsigned int width, unsigned int height)
+{
     this->state = GAME_NONE;
     this->width = width;
     this->height = height;
@@ -59,41 +64,19 @@ Game::Game(unsigned int width, unsigned int height) {
 }
 
 // Creates a bullet in a given 2D position.
-void buildBullet(vec2 pos) {
-    bullet = new MultiShape();
-
-    ComplexShape2D *base = new Square(color::BLACK);
-    ComplexShape2D *peak = new Shape2D(50);
-    base->createVertexArray();
-
-    base->setModelMatrix(mat4(1.0f));
-    base->translateShape(vec3(pos, 0));
-    base->scaleShape(vec3(35, 25, 1));
-    base->setSolid();
-
-    peak->setColor(color::BLACK);
-    peak->setMidColor(color::BLACK);
-    Helper::buildCircle(0, 0, 1, 1, peak);
-    peak->createVertexArray();
-
-    peak->setModelMatrix(mat4(1.0f));
-    peak->translateShape(vec3(pos.x - 30, pos.y, 0));
-    peak->scaleShape(vec3(50, 25, 1));
-    peak->setSolid();
-
-    bullet->addShape(base);
-    bullet->addShape(peak);
+void buildBullet(vec2 pos)
+{
+    bullet = new Bullet(pos);
     bullet->createVertexArray();
 
     Shader shader("resources/vertexShader.glsl", "resources/fragmentShader.glsl");
     shapeScene.addShape2dToScene(bullet, shader, ShapeType::BULLET);
 }
 
-void Game::initGame() {
-    // Create the background shader and set the window resolution for drawing
-    // purpose
-    roadShader =
-        Shader("resources/vertexShader.glsl", "resources/backFragShader.glsl");
+void Game::initGame()
+{
+    // Create the background shader and set the window resolution for drawing purpose
+    roadShader = Shader("resources/vertexShader.glsl", "resources/backFragShader.glsl");
     roadShader.use();
     GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
     glUniform2f(resLoc, this->width, ROADLIMIT);
@@ -106,18 +89,18 @@ void Game::initGame() {
     // Create all the shapes of the scene
 
     // Init road entity in the background
-    ComplexShape2D *road = new Square(color::WHITE);
+    ComplexShape2D* road = new Square(color::WHITE);
     road->scaleShape(vec3(this->width, this->height, 1));
     road->createVertexArray();
 
     // Init player entity
-    ComplexShape2D *carBody = new Square(color::RED);
+    ComplexShape2D* carBody = new Square(color::RED);
     carBody->createVertexArray();
     carBody->translateShape(vec3(153, 140, 0));
     carBody->scaleShape(vec3(89, 40, 1));
     carBody->setSolid();
 
-    ComplexShape2D *fwheel = new Shape2D(50);
+    ComplexShape2D* fwheel = new Shape2D(50);
     fwheel->setColor(color::BLACK);
     fwheel->setMidColor(color::WHITE);
     Helper::buildCircle(0, 0, 1, 1, fwheel);
@@ -126,7 +109,7 @@ void Game::initGame() {
     fwheel->scaleShape(vec3(20, 20, 1));
     fwheel->setSolid();
 
-    ComplexShape2D *rwheel = new Shape2D(50);
+    ComplexShape2D* rwheel = new Shape2D(50);
     rwheel->setColor(color::BLACK);
     rwheel->setMidColor(color::WHITE);
     Helper::buildCircle(0, 0, 1, 1, rwheel);
@@ -135,12 +118,16 @@ void Game::initGame() {
     rwheel->scaleShape(vec3(20, 20, 1));
     rwheel->setSolid();
 
+<<<<<<< HEAD
     ComplexShape2D *carWindow = new Square(Color(0.78f, 0.96f, 0.94f, 1.0f));
+=======
+    ComplexShape2D* carWindow = new Square(Color(0.78f, 0.96f, 0.94f, 1.0f));
+>>>>>>> parent of 318dd34 (changed bullet object)
     carWindow->createVertexArray();
     carWindow->translateShape(vec3(170, 150, 0));
     carWindow->scaleShape(vec3(40, 20, 1));
 
-    ComplexShape2D *wheel = new Shape2D(50);
+    ComplexShape2D* wheel = new Shape2D(50);
     wheel->setColor(color::BLACK);
     wheel->setMidColor(color::BLACK);
     Helper::buildCircle(0, 0, 1, 1, wheel);
@@ -149,10 +136,19 @@ void Game::initGame() {
     wheel->scaleShape(vec3(10, 10, 14));
     wheel->rotateShape(vec3(0, 1, 1), -15);
 
+    Curve* human = new Curve();
+    human->setColor(vec4(0.94, 0.76, 0.49, 1));
+    human->readDataFromFile("resources/hermite/human.txt");
+    human->buildHermite(vec4(0.94, 0.76, 0.49, 1), vec4(0.94, 0.76, 0.49, 1));
+    human->createVertexArray();
+    human->translateShape(vec3(170, 150, 0));
+    human->scaleShape(vec3(32, 42, 1));
+
     // add all shapes to the player
     player.car->addShape(carBody);
     player.car->addShape(carWindow);
     player.car->addShape(wheel);
+    player.car->addShape(human);
     player.car->addShape(rwheel);
     player.car->addShape(fwheel);
 
@@ -161,8 +157,7 @@ void Game::initGame() {
     goal->readDataFromFile("./resources/hermite/star.txt");
     goal->buildHermite(color::YELLOW, color::YELLOW);
     goal->createVertexArray();
-    auto pos = Helper::getRandomPosition2D(pair<int, int>(1500, 1500),
-            pair<int, int>(80, ROADLIMIT - 100));
+    auto pos = Helper::getRandomPosition2D(pair<int, int>(1500, 1500), pair<int, int>(80, ROADLIMIT - 100));
     goal->translateShape(vec3(pos, 0));
     goal->scaleShape(vec3(35, 35, 1));
     goal->setSolid();
@@ -173,9 +168,9 @@ void Game::initGame() {
     shapeScene.addShape2dToScene(player.car, shader);
 
     // creates the bullets
-    for (int i = 0; i < gameLevel; i++) {
-        auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH),
-                pair<int, int>(80, 500));
+    for (int i = 0; i < gameLevel; i++)
+    {
+        auto pos = Helper::getRandomPosition2D(pair<int, int>(WIDTH, WIDTH), pair<int, int>(80, 500));
         buildBullet(pos);
     }
 
@@ -210,29 +205,28 @@ void Game::initGame() {
 }
 
 // Action made by the user thats shoot a boomerang from the car entity.
-void playerShoot(GLFWwindow *window, int key, int scancode, int action,
-        int mods) {
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+void playerShoot(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    {
         // check if players has ammos
-        if (player.ammo > 0) {
+        if (player.ammo > 0)
+        {
             player.ammo--;
 
             // creates the projectile
-            Curve *proj = new Curve();
+            Curve* proj = new Curve();
             proj->readDataFromFile("./resources/hermite/boomerang.txt");
             proj->buildHermite(color::BLUE, color::BLUE);
             proj->createVertexArray();
 
             // spawns the projectile in the front of the car in the middle y
             auto pos = player.car->getBoundingBox();
-            proj->translateShape(vec3(pos.second.x + 50,
-                        (pos.second.y - pos.first.y) / 2 + pos.first.y,
-                        0));
+            proj->translateShape(vec3(pos.second.x + 50, (pos.second.y - pos.first.y) / 2 + pos.first.y, 0));
             proj->scaleShape(vec3(150, 150, 1));
             proj->setSolid();
 
-            Shader shader("./resources/vertexShader.glsl",
-                    "./resources/fragmentShader.glsl");
+            Shader shader("./resources/vertexShader.glsl", "./resources/fragmentShader.glsl");
             shapeScene.addShape2dToScene(proj, shader, ShapeType::PROJ);
 
             // text rendering
@@ -243,92 +237,106 @@ void playerShoot(GLFWwindow *window, int key, int scancode, int action,
     }
 }
 
-void Game::processGameInput(float deltaTime, Window window) {
-    if (this->state == GAME_ACTIVE) {
+void Game::processGameInput(float deltaTime, Window window)
+{
+    if (this->state == GAME_ACTIVE)
+    {
         float playerVelocity = 7 * deltaTime;
         auto points = player.car->getBoundingBox();
         auto botLeft = points.first;
         auto topRight = points.second;
 
         // player movement
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS &&
-                topRight.y < ROADLIMIT - 50) {
-            player.car->transformShapes(vec3(0, 1, 0), vec3(1), vec3(0),
-                    playerVelocity);
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_W) == GLFW_PRESS && topRight.y < ROADLIMIT - 50)
+        {
+            player.car->transformShapes(vec3(0, 1, 0),
+                    vec3(1), vec3(0), playerVelocity);
         }
 
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS &&
-                botLeft.y > 0 + 50 + 25) {
-            player.car->transformShapes(vec3(0, -1, 0), vec3(1), vec3(0),
-                    playerVelocity);
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_S) == GLFW_PRESS && botLeft.y > 0 + 50 + 25)
+        {
+            player.car->transformShapes(vec3(0, -1, 0),
+                    vec3(1), vec3(0), playerVelocity); 
         }
 
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS &&
-                botLeft.x > 0) {
-            player.car->transformShapes(vec3(-1, 0, 0), vec3(1), vec3(0),
-                    playerVelocity);
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_A) == GLFW_PRESS && botLeft.x > 0)
+        {
+            player.car->transformShapes(vec3(-1, 0, 0),
+                    vec3(1), vec3(0), playerVelocity); 
         }
 
-        if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS &&
-                topRight.x < this->width) {
-            player.car->transformShapes(vec3(1, 0, 0), vec3(1), vec3(0),
-                    playerVelocity);
+        if (glfwGetKey(window.getWindow(), GLFW_KEY_D) == GLFW_PRESS && topRight.x < this->width)
+        {
+            player.car->transformShapes(vec3(1, 0, 0),
+                    vec3(1), vec3(0), playerVelocity);  
         }
         glfwSetKeyCallback(window.getWindow(), playerShoot);
-    } else {
+    }
+    else 
+    {
         glfwSetKeyCallback(window.getWindow(), NULL);
     }
 }
 
-void bulletCollision(Game *game) {
+void bulletCollision(Game* game)
+{
     Text textGameOver = Text(projection, "Game Over!", 60);
     textGameOver.setPosition(vec2(630, 720));
     textGameOver.initializeTextRender();
     textGameOver.createVertexArray();
 
-    Shader shader = Shader("resources/textVertexShader.glsl",
-            "resources/textFragmentShader.glsl");
+    Shader shader = Shader("resources/textVertexShader.glsl", "resources/textFragmentShader.glsl");
     textScene.addTextToScene(textGameOver, shader);
     game->state = GameState::GAME_PAUSE;
 }
 
-bool Game::isOutOfBounds(vec2 pos) {
+bool Game::isOutOfBounds(vec2 pos)
+{
     return pos.x < 0 || pos.x > WIDTH || pos.y < 0 || pos.y > HEIGHT;
 }
 
 static float rotVal = 0;
 
-void Game::updateGame(float deltaTime) {
+void Game::updateGame(float deltaTime)
+{
     roadShader.use();
     glUniform1f(timeLoc, glfwGetTime());
     int index = 0;
     auto count = 0;
-    for (auto elem : shapeScene.getSceneElements()) {
+    for (auto elem: shapeScene.getSceneElements())
+    {
         // collisions of the bullets with the player or out of bound
-        if (elem.type == ShapeType::BULLET) {
-            const auto blt = (MultiShape*)elem.shape;
-            const auto bb = blt->getBoundingBox();
-            if (this->isOutOfBounds(bb.second) && 
-                    this->isOutOfBounds(bb.first)) {
+        if (elem.type == ShapeType::BULLET)
+        {
+            if (this->isOutOfBounds(((Bullet*)elem.shape)->getTopCorner()) && 
+                    this->isOutOfBounds(((Bullet*)elem.shape)->getBotCorner()))
+            {
                 elem.shape->clearShape();
                 elem.shape->setDestroyed();
             }
-            for (auto shape : player.car->getShapes()) {
-                if (((Bullet *)elem.shape)->checkShapesCollision(shape)) {
+            for (auto shape: player.car->getShapes())
+            {
+                if (((Bullet*)elem.shape)->checkShapesCollision(shape))
+                {
                     player.car->setDestroyed();
                     this->state = GAME_PAUSE;
                     bulletCollision(this);
                 }
+
             }
-            ((MultiShape*)elem.shape)->runAction(deltaTime);
+            elem.shape->runAction();
         }
 
         // collisions of the projectile with the bullets
-        if (elem.type == ShapeType::PROJ) {
-            for (auto plpro : shapeScene.getSceneElements()) {
-                if (plpro.type == ShapeType::BULLET) {
+        if (elem.type == ShapeType::PROJ)
+        {
+            for (auto plpro: shapeScene.getSceneElements())
+            {
+                if (plpro.type == ShapeType::BULLET)
+                {
                     // checks collisions with the player projectile
-                    if (((Bullet *)plpro.shape)->checkShapesCollision(elem.shape)) {
+                    if (((Bullet*)plpro.shape)->checkShapesCollision(elem.shape))
+                    {
                         plpro.shape->setDestroyed();
                         elem.shape->setDestroyed();
                     }
@@ -344,16 +352,19 @@ void Game::updateGame(float deltaTime) {
         }
 
         // remove all null shapes
-        if (!elem.shape->isAlive()) {
+        if (!elem.shape->isAlive())
+        {
             shapeScene.removeElement(index - count++);
         }
 
         index++;
     }
 
-    for (auto shape : player.car->getShapes()) {
+    for (auto shape: player.car->getShapes())
+    {
         // checks if player reach the goal
-        if (shape->checkCollision(goal)) {
+        if (shape->checkCollision(goal))
+        {
             player.ammo++;
             this->clearGame();
             this->initGame();
@@ -362,30 +373,31 @@ void Game::updateGame(float deltaTime) {
     }
 }
 
-void Game::renderGame() {
+void Game::renderGame()
+{
     shapeScene.drawScene();
     textScene.drawScene();
 }
 
-void Game::clearGame() {
+void Game::clearGame()
+{
     shapeScene.clear();
     textScene.clear();
 }
 
-ComplexShape2D *playButton;
-ComplexShape2D *quitButton;
+ComplexShape2D* playButton;
+ComplexShape2D* quitButton;
 
-void Game::initMenu() {
+void Game::initMenu()
+{
     wWidth = this->width;
     wHeight = this->height;
-    ComplexShape2D *road = new Square(color::WHITE);
+    ComplexShape2D* road = new Square(color::WHITE);
     road->scaleShape(vec3(this->width, this->height, 1));
-    road->createVertexArray();
+    road->createVertexArray(); 
 
-    // Create the background shader and set the window resolution for drawing
-    // purpose
-    roadShader =
-        Shader("resources/vertexShader.glsl", "resources/backFragShader.glsl");
+    // Create the background shader and set the window resolution for drawing purpose
+    roadShader = Shader("resources/vertexShader.glsl", "resources/backFragShader.glsl");
     roadShader.use();
     GLuint resLoc = glGetUniformLocation(roadShader.getId(), "resolution");
     glUniform2f(resLoc, this->width, ROADLIMIT);
@@ -407,8 +419,7 @@ void Game::initMenu() {
     textQuit.initializeTextRender();
     textQuit.createVertexArray();
 
-    Shader textShader = Shader("./resources/textVertexShader.glsl",
-            "./resources/textFragmentShader.glsl");
+    Shader textShader = Shader("./resources/textVertexShader.glsl", "./resources/textFragmentShader.glsl");
 
     textScene.addTextToScene(textGameName, textShader);
     textScene.addTextToScene(textPlay, textShader);
@@ -419,8 +430,7 @@ void Game::initMenu() {
     playButton->createVertexArray();
     auto playWidth = textPlay.getTotalWidth();
     auto playHeight = textPlay.getTotalHeight();
-    playButton->translateShape(
-            vec3(740 + playWidth / 2, 260 + playHeight / 2, 0));
+    playButton->translateShape(vec3(740 + playWidth / 2, 260 + playHeight / 2, 0));
     playButton->scaleShape(vec3(playWidth / 2, playHeight / 2, 0));
 
     quitButton = new Square(color::NONE);
@@ -428,8 +438,7 @@ void Game::initMenu() {
     auto quitWidth = textQuit.getTotalWidth();
     auto quitHeight = textQuit.getTotalHeight();
 
-    quitButton->translateShape(
-            vec3(740 + quitWidth / 2, 160 + quitHeight / 2, 0));
+    quitButton->translateShape(vec3(740 + quitWidth / 2, 160 + quitHeight / 2, 0));
     quitButton->scaleShape(vec3(quitWidth / 2, quitHeight / 2, 0));
 
     Shader shader("resources/vertexShader.glsl", "resources/fragmentShader.glsl");
@@ -441,18 +450,21 @@ void Game::initMenu() {
     this->state = GAME_MENU;
 }
 
-void Game::updateMenu(float deltaTime) {
+void Game::updateMenu(float deltaTime)
+{
     roadShader.use();
     glUniform1f(timeLoc, glfwGetTime());
 }
 
-void Game::renderMenu() {
+void Game::renderMenu()
+{
     shapeScene.drawScene();
     textScene.drawScene();
 }
 
 // Checks mouse position.
-bool isMouseInButton(ComplexShape2D *button, int x, int y) {
+bool isMouseInButton(ComplexShape2D* button, int x, int y)
+{
     bool collisionX, collisionY;
     collisionX = x >= button->getBotCorner().x && x <= button->getTopCorner().x;
     collisionY = y >= button->getBotCorner().y && y <= button->getTopCorner().y;
@@ -463,8 +475,10 @@ bool playGame = false;
 bool quitGame = false;
 
 // Everytime a left click is detected checks if it happened in a button.
-void mouseClick(GLFWwindow *window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+void mouseClick(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
         // adapting mouse coordinates to viewport coordinates
@@ -476,13 +490,15 @@ void mouseClick(GLFWwindow *window, int button, int action, int mods) {
     }
 }
 
-void Game::processMouseInput(float deltaTime, Window window) {
+void Game::processMouseInput(float deltaTime, Window window)
+{
     glfwSetMouseButtonCallback(window.getWindow(), mouseClick);
     this->state = playGame ? GAME_ACTIVE : this->state;
     this->state = quitGame ? GAME_END : this->state;
 }
 
-void Game::clearMenu() {
+void Game::clearMenu()
+{
     shapeScene.clear();
     textScene.clear();
 }
