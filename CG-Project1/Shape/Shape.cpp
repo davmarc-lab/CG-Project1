@@ -1,7 +1,4 @@
 #include "Shape.hpp"
-#include <glm/ext/matrix_clip_space.hpp>
-
-using namespace std;
 
 void Shape2D::createVertexArray()
 {
