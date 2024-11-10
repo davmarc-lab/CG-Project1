@@ -1,0 +1,69 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bolt-Graphics", "Bolt-Graphics\Bolt-Graphics.vcxproj", "{684F5994-F682-4390-B3C8-C5002F7F07B9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bolt-imgui", "Bolt-imgui\Bolt-imgui.vcxproj", "{54A4ABB9-E7AF-4824-88E8-9FD4E0551993}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bolt-Core", "Bolt-Core\Bolt-Core.vcxproj", "{A2D78893-C3FE-423F-8BEA-A49533CC13BD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bolt-Vendor", "Bolt-Vendor\Bolt-Vendor.vcxproj", "{42C3DF11-AE82-4801-A793-BB8050FB0DD9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bolt-Kart", "Bolt-Kart\Bolt-Kart.vcxproj", "{25886535-AB1E-4301-B02E-DA3B24B6CAFD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{684F5994-F682-4390-B3C8-C5002F7F07B9}.Debug|x64.ActiveCfg = Debug|x64
+		{684F5994-F682-4390-B3C8-C5002F7F07B9}.Debug|x64.Build.0 = Debug|x64
+		{684F5994-F682-4390-B3C8-C5002F7F07B9}.Debug|x86.ActiveCfg = Debug|x64
+		{684F5994-F682-4390-B3C8-C5002F7F07B9}.Debug|x86.Build.0 = Debug|x64
+		{684F5994-F682-4390-B3C8-C5002F7F07B9}.Release|x64.ActiveCfg = Release|x64
+		{684F5994-F682-4390-B3C8-C5002F7F07B9}.Release|x64.Build.0 = Release|x64
+		{684F5994-F682-4390-B3C8-C5002F7F07B9}.Release|x86.ActiveCfg = Release|x64
+		{684F5994-F682-4390-B3C8-C5002F7F07B9}.Release|x86.Build.0 = Release|x64
+		{54A4ABB9-E7AF-4824-88E8-9FD4E0551993}.Debug|x64.ActiveCfg = Debug|x64
+		{54A4ABB9-E7AF-4824-88E8-9FD4E0551993}.Debug|x64.Build.0 = Debug|x64
+		{54A4ABB9-E7AF-4824-88E8-9FD4E0551993}.Debug|x86.ActiveCfg = Debug|x64
+		{54A4ABB9-E7AF-4824-88E8-9FD4E0551993}.Debug|x86.Build.0 = Debug|x64
+		{54A4ABB9-E7AF-4824-88E8-9FD4E0551993}.Release|x64.ActiveCfg = Release|x64
+		{54A4ABB9-E7AF-4824-88E8-9FD4E0551993}.Release|x64.Build.0 = Release|x64
+		{54A4ABB9-E7AF-4824-88E8-9FD4E0551993}.Release|x86.ActiveCfg = Release|x64
+		{54A4ABB9-E7AF-4824-88E8-9FD4E0551993}.Release|x86.Build.0 = Release|x64
+		{A2D78893-C3FE-423F-8BEA-A49533CC13BD}.Debug|x64.ActiveCfg = Debug|x64
+		{A2D78893-C3FE-423F-8BEA-A49533CC13BD}.Debug|x64.Build.0 = Debug|x64
+		{A2D78893-C3FE-423F-8BEA-A49533CC13BD}.Debug|x86.ActiveCfg = Debug|x64
+		{A2D78893-C3FE-423F-8BEA-A49533CC13BD}.Debug|x86.Build.0 = Debug|x64
+		{A2D78893-C3FE-423F-8BEA-A49533CC13BD}.Release|x64.ActiveCfg = Release|x64
+		{A2D78893-C3FE-423F-8BEA-A49533CC13BD}.Release|x64.Build.0 = Release|x64
+		{A2D78893-C3FE-423F-8BEA-A49533CC13BD}.Release|x86.ActiveCfg = Release|x64
+		{A2D78893-C3FE-423F-8BEA-A49533CC13BD}.Release|x86.Build.0 = Release|x64
+		{42C3DF11-AE82-4801-A793-BB8050FB0DD9}.Debug|x64.ActiveCfg = Debug|x64
+		{42C3DF11-AE82-4801-A793-BB8050FB0DD9}.Debug|x64.Build.0 = Debug|x64
+		{42C3DF11-AE82-4801-A793-BB8050FB0DD9}.Debug|x86.ActiveCfg = Debug|Win32
+		{42C3DF11-AE82-4801-A793-BB8050FB0DD9}.Debug|x86.Build.0 = Debug|Win32
+		{42C3DF11-AE82-4801-A793-BB8050FB0DD9}.Release|x64.ActiveCfg = Release|x64
+		{42C3DF11-AE82-4801-A793-BB8050FB0DD9}.Release|x64.Build.0 = Release|x64
+		{42C3DF11-AE82-4801-A793-BB8050FB0DD9}.Release|x86.ActiveCfg = Release|Win32
+		{42C3DF11-AE82-4801-A793-BB8050FB0DD9}.Release|x86.Build.0 = Release|Win32
+		{25886535-AB1E-4301-B02E-DA3B24B6CAFD}.Debug|x64.ActiveCfg = Debug|x64
+		{25886535-AB1E-4301-B02E-DA3B24B6CAFD}.Debug|x64.Build.0 = Debug|x64
+		{25886535-AB1E-4301-B02E-DA3B24B6CAFD}.Debug|x86.ActiveCfg = Debug|x64
+		{25886535-AB1E-4301-B02E-DA3B24B6CAFD}.Release|x64.ActiveCfg = Release|x64
+		{25886535-AB1E-4301-B02E-DA3B24B6CAFD}.Release|x64.Build.0 = Release|x64
+		{25886535-AB1E-4301-B02E-DA3B24B6CAFD}.Release|x86.ActiveCfg = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {81AC06DA-90BE-41FF-813B-B43D14EDB3F2}
+	EndGlobalSection
+EndGlobal

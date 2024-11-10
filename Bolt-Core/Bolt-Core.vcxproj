@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{a2d78893-c3fe-423f-8bea-a49533cc13bd}</ProjectGuid>
+    <RootNamespace>BoltCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)bin\int\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)bin\int\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>BT_WINDOWS;BT_ENABLE_DEBUG;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>include\;$(SolutionDir)Bolt-Vendor\include\;$(SolutionDir)Bolt-Graphics\include\</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d  "$(OutDir)*.lib" "$(SolutionDir)bin\$(Configuration)-$(Platform)\lib\"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>BT_WINDOWS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>include\;$(SolutionDir)Bolt-Vendor\include\;$(SolutionDir)Bolt-Graphics\include\</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d  "$(OutDir)*.lib" "$(SolutionDir)bin\$(Configuration)-$(Platform)\lib\"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Application\Application.hpp" />
+    <ClInclude Include="include\Core\Core.hpp" />
+    <ClInclude Include="include\Core\Enums.hpp" />
+    <ClInclude Include="include\Core\Event.hpp" />
+    <ClInclude Include="include\Core\InputManager.hpp" />
+    <ClInclude Include="include\Core\Layer.hpp" />
+    <ClInclude Include="include\Core\LayerManager.hpp" />
+    <ClInclude Include="include\Core\Log.hpp" />
+    <ClInclude Include="include\Core\Math.hpp" />
+    <ClInclude Include="include\Core\Physics.hpp" />
+    <ClInclude Include="include\Core\RenderApi.hpp" />
+    <ClInclude Include="include\Core\Resource.hpp" />
+    <ClInclude Include="include\Core\Scene.hpp" />
+    <ClInclude Include="include\Core\stbi_image.h" />
+    <ClInclude Include="include\Core\Structs.hpp" />
+    <ClInclude Include="include\Core\Timestep.hpp" />
+    <ClInclude Include="include\Core\Utils.hpp" />
+    <ClInclude Include="include\Graphics.hpp" />
+    <ClInclude Include="include\Graphic\Buffer\UniformBuffer.hpp" />
+    <ClInclude Include="include\Graphic\Camera\Camera.hpp" />
+    <ClInclude Include="include\Graphic\ImGui\ImGuiDebug.hpp" />
+    <ClInclude Include="include\Graphic\Text\TextManager.hpp" />
+    <ClInclude Include="include\Graphic\Window.hpp" />
+    <ClInclude Include="include\ECS\Component.hpp" />
+    <ClInclude Include="include\ECS\Entity.hpp" />
+    <ClInclude Include="include\ECS\EntityManager.hpp" />
+    <ClInclude Include="include\ECS\System.hpp" />
+    <ClInclude Include="include\Engine.hpp" />
+    <ClInclude Include="include\Graphic\Buffer\ElementBuffer.hpp" />
+    <ClInclude Include="include\Graphic\Buffer\FrameBuffer.hpp" />
+    <ClInclude Include="include\Graphic\Buffer\RenderBuffer.hpp" />
+    <ClInclude Include="include\Graphic\Buffer\VertexArray.hpp" />
+    <ClInclude Include="include\Graphic\Buffer\VertexBuffer.hpp" />
+    <ClInclude Include="include\Graphic\Renderer\Renderer.hpp" />
+    <ClInclude Include="include\Graphic\Shader\Shader.hpp" />
+    <ClInclude Include="include\Graphic\Texture\Texture.hpp" />
+    <ClInclude Include="include\Platform\ImGuiFactory.hpp" />
+    <ClInclude Include="include\Graphic\ImGuiLayer.hpp" />
+    <ClInclude Include="include\Platform\MeshFactory.hpp" />
+    <ClInclude Include="include\Platform\MeshVertices.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Application\Application.cpp" />
+    <ClCompile Include="src\Core\Event.cpp" />
+    <ClCompile Include="src\Core\InputManager.cpp" />
+    <ClCompile Include="src\Core\Layer.cpp" />
+    <ClCompile Include="src\Core\LayerManager.cpp" />
+    <ClCompile Include="src\Core\Log.cpp" />
+    <ClCompile Include="src\Core\PhysicsWorld.cpp" />
+    <ClCompile Include="src\Core\Resource.cpp" />
+    <ClCompile Include="src\Core\Scene.cpp" />
+    <ClCompile Include="src\ECS\EntityManager.cpp" />
+    <ClCompile Include="src\Graphic\Buffer\GlElementBuffer.cpp" />
+    <ClCompile Include="src\Graphic\Buffer\GlFrameBuffer.cpp" />
+    <ClCompile Include="src\Graphic\Buffer\GlRenderBuffer.cpp" />
+    <ClCompile Include="src\Graphic\Buffer\GlUniformBuffer.cpp" />
+    <ClCompile Include="src\Graphic\Buffer\GlVertexArray.cpp" />
+    <ClCompile Include="src\Graphic\Buffer\GlVertexBuffer.cpp" />
+    <ClCompile Include="src\Graphic\Camera\Camera.cpp" />
+    <ClCompile Include="src\Graphic\GlfwWindow.cpp" />
+    <ClCompile Include="src\Graphic\GlRenderer.cpp" />
+    <ClCompile Include="src\Graphic\ImGuiFactory.cpp" />
+    <ClCompile Include="src\Graphic\ImGuiLayer.cpp" />
+    <ClCompile Include="src\ECS\MeshFactory.cpp" />
+    <ClCompile Include="src\Graphic\ImGui\ImGuiDebug.cpp" />
+    <ClCompile Include="src\Graphic\Shader\GlShader.cpp" />
+    <ClCompile Include="src\Graphic\Texture\GlTexture.cpp" />
+    <ClCompile Include="src\Graphic\Text\TextManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bolt-Graphics\Bolt-Graphics.vcxproj">
+      <Project>{684f5994-f682-4390-b3c8-c5002f7f07b9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Bolt-imgui\Bolt-imgui.vcxproj">
+      <Project>{54a4abb9-e7af-4824-88e8-9fd4e0551993}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Bolt-Vendor\Bolt-Vendor.vcxproj">
+      <Project>{42c3df11-ae82-4801-a793-bb8050fb0dd9}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
