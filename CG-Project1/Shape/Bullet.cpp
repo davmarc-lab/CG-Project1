@@ -3,13 +3,11 @@
 #include "Square.hpp"
 #include "Shape.hpp"
 #include "../Utils/utils.hpp"
-#include <glm/gtx/string_cast.hpp>
-#include <string>
 
-Bullet::Bullet(vec2 pos)
+Bullet::Bullet(vec2 pos, vec4 baseColor, DoubleColor peakColor)
 {
     // Creates the bullet shape
-    ComplexShape2D* base = new Square(color::BLACK);
+    ComplexShape2D* base = new Square(Color(baseColor));
     ComplexShape2D* peak = new Shape2D(50);
     base->createVertexArray();
 
@@ -18,8 +16,8 @@ Bullet::Bullet(vec2 pos)
     base->scaleShape(vec3(35, 25, 1));
     base->setSolid();
 
-    peak->setColor(color::BLACK);
-    peak->setMidColor(color::BLACK);
+    peak->setColor(peakColor.out);
+    peak->setMidColor(peakColor.mid);
     Helper::buildCircle(0, 0, 1, 1, peak);
     peak->createVertexArray();
 

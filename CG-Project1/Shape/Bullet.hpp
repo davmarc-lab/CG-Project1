@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ComplexShape2D.hpp"
+#include "../Structs.hpp"
 #include <vector>
 
 /*
@@ -17,7 +18,7 @@ class Bullet : public ComplexShape2D
 
     public:
         // Constructs a bullet from a given position.
-        Bullet(vec2 pos);
+        Bullet(vec2 pos, vec4 baseColor, DoubleColor peakColor);
 
         Bullet();
 

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string.h>
 
+#include "../ImGui.hpp"
+
 using namespace std;
 
 Window::Window(const char *name, int w, int h)

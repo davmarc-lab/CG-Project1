@@ -8,7 +8,7 @@ project "HelloWorld"
 
    files { "**.hpp", "**.h", "**.cpp", "**.c" }
 
-   links {  "glfw", "GL", "GLU", "X11", "freetype", "Xrandr", "GL", "Xi", "dl" }
+   links {  "glfw", "GL", "X11", "freetype", "Xrandr", "GL", "Xi", "dl" }
 
    filter "configurations:Debug"
       defines { "DEBUG" }
