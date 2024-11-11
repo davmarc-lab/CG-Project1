@@ -95,11 +95,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\HermiteFactory.hpp" />
+    <ClInclude Include="include\LevelManager.hpp" />
     <ClInclude Include="include\Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\HermiteFactory.cpp" />
     <ClCompile Include="src\kart.cpp" />
+    <ClCompile Include="src\LevelManager.cpp" />
     <ClCompile Include="src\Utils.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

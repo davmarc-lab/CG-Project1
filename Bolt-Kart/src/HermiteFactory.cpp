@@ -25,6 +25,7 @@ float dx(int i, float *t, float Tens, float Bias, float Cont, Curve *Fig) {
 	else
 		return 0.5 * (1 - Tens) * (1 + Bias) * (1 - Cont) * (Fig->CP.at(i).x - Fig->CP.at(i - 1).x) / (t[i] - t[i - 1]) + 0.5 * (1 - Tens) * (1 - Bias) * (1 + Cont) * (Fig->CP.at(i + 1).x - Fig->CP.at(i).x) / (t[i + 1] - t[i]);
 }
+
 float dy(int i, float *t, float Tens, float Bias, float Cont, Curve *Fig) {
 	if (i == 0)
 		return 0.5 * (1.0 - Tens) * (1.0 - Bias) * (1 - Cont) * (Fig->CP.at(i + 1).y - Fig->CP.at(i).y) / (t[i + 1] - t[i]);
@@ -100,21 +101,18 @@ void buildHermite(vec4 color_top, vec4 color_bot, Curve *curve) {
 	Poligonale.colCP.clear();
 }
 
+struct Data {
+	f32 x, y, z;
+};
+
 Shared<Curve> readDataFromFile(const char *path) {
-	auto result = CreateShared<Curve>();
-
-	struct Data {
-		f32 x, y, z;
-	};
-
-	FILE *file = fopen(path, "r");
+	auto file = fopen(path, "r");
 	if (file == NULL) {
 		std::cerr << "Cannot open the file: " << path << "\n";
 		return nullptr;
 	}
 
-	struct Data data[1000]{};
-
+	Data data[1000]{}; 
 	int row = 0;
 	while (fscanf(file, "%f %f %f", &data[row].x, &data[row].y, &data[row].z) == 3) {
 		row++;
@@ -123,8 +121,9 @@ Shared<Curve> readDataFromFile(const char *path) {
 			return nullptr;
 		}
 	}
+	assert(fclose(file) == 0);
 
-	fclose(file);
+	auto result = CreateShared<Curve>();
 
 	for (int i = 0; i < row; i++) {
 		result->CP.push_back({data[i].x, data[i].y, data[i].z});
@@ -165,10 +164,10 @@ void initHermiteMesh(const u32 &id, Curve *mesh) {
 	shaderComp->shader = CreateUnique<ShaderProgram>("shader/defaultOrthoVertShader.glsl", "shader/defaultFragShader.glsl");
 	shaderComp->shader->createShaderProgram();
 
-    auto vao = comp->vao;
-    auto size = comp->vertices.size();
-	
-    comp->render.setCall([vao, size]() {
-        RenderApi::instance()->getRenderer()->drawArraysTriangleFan(vao, size);
-    });
+	auto vao = comp->vao;
+	auto size = comp->vertices.size();
+
+	comp->render.setCall([vao, size]() {
+		RenderApi::instance()->getRenderer()->drawArraysTriangleFan(vao, size);
+	});
 }

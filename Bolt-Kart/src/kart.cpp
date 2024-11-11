@@ -16,6 +16,7 @@ const auto defaultShaders = Pair<std::string>{"shader/defaultOrthoVertShader.gls
 const auto circleHelper = CircleSettings{};
 
 std::string textAmmoPrefix = "Ammo: ";
+std::string levelPrefix = "Level: ";
 
 u32 gameLevel = 0;
 u32 finalScore = 0;
@@ -143,11 +144,51 @@ int main(int argc, char *argv[]) {
 
 	// Starts level manager
 	const auto levels = LevelManager::instance();
-    levels->createLevel();
+	levels->createLevel();
 
-	// auto b = createBullet(vec2(1600, 400));
+	const auto tm = CreateShared<TextManager>();
+	tm->onAttach();
+	ls->addCustomLayer(tm);
 
-	// add human?????
+	{
+		auto textHelper = TextHelper{};
+		textHelper.position = {40, 820};
+		textHelper.color = {1, 1, 1};
+		textHelper.text = levelPrefix + std::to_string(levels->getCurrentLevel());
+		const auto level = CreateShared<Text>(textHelper);
+		tm->addText(level);
+	}
+
+	{
+		auto textHelper = TextHelper{};
+		textHelper.position = {1300, 820};
+		textHelper.color = {1, 1, 1};
+		textHelper.text = textAmmoPrefix + std::to_string(playerAmmo);
+		const auto ammo = CreateShared<Text>(textHelper);
+		input->registerAction(GLFW_KEY_SPACE, [ammo, carBody, dt]() {
+			if (playerAmmo > 0) {
+				playerAmmo--;
+				// create boomerang
+				{
+					auto boom = em->createEntity();
+					auto tmp = readDataFromFile("resources/hermite/boomerang.txt");
+					buildHermite(boomerangColor.top, boomerangColor.bot, tmp.get());
+					if (tmp != nullptr) {
+						initHermiteMesh(boom, tmp.get());
+						auto car = em->getEntityComponent<Transform>(carBody);
+						auto comp = em->getEntityComponent<Transform>(boom);
+						comp->setPosition({car->getModelMatrix()[3].x + 50, car->getModelMatrix()[3].y, 0});
+						comp->setScale({150, 150, 1});
+						Scene::instance()->addEntity(boom);
+					}
+				}
+
+				// change ammo text
+				ammo->setText(textAmmoPrefix + std::to_string(playerAmmo));
+			}
+		});
+		tm->addText(ammo);
+	}
 
 	// Prepare all events
 	auto ed = EventDispatcher::instance();
