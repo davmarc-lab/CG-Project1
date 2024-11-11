@@ -2,6 +2,7 @@
 #include "../../Bolt-Core/include/Graphics.hpp"
 
 #include "../include/HermiteFactory.hpp"
+#include "../include/LevelManager.hpp"
 #include "../include/Utils.hpp"
 
 #include <iostream>
@@ -21,11 +22,6 @@ u32 finalScore = 0;
 
 u32 playerAmmo = 1;
 
-struct DoubleColor {
-	vec4 out{0, 0, 0, 1};
-	vec4 mid{1, 1, 1, 1};
-};
-
 struct CarSettings {
 	DoubleColor back{};
 	DoubleColor front{};
@@ -37,29 +33,10 @@ struct CarSettings {
 } carSettings;
 
 // TODO
-struct BulletColor {
-	vec4 base{0, 0, 0, 1};
-	DoubleColor peak{{0, 0, 0, 1}, {0, 0, 0, 1}};
-} bulletsColor;
-
-// TODO
 struct BoomerangColor {
 	vec4 top{0, 0, 1, 1};
 	vec4 bot{0, 0, 1, 1};
 } boomerangColor;
-
-MultiMesh createBullet(const vec2 &pos) {
-	auto bulletBase = em->createEntity();
-	initSquare(bulletBase, {pos.x, pos.y}, {35, 25}, bulletsColor.base, defaultShaders);
-
-	auto bulletPeak = em->createEntity();
-	initCircle(bulletPeak, {pos.x - 30, pos.y}, {50, 25}, bulletsColor.peak.mid, bulletsColor.peak.out, defaultShaders, circleHelper);
-
-	auto bullet = MultiMesh{{bulletBase, bulletPeak}, static_cast<i32>(bulletBase)};
-	Scene::instance()->addEntity(bulletBase);
-	
-	return bullet;
-}
 
 int main(int argc, char *argv[]) {
 	std::cout << "Application started\n";
@@ -164,15 +141,19 @@ int main(int argc, char *argv[]) {
 		car.transform(carSettings.carVel * vec3(1, 0, 0) * dt, {1, 1, 1}, {0, 0, 0}, 0);
 	});
 
-	auto b = createBullet(vec2(1600, 400));
+	// Starts level manager
+	const auto levels = LevelManager::instance();
+    levels->createLevel();
+
+	// auto b = createBullet(vec2(1600, 400));
 
 	// add human?????
 
 	// Prepare all events
 	auto ed = EventDispatcher::instance();
-	ed->subscribe(events::loop::LoopUpdate, [&b](auto p) {
-		b.transform({-5 * 0.03, 0, 0}, {1, 1, 1}, {0, 0, 0}, 0);
-	});
+	// ed->subscribe(events::loop::LoopUpdate, [&b](auto p) {
+	// 	b.transform({-5 * 0.03, 0, 0}, {1, 1, 1}, {0, 0, 0}, 0);
+	// });
 
 	// Start application
 	app->run();

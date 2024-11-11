@@ -12,20 +12,18 @@ ifeq ($(config),debug)
   Bolt_Graphics_config = debug
   Bolt_imgui_config = debug
   Bolt_Core_config = debug
-  Bolt_Test_config = debug
-  Bolt_Pong_config = debug
+  Bolt_Kart_config = debug
 endif
 ifeq ($(config),release)
   Bolt_Graphics_config = release
   Bolt_imgui_config = release
   Bolt_Core_config = release
-  Bolt_Test_config = release
-  Bolt_Pong_config = release
+  Bolt_Kart_config = release
 endif
 
-PROJECTS := Bolt-Graphics Bolt-imgui Bolt-Core Bolt-Test Bolt-Pong
+PROJECTS := Bolt-Graphics Bolt-imgui Bolt-Core Bolt-Kart
 
-.PHONY: all clean help $(PROJECTS) Bolt-Core Bolt-Graphics Bolt-Pong Bolt-Test Bolt-imgui
+.PHONY: all clean help $(PROJECTS) Bolt-Core Bolt-Graphics Bolt-Kart Bolt-imgui
 
 all: $(PROJECTS)
 
@@ -33,9 +31,7 @@ Bolt-Core: Bolt-Core
 
 Bolt-Graphics: Bolt-Graphics
 
-Bolt-Pong: Bolt-Pong
-
-Bolt-Test: Bolt-Test
+Bolt-Kart: Bolt-Kart
 
 Bolt-imgui: Bolt-imgui
 
@@ -57,24 +53,17 @@ ifneq (,$(Bolt_Core_config))
 	@${MAKE} --no-print-directory -C Bolt-Core -f Makefile config=$(Bolt_Core_config)
 endif
 
-Bolt-Test: Bolt-Core Bolt-imgui
-ifneq (,$(Bolt_Test_config))
-	@echo "==== Building Bolt-Test ($(Bolt_Test_config)) ===="
-	@${MAKE} --no-print-directory -C Bolt-Test -f Makefile config=$(Bolt_Test_config)
-endif
-
-Bolt-Pong: Bolt-Core Bolt-imgui
-ifneq (,$(Bolt_Pong_config))
-	@echo "==== Building Bolt-Pong ($(Bolt_Pong_config)) ===="
-	@${MAKE} --no-print-directory -C Bolt-Pong -f Makefile config=$(Bolt_Pong_config)
+Bolt-Kart: Bolt-Core Bolt-imgui
+ifneq (,$(Bolt_Kart_config))
+	@echo "==== Building Bolt-Kart ($(Bolt_Kart_config)) ===="
+	@${MAKE} --no-print-directory -C Bolt-Kart -f Makefile config=$(Bolt_Kart_config)
 endif
 
 clean:
 	@${MAKE} --no-print-directory -C Bolt-Graphics -f Makefile clean
 	@${MAKE} --no-print-directory -C Bolt-imgui -f Makefile clean
 	@${MAKE} --no-print-directory -C Bolt-Core -f Makefile clean
-	@${MAKE} --no-print-directory -C Bolt-Test -f Makefile clean
-	@${MAKE} --no-print-directory -C Bolt-Pong -f Makefile clean
+	@${MAKE} --no-print-directory -C Bolt-Kart -f Makefile clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -89,7 +78,6 @@ help:
 	@echo "   Bolt-Graphics"
 	@echo "   Bolt-imgui"
 	@echo "   Bolt-Core"
-	@echo "   Bolt-Test"
-	@echo "   Bolt-Pong"
+	@echo "   Bolt-Kart"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"

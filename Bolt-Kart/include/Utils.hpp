@@ -8,6 +8,11 @@ struct CircleSettings {
 	u32 divisions = 50;
 };
 
+struct DoubleColor {
+    bolt::vec4 out{0, 0, 0, 1};
+	bolt::vec4 mid{1, 1, 1, 1};
+};
+
 struct AABB {
 	bolt::vec3 botLeft;
 	bolt::vec3 topRight;
@@ -22,9 +27,9 @@ public:
 
 	void setAnchor(const u32 &id);
 
-	void moveAnchor(const bolt::vec3 &position, const bolt::vec3 &scale, const bolt::vec3 &rotation, const f32 &rotVal);
+	void moveAnchor(const bolt::vec3 &position, const bolt::vec3 &scale, const bolt::vec3 &rotation, const f32 &rotVal)const ;
 
-	void transform(const bolt::vec3 &position, const bolt::vec3 &scale, const bolt::vec3 &rotation, const f32 &rotVal);
+	void transform(const bolt::vec3 &position, const bolt::vec3 &scale, const bolt::vec3 &rotation, const f32 &rotVal) const;
 
 	MultiMesh() = default;
 
@@ -37,7 +42,6 @@ public:
 
 private:
 	i32 m_anchor = -1;
-	bolt::vec3 m_prePos{};
 	std::vector<u32> m_meshes{};
 };
 

@@ -101,6 +101,8 @@ void initCircle(const u32 &id, bolt::Pair<f32> pos, const bolt::Pair<f32> &size,
 	});
 }
 
+vec3 prePos;
+
 void MultiMesh::addMesh(const u32 &id) {
 	if (this->m_anchor == -1)
 		this->m_anchor = static_cast<i32>(id);
@@ -111,7 +113,7 @@ void MultiMesh::setAnchor(const u32 &id) {
 	this->m_anchor = static_cast<i32>(id);
 }
 
-void MultiMesh::moveAnchor(const bolt::vec3 &position, const bolt::vec3 &scale, const bolt::vec3 &rotation, const f32 &rotVal) {
+void MultiMesh::moveAnchor(const bolt::vec3 &position, const bolt::vec3 &scale, const bolt::vec3 &rotation, const f32 &rotVal) const {
 	auto val = rotVal;
 	auto rot = rotation;
 
@@ -125,12 +127,12 @@ void MultiMesh::moveAnchor(const bolt::vec3 &position, const bolt::vec3 &scale, 
 	const auto rotate = glm::rotate(base, radians(val), rot);
 
 	const auto anchor = EntityManager::instance()->getEntityComponent<Transform>(this->m_anchor);
-	this->m_prePos = anchor->getModelMatrix()[3];
+	prePos = anchor->getModelMatrix()[3];
 
 	anchor->setModelMatrix(anchor->getModelMatrix() * scl * rotate * translate);
 }
 
-void MultiMesh::transform(const bolt::vec3 &position, const bolt::vec3 &scale, const bolt::vec3 &rotation, const f32 &rotVal) {
+void MultiMesh::transform(const bolt::vec3 &position, const bolt::vec3 &scale, const bolt::vec3 &rotation, const f32 &rotVal) const {
 	const auto em = EntityManager::instance();
 	const auto anchor = em->getEntityComponent<Transform>(this->m_anchor);
 	this->moveAnchor(position, scale, rotation, rotVal);
@@ -139,7 +141,7 @@ void MultiMesh::transform(const bolt::vec3 &position, const bolt::vec3 &scale, c
 	auto rot = rotation;
 
 	vec3 anchorPos = anchor->getModelMatrix()[3];
-	auto final = anchorPos - this->m_prePos;
+	auto final = anchorPos - prePos;
 	for (auto id : this->m_meshes) {
 		if (this->m_anchor == id)
 			continue;
