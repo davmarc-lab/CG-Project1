@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 #include <math.h>
 #include <vector>
 
@@ -49,6 +48,7 @@ Bullet *bullet;
 Shader roadShader;
 GLuint timeLoc;
 
+/// Manages car colors.
 struct CarColors {
     DoubleColor back;
     DoubleColor front;
@@ -58,11 +58,13 @@ struct CarColors {
     vec4 carWindow{0.78f, 0.96f, 0.94f, 1.f};
 } carColors;
 
+/// Manages bullets colors.
 struct BulletColor {
     vec4 base{0, 0, 0, 1};
     DoubleColor peak{{0, 0, 0, 1}, {0, 0, 0, 1}};
 } bulletsColor;
 
+/// Manage projectiles colors.
 struct BoomerangColor {
     vec4 top{0, 0, 1, 1};
     vec4 bot{0, 0, 1, 1};

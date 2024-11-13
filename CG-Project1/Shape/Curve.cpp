@@ -161,8 +161,6 @@ void Curve::draw(Shader shader)
     GLuint modelLoc = glGetUniformLocation(shader.getId(), "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(this->getModelMatrix()));
 
-    std::cout << this->getVertexNum() << "\n";
-
     glBindVertexArray(this->getVertexArrayObject());
 	glDrawArrays(GL_TRIANGLE_FAN, 0, this->getVertexNum());
 	glBindVertexArray(0);

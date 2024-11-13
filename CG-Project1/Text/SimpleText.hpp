@@ -6,6 +6,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+/// Single character properties.
 struct Character {
     unsigned int TextureID;     // ID handle of the glyph this->texture
     ivec2 Size;                 // Size of glyph

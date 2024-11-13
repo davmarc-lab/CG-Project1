@@ -9,6 +9,7 @@
 
 using namespace std;
 
+/// Defines the mesh kind.
 enum ShapeType
 {
     BULLET,
@@ -17,6 +18,7 @@ enum ShapeType
     NONE
 };
 
+/// Structure to be stored in the Scene.
 class Element
 {
     public:
@@ -70,5 +72,6 @@ class Scene
         // This method call all draw(shader) method of each shape implemented from ComplexShape2D class.
         void drawScene();
 
+        // Clear the scene.
         void clear();
 };
