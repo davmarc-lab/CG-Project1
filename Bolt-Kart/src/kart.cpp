@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	MultiMesh car = {{carBody, carWindow, fwheel, rwheel, wheel}, static_cast<i32>(carBody)};
-	auto dt = 0.01f;
+	auto dt = 0.02f;
 	input->registerAction(GLFW_KEY_W, [&car, dt]() {
 		car.transform(carSettings.carVel * vec3(0, 1, 0) * dt, {1, 1, 1}, {0, 0, 0}, 0);
 	});
@@ -192,9 +192,6 @@ int main(int argc, char *argv[]) {
 
 	// Prepare all events
 	auto ed = EventDispatcher::instance();
-	// ed->subscribe(events::loop::LoopUpdate, [&b](auto p) {
-	// 	b.transform({-5 * 0.03, 0, 0}, {1, 1, 1}, {0, 0, 0}, 0);
-	// });
 
 	// Start application
 	app->run();

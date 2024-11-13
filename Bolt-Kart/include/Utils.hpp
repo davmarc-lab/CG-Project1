@@ -31,6 +31,8 @@ public:
 
 	void transform(const bolt::vec3 &position, const bolt::vec3 &scale, const bolt::vec3 &rotation, const f32 &rotVal) const;
 
+    AABB getBoundingBox(const u32& id) const;
+
 	MultiMesh() = default;
 
 	MultiMesh(const std::vector<u32> &meshes, const i32 &anchorIndex = -1) :

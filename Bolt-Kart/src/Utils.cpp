@@ -160,3 +160,4 @@ void MultiMesh::transform(const bolt::vec3 &position, const bolt::vec3 &scale, c
 		mesh->setModelMatrix(result);
 	}
 }
+

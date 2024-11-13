@@ -158,24 +158,6 @@ namespace bolt {
 		~Mesh() override = default;
 	};
 
-    enum ColliderType {
-        AABB,
-        PLANE,
-        SPHERE,
-        FULL,
-    };
-
-    struct Collider : public Component {
-    public:
-        ColliderType type;
-
-        std::vector<vec3> points{};
-
-        Collider() = default;
-
-        ~Collider() override = default;
-    };
-
 	struct PhysicComponent : public Component {
 	public:
 		f32 mass = 1.f;
