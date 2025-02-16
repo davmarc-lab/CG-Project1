@@ -93,22 +93,33 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AppGui.hpp" />
+    <ClInclude Include="include\ECS\Component.hpp" />
+    <ClInclude Include="include\ECS\Ett.hpp" />
+    <ClInclude Include="include\ECS\System.hpp" />
+    <ClInclude Include="include\Enemy.hpp" />
     <ClInclude Include="include\Entity.hpp" />
     <ClInclude Include="include\Factory.hpp" />
     <ClInclude Include="include\HermiteFactory.hpp" />
+    <ClInclude Include="include\MultiShape.hpp" />
+    <ClInclude Include="include\Projectile.hpp" />
     <ClInclude Include="include\Scene.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\AppGui.cpp" />
+    <ClCompile Include="src\ECS\System.cpp" />
+    <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Factory.cpp" />
     <ClCompile Include="src\HermiteFactory.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\MultiShape.cpp" />
+    <ClCompile Include="src\Projectile.cpp" />
     <ClCompile Include="src\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="resources\first.txt" />
-    <Content Include="resources\hermite\hermite.txt" />
-    <Content Include="resources\second.txt" />
+    <Content Include="resources\hermite\other.txt" />
+    <Content Include="resources\hermite\slime.txt" />
     <Content Include="resources\shader\fragmentShader.glsl" />
     <Content Include="resources\shader\vertexShader.glsl" />
   </ItemGroup>

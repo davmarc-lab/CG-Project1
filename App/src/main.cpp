@@ -61,7 +61,7 @@ void shootProjectile(const glm::vec3 &direction, const glm::vec3 &pos, const glm
 std::vector<Shared<Entity>> projPool{};
 
 int main(int argc, char *argv[]) {
-	/* WindowSettings s{};
+	WindowSettings s{};
 	s.decorated = false;
 
 	Window w{s};
@@ -303,61 +303,61 @@ int main(int argc, char *argv[]) {
 
 	basic.onDetach();
 	im.onDetach();
-	w.onDetach(); */
-
-	WindowSettings s{};
-	s.decorated = false;
-	Window w{s};
-	w.onAttach();
-	em->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
-	em->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
-
-	ImGuiManager im{"", w};
-	im.onAttach();
-	em->subscribe(event::loop::LOOP_UPDATE, [&im]() { im.onUpdate(); });
-	em->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
-	em->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
-	em->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
-
-	auto ett = EntityManager::instance();
-	auto first = ett->createEntity();
-
-	std::vector<glm::vec3> aaa{
-		{-1, -1, 0},
-		{1, -1, 0},
-		{0, 1, 0},
-	};
-	auto tc = ett->addComponent<Transform>(first);
-	systems::transform::updatePosition(first, {200, 200, 1});
-	systems::transform::updateScale(first, {200, 200, 1});
-	systems::transform::updateRotation(first, {0, 0, 0});
-	auto vc = ett->addComponent<VertexComponent>(first, aaa, getColorVector({1, 0, 0, 1}, aaa.size()), std::vector<unsigned int>{});
-	auto ic = ett->addComponent<InputComponent>(first);
-	auto cc = ett->getComponentFromId<RenderComponent>(first);
-
-	// Entity Manager callbacks
-	std::cerr << "Move this operation in EventManger: LINE -> " << __LINE__ << ", FILE -> " << __FILE_NAME__ << "\n";
-	em->subscribe(event::loop::LOOP_INPUT, [&w, &ett]() {
-		for (auto e : ett->getEntitiesFromComponent<InputComponent>()) {
-			auto ic = ett->getComponentFromId<InputComponent>(e);
-			for (auto k : ic->getAllKeys()) {
-				if (glfwGetKey(w.getContext(), k) == GLFW_PRESS) {
-					ic->call(k);
-				}
-			}
-		}
-	});
-
-	while (!glfwWindowShouldClose(w.getContext())) {
-		em->post(event::loop::LOOP_INPUT);
-		em->post(event::loop::LOOP_UPDATE);
-		em->post(event::loop::LOOP_BEGIN_RENDER);
-		em->post(event::loop::LOOP_RENDER);
-		em->post(event::loop::LOOP_END_RENDER);
-	}
-
-	im.onDetach();
 	w.onDetach();
+
+	// WindowSettings s{};
+	// s.decorated = false;
+	// Window w{s};
+	// w.onAttach();
+	// em->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
+	// em->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
+	//
+	// ImGuiManager im{"", w};
+	// im.onAttach();
+	// em->subscribe(event::loop::LOOP_UPDATE, [&im]() { im.onUpdate(); });
+	// em->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
+	// em->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
+	// em->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
+	//
+	// auto ett = EntityManager::instance();
+	// auto first = ett->createEntity();
+	//
+	// std::vector<glm::vec3> aaa{
+	// 	{-1, -1, 0},
+	// 	{1, -1, 0},
+	// 	{0, 1, 0},
+	// };
+	// auto tc = ett->addComponent<Transform>(first);
+	// systems::transform::updatePosition(first, {200, 200, 1});
+	// systems::transform::updateScale(first, {200, 200, 1});
+	// systems::transform::updateRotation(first, {0, 0, 0});
+	// auto vc = ett->addComponent<VertexComponent>(first, aaa, getColorVector({1, 0, 0, 1}, aaa.size()), std::vector<unsigned int>{});
+	// auto ic = ett->addComponent<InputComponent>(first);
+	// auto cc = ett->getComponentFromId<RenderComponent>(first);
+	//
+	// // Entity Manager callbacks
+	// std::cerr << "Move this operation in EventManger: LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
+	// em->subscribe(event::loop::LOOP_INPUT, [&w, &ett]() {
+	// 	for (auto e : ett->getEntitiesFromComponent<InputComponent>()) {
+	// 		auto ic = ett->getComponentFromId<InputComponent>(e);
+	// 		for (auto k : ic->getAllKeys()) {
+	// 			if (glfwGetKey(w.getContext(), k) == GLFW_PRESS) {
+	// 				ic->call(k);
+	// 			}
+	// 		}
+	// 	}
+	// });
+	//
+	// while (!glfwWindowShouldClose(w.getContext())) {
+	// 	em->post(event::loop::LOOP_INPUT);
+	// 	em->post(event::loop::LOOP_UPDATE);
+	// 	em->post(event::loop::LOOP_BEGIN_RENDER);
+	// 	em->post(event::loop::LOOP_RENDER);
+	// 	em->post(event::loop::LOOP_END_RENDER);
+	// }
+	//
+	// im.onDetach();
+	// w.onDetach();
 
 	return 0;
 }
