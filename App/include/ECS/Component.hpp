@@ -218,7 +218,6 @@ public:
 
 	~InputComponent() override = default;
 
-private:
 	std::map<unsigned int, std::function<void()>> callbacks;
 };
 

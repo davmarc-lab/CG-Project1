@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstddef>
+#include <functional>
+#include <utility>
 #include <vector>
 
 #include "../../../Opengl-Core/include/Core.hpp"
@@ -32,8 +34,14 @@ namespace systems {
 		void updateCollider(const unsigned int &id);
 		void updateAllColliders();
 
-        std::vector<Pair<unsigned int>> getCollisions();
+		std::vector<Pair<unsigned int>> getCollisions();
 	} // namespace collision
+
+	namespace input {
+		std::vector<std::pair<unsigned int, std::function<void()>>> getKeysCallback(const unsigned int &id);
+
+		void setKeyCallback(const unsigned int &id, const unsigned int &key, std::function<void()> func);
+	} // namespace input
 
 	namespace render {
 		void renderAllMeshes();

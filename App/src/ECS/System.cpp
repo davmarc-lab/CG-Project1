@@ -1,5 +1,6 @@
 #include "../../include/ECS/System.hpp"
 #include <algorithm>
+#include <functional>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <vector>
 #include "../../include/ECS/Component.hpp"
@@ -127,6 +128,28 @@ namespace systems {
 		}
 
 	} // namespace collision
+
+	namespace input {
+		// it can be optimized merging from each InputComponent all callbacks.
+		std::vector<std::pair<unsigned int, std::function<void()>>> getKeysCallback(const unsigned int &id) {
+	        std::cerr << "Optimize this method (read comment above implementation): LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
+			std::vector<std::pair<unsigned int, std::function<void()>>> res{};
+			auto ic = em->getComponentFromId<InputComponent>(id);
+            ASSERT(ic != nullptr);
+            
+			for (auto k : ic->getAllKeys()) {
+				res.emplace_back(k, ic->callbacks.at(k));
+			}
+			return res;
+		}
+
+		void setKeyCallback(const unsigned int &id, const unsigned int &key, std::function<void()> func) {
+            auto ic = em->getComponentFromId<InputComponent>(id);
+            if (ic == nullptr) return;
+
+            ic->registerAction(key, func);
+		}
+	} // namespace input
 
 	namespace render {
 		void renderAllMeshes() {

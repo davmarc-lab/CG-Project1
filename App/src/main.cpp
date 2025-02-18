@@ -328,8 +328,6 @@ int main(int argc, char *argv[]) {
 	em->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
 	em->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
 
-	Scene basic{};
-
 	Shared<ShaderProgram> shader = CreateShared<ShaderProgram>("vertexShader.glsl", "fragmentShader.glsl");
 	shader->createShaderProgram();
 
@@ -350,10 +348,9 @@ int main(int argc, char *argv[]) {
 	std::cerr << "Move this operation in EventManger: LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
 	em->subscribe(event::loop::LOOP_INPUT, [&w, &ett]() {
 		for (auto e : ett->getEntitiesFromComponent<InputComponent>()) {
-			auto ic = ett->getComponentFromId<InputComponent>(e);
-			for (auto k : ic->getAllKeys()) {
-				if (glfwGetKey(w.getContext(), k) == GLFW_PRESS) {
-					ic->call(k);
+			for (auto [key, f] : systems::input::getKeysCallback(e)) {
+				if (glfwGetKey(w.getContext(), key) == GLFW_PRESS) {
+					f();
 				}
 			}
 		}
