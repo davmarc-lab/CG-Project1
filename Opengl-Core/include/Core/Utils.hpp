@@ -3,6 +3,10 @@
 template <typename T>
 struct Pair {
 	T x, y;
+
+    friend bool operator==(const Pair<T>& lhs, const Pair<T>& rhs) {
+        return (lhs.x == rhs.x) && (lhs.y == rhs.y);
+    }
 };
 
 #include <memory>

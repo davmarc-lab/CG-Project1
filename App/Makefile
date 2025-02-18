@@ -84,6 +84,7 @@ endif
 
 OBJECTS := \
 	$(OBJDIR)/AppGui.o \
+	$(OBJDIR)/EcsScene.o \
 	$(OBJDIR)/System.o \
 	$(OBJDIR)/Enemy.o \
 	$(OBJDIR)/Entity.o \
@@ -152,6 +153,9 @@ $(OBJECTS): | $(OBJDIR)
 endif
 
 $(OBJDIR)/AppGui.o: src/AppGui.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/EcsScene.o: src/ECS/EcsScene.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/System.o: src/ECS/System.cpp

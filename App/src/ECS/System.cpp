@@ -1,4 +1,7 @@
 #include "../../include/ECS/System.hpp"
+#include <algorithm>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <vector>
 #include "../../include/ECS/Component.hpp"
 #include "../../include/ECS/EcsScene.hpp"
 #include "../../include/ECS/Ett.hpp"
@@ -10,54 +13,132 @@ namespace systems {
 	namespace transform {
 		void updatePosition(const unsigned int &id, const glm::vec3 &position) {
 			auto c = em->getComponentFromId<Transform>(id);
+			ASSERT(c != nullptr);
+
 			c->setPosition(position);
 		}
 
 		void updateScale(const unsigned int &id, const glm::vec3 &scale) {
 			auto c = em->getComponentFromId<Transform>(id);
+			ASSERT(c != nullptr);
+
 			c->setScale(scale);
 		}
 
 		void updateRotation(const unsigned int &id, const glm::vec3 &rotation) {
 			auto c = em->getComponentFromId<Transform>(id);
+			ASSERT(c != nullptr);
+
 			c->setRotation(rotation);
 		}
 
 		void addPosition(const unsigned int &id, const glm::vec3 &offset) {
 			auto c = em->getComponentFromId<Transform>(id);
+			ASSERT(c != nullptr);
+
 			c->addPosition(offset);
 		}
 
 		void addScale(const unsigned int &id, const glm::vec3 &offset) {
 			auto c = em->getComponentFromId<Transform>(id);
+			ASSERT(c != nullptr);
+
 			c->addScale(offset);
 		}
 
 		void addRotation(const unsigned int &id, const glm::vec3 &offset) {
 			auto c = em->getComponentFromId<Transform>(id);
+			ASSERT(c != nullptr);
+
 			c->addRotation(offset);
+		}
+
+		glm::vec3 getPosition(const unsigned int &id) {
+			auto c = em->getComponentFromId<Transform>(id);
+			ASSERT(c != nullptr);
+
+			return c->position;
+		}
+
+		glm::mat4 getModelMatrix(const unsigned int &id) {
+			auto tc = em->getComponentFromId<Transform>(id);
+			ASSERT(tc != nullptr);
+
+			if (tc->isDirty())
+				updateModelMatrix(id);
+			return tc->model;
+		}
+
+		void updateModelMatrix(const unsigned int &id) {
+			auto tc = em->getComponentFromId<Transform>(id);
+			if (tc == nullptr)
+				return;
+
+			tc->updateModelMatrix();
+			::systems::collision::updateCollider(id);
+		}
+
+		void updateAllModelMatrix() {
+			for (auto id : em->getEntitiesFromComponent<Transform>()) {
+				updateModelMatrix(id);
+			}
 		}
 	} // namespace transform
 
+	namespace collision {
+		void updateCollider(const unsigned int &id) {
+			auto bc = em->getComponentFromId<AABB>(id);
+			if (bc == nullptr)
+				return;
+
+			auto cc = em->getComponentFromId<VertexComponent>(id);
+			bc->updateCollider(cc->getVertexCoords(), ::systems::transform::getModelMatrix(id));
+		}
+
+		// void updateAllColliders() {
+		// 	for (auto id : em->getEntitiesFromComponent<AABB>())
+		// 		updateCollider(id);
+		// }
+
+		bool isColliding(const unsigned int &first, const unsigned int &second) {
+			if (first == second)
+				return false;
+			auto fc = em->getComponentFromId<AABB>(first);
+			auto sc = em->getComponentFromId<AABB>(second);
+
+			return fc->isColliding(*sc);
+		}
+
+		std::vector<Pair<unsigned int>> getCollisions() {
+			std::vector<Pair<unsigned int>> coll{};
+			for (auto first : em->getEntitiesFromComponent<AABB>()) {
+				for (auto other : em->getEntitiesFromComponent<AABB>()) {
+					if (first == other)
+						continue;
+					if (isColliding(first, other)) {
+						if (std::find(ALL(coll), Pair<unsigned int>{first, other}) == coll.end() &&
+							std::find(ALL(coll), Pair<unsigned int>{other, first}) == coll.end()) {
+							coll.push_back({first, other});
+						}
+					}
+				}
+			}
+			return coll;
+		}
+
+	} // namespace collision
+
 	namespace render {
 		void renderAllMeshes() {
-
 			for (auto [shader, etts] : ecs->getShaderEntityMap()) {
 				shader->use();
 				for (auto id : etts) {
-					auto vc = em->getComponentFromId<Transform>(id);
 					auto rc = em->getComponentFromId<RenderComponent>(id);
-					shader->setMat4("model", vc->getModelMatrix());
+					shader->setMat4("model", ::systems::transform::getModelMatrix(id));
 					rc->call();
 				}
 			}
-
-			for (auto id : EntityManager::instance()->getEntitiesFromComponent<RenderComponent>()) {
-				auto rend = EntityManager::instance()->getComponentFromId<RenderComponent>(id);
-				rend->call();
-			}
 		}
-
-	}
+	} // namespace render
 
 } // namespace systems

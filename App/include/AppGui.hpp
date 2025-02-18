@@ -3,21 +3,41 @@
 #include "../../Opengl-Core/include/Core.hpp"
 #include "Scene.hpp"
 
-class ImGuiStats : public ogl::ImGuiPanel {
-  public:
-    ImGuiStats() : ogl::ImGuiPanel("Stats", 0) {}
+using namespace ogl;
 
-    virtual ~ImGuiStats() = default;
+class ImGuiStats : public ImGuiPanel {
+public:
+	ImGuiStats() :
+		ImGuiPanel("Stats", 0) {}
 
-  private:
+	virtual ~ImGuiStats() = default;
+
+private:
 };
 
-class ImGuiScene : public ogl::ImGuiPanel {
-  public:
-    ImGuiScene(Scene &scene) : ogl::ImGuiPanel("Scene", 0), m_scene(scene) {}
+class ImGuiScene : public ImGuiPanel {
+public:
+	ImGuiScene(Scene &scene) :
+		ImGuiPanel("Scene", 0), m_scene(scene) {}
 
-    virtual ~ImGuiScene() = default;
+	virtual ~ImGuiScene() override = default;
 
-  private:
-    Scene &m_scene;
+private:
+	Scene &m_scene;
+};
+
+class ImGuiModel : public ImGuiPanel {
+public:
+	void changeObserver(const unsigned int &id) { this->m_id = id; }
+
+	unsigned int getCurrentId() const { return this->m_id; }
+
+	ImGuiModel(const unsigned int &id = 0) :
+		m_id(id),
+		ImGuiPanel("Model", 0) {}
+
+	virtual ~ImGuiModel() override = default;
+
+private:
+	unsigned int m_id = 0;
 };

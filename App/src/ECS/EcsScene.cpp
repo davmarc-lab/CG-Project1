@@ -1,5 +1,7 @@
 ﻿#include "../../include/ECS/EcsScene.hpp"
 
+#include <algorithm>
+
 void BasicScene::addEntity(Shared<ogl::ShaderProgram> &shader, const unsigned int &ett) {
 	if (this->m_entities.find(shader) == this->m_entities.end()) {
 		this->m_entities.insert_or_assign(shader, std::vector<unsigned int>{});
@@ -14,7 +16,7 @@ void BasicScene::removeEntity(Shared<ogl::ShaderProgram> &shader, const unsigned
 		return;
 	}
 
-	// key element  found
+	// key element found
 	elem->second.erase(std::find(ALL(elem->second), ett));
 }
 

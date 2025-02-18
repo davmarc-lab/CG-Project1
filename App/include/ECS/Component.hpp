@@ -16,6 +16,7 @@ public:
 	virtual ~Component() = default;
 };
 
+// REMOVE ALL SET AND GET METHODS - USE SYSTEMS
 class Transform : public Component {
 public:
 	inline bool isModelMatrixEnable() const { return this->enableModel; }
@@ -25,12 +26,6 @@ public:
 	inline const bool &isDirty() const { return this->dirty; }
 
 	inline void setDirty(const bool &dirty) { this->dirty = true; }
-
-	inline glm::mat4 getModelMatrix() {
-		if (this->dirty)
-			this->updateModelMatrix();
-		return this->model;
-	}
 
 	/* // BETTER DON'T FORCE MODEL MATRIX
 	inline void setModelMatrix(const glm::mat4 &matrix) {
@@ -89,7 +84,6 @@ public:
 
 	virtual ~Transform() override = default;
 
-private:
 	void updateModelMatrix() {
 		if (!this->dirty)
 			return;
@@ -226,6 +220,51 @@ public:
 
 private:
 	std::map<unsigned int, std::function<void()>> callbacks;
+};
+
+class AABB : public Component {
+public:
+	glm::vec3 botLeft{};
+	glm::vec3 topRight{};
+
+	void updateCollider(const std::vector<glm::vec3> &coords, const glm::mat4 &model) {
+		auto bot = glm::vec3(1, 1, 0);
+		bool first = true;
+
+		for (auto i = 0; i < coords.size(); i++) {
+			auto elem = model * glm::vec4(coords[i], 1);
+			if (first) {
+				bot = elem;
+				first = false;
+			}
+			bot.x = bot.x >= elem.x ? elem.x : bot.x;
+			bot.y = bot.y >= elem.y ? elem.y : bot.y;
+		}
+
+		auto top = glm::vec3(1, 1, 0);
+		first = true;
+		for (auto i = 0; i < coords.size(); i++) {
+			auto elem = model * glm::vec4(coords[i], 1);
+			if (first) {
+				top = elem;
+				first = false;
+			}
+			top.x = top.x <= elem.x ? elem.x : top.x;
+			top.y = top.y <= elem.y ? elem.y : top.y;
+		}
+
+		this->botLeft = bot;
+		this->topRight = top;
+	}
+
+	bool isColliding(const AABB &other) const {
+		return (this->botLeft.x <= other.topRight.x && this->topRight.x >= other.botLeft.x) &&
+			(this->botLeft.y <= other.topRight.y && this->topRight.y >= other.botLeft.y);
+	}
+
+	AABB() = default;
+
+	virtual ~AABB() override = default;
 };
 
 // Mesh is not a component but an extended Entity

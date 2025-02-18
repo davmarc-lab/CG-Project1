@@ -21,8 +21,8 @@
 #include <memory>
 #include <vector>
 
-#include "../include/HermiteFactory.hpp"
 #include "../include/ECS/EcsScene.hpp"
+#include "../include/HermiteFactory.hpp"
 
 Shared<Enemy> enem;
 
@@ -328,18 +328,23 @@ int main(int argc, char *argv[]) {
 	em->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
 	em->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
 
+	Scene basic{};
+
 	Shared<ShaderProgram> shader = CreateShared<ShaderProgram>("vertexShader.glsl", "fragmentShader.glsl");
 	shader->createShaderProgram();
 
 	const auto ecs = BasicScene::instance();
 
 	auto ett = EntityManager::instance();
-	
+
 	auto first = factorySquare(BasicInfo{{1400, 800, 0}, {40, 40, 1}, {}}, {1, 0, 0, 1});
 	ecs->addEntity(shader, first);
-	
-	auto second = factorySquare(BasicInfo{{1500, 800, 0}, {40, 40, 1}, {}}, {1, 1, 0, 1}, {});
+
+	auto second = factoryProjectile(BasicInfo{{1000, 800, 0}, {40, 40, 1}, {}}, {1, 1, 0, 1}, {});
 	ecs->addEntity(shader, second);
+
+	auto third = factoryProjectile(BasicInfo{{1050, 800, 0}, {40, 40, 1}, {}}, {1, 1, 0, 1}, {});
+	ecs->addEntity(shader, third);
 
 	// Entity Manager callbacks
 	std::cerr << "Move this operation in EventManger: LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
@@ -354,6 +359,11 @@ int main(int argc, char *argv[]) {
 		}
 	});
 
+	// collision manager
+	em->subscribe(event::loop::LOOP_UPDATE, [&first, &second]() {
+		auto coll = systems::collision::getCollisions();
+		std::cout << coll.size() << "\n";
+	});
 	em->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
 
 	UniformBuffer ubo{"Matrices"};
@@ -364,6 +374,27 @@ int main(int argc, char *argv[]) {
 	em->subscribe(event::shader::SHADER_PROJECTION_CHANGED, [&w, &ubo]() {
 		auto proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
 		ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
+	});
+
+	auto igscene = im.addPanel<ImGuiModel>(first);
+	igscene->setRenderFunc([&ett, &igscene]() {
+		auto tc = ett->getComponentFromId<Transform>(igscene->getCurrentId());
+		auto bc = ett->getComponentFromId<AABB>(igscene->getCurrentId());
+		if (tc == nullptr)
+			return;
+		if (bc == nullptr)
+			return;
+
+		ImGui::Begin("Basic Scene");
+		auto pos = systems::transform::getPosition(igscene->getCurrentId());
+		if (ImGui::DragFloat3("Pos", &pos[0])) {
+			systems::transform::updatePosition(igscene->getCurrentId(), pos);
+		}
+		auto b = bc->botLeft;
+		auto t = bc->topRight;
+		ImGui::DragFloat3("Bot", &b[0]);
+		ImGui::DragFloat3("Top", &t[0]);
+		ImGui::End();
 	});
 
 	while (!glfwWindowShouldClose(w.getContext())) {

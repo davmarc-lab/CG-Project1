@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <vector>
 
 #include "../../../Opengl-Core/include/Core.hpp"
 #include "Component.hpp"
@@ -16,11 +17,23 @@ namespace systems {
 		void addScale(const unsigned int &id, const glm::vec3 &offset);
 		void addRotation(const unsigned int &id, const glm::vec3 &offset);
 
+		glm::vec3 getPosition(const unsigned int &id);
+		glm::vec3 getScale(const unsigned int &id);
+		glm::vec3 getRotation(const unsigned int &id);
+		glm::mat4 getModelMatrix(const unsigned int &id);
+
 		void updateModelMatrix(const unsigned int &id);
 
 		void updateAllModelMatrix();
 
 	} // namespace transform
+
+	namespace collision {
+		void updateCollider(const unsigned int &id);
+		void updateAllColliders();
+
+        std::vector<Pair<unsigned int>> getCollisions();
+	} // namespace collision
 
 	namespace render {
 		void renderAllMeshes();
