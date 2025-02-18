@@ -95,6 +95,7 @@
   <ItemGroup>
     <ClInclude Include="include\AppGui.hpp" />
     <ClInclude Include="include\ECS\Component.hpp" />
+    <ClInclude Include="include\ECS\EcsScene.hpp" />
     <ClInclude Include="include\ECS\Ett.hpp" />
     <ClInclude Include="include\ECS\System.hpp" />
     <ClInclude Include="include\Enemy.hpp" />
@@ -107,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AppGui.cpp" />
+    <ClCompile Include="src\ECS\EcsScene.cpp" />
     <ClCompile Include="src\ECS\System.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Entity.cpp" />

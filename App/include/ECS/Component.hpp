@@ -74,6 +74,7 @@ public:
 		this->rotation += glm::radians(offset);
 		this->dirty = true;
 	}
+
 	/*
 	inline glm::quat getQuaternion() const { return this->quaternion; }
 
@@ -83,7 +84,8 @@ public:
 	}
 	*/
 	Transform() :
-		Component() {}
+		Component() {
+	}
 
 	virtual ~Transform() override = default;
 
@@ -113,10 +115,23 @@ private:
 	bool enableModel = true;
 };
 
+class BufferComponent : public Component {
+public:
+	BufferComponent() = default;
+
+	virtual ~BufferComponent() override = default;
+
+	ogl::VertexArray vao{};
+	ogl::VertexBuffer vbo_g{};
+	ogl::VertexBuffer vbo_c{};
+	ogl::ElementBuffer ebo{};
+};
+
 class VertexComponent : public Component {
 public:
 	inline std::vector<glm::vec3> getVertexCoords() const { return this->m_vertex; }
 	inline void setVertexCoords(const std::vector<glm::vec3> &vertex) { this->m_vertex = vertex; }
+
 	inline void appendVertex(const std::vector<glm::vec3> &vertex) {
 		for (auto e : vertex)
 			this->m_vertex.push_back(e);
@@ -124,6 +139,7 @@ public:
 
 	inline std::vector<glm::vec4> getColorsCoords() const { return this->m_colors; }
 	inline void setColorsCoords(const std::vector<glm::vec4> &colors) { this->m_colors = colors; }
+
 	inline void appendColor(const std::vector<glm::vec4> &colors) {
 		for (auto e : colors)
 			this->m_colors.push_back(e);
@@ -131,6 +147,7 @@ public:
 
 	inline std::vector<unsigned int> getIndexCoords() const { return this->m_index; }
 	inline void setIndexCoords(const std::vector<unsigned int> &index) { this->m_index = index; }
+
 	inline void appendIndex(const std::vector<unsigned int> &index) {
 		for (auto e : index)
 			this->m_index.push_back(e);
@@ -154,7 +171,8 @@ private:
 class ShaderComponent : public Component {
 public:
 	ShaderComponent() :
-		Component() {}
+		Component() {
+	}
 
 	virtual ~ShaderComponent() override = default;
 
@@ -172,7 +190,8 @@ public:
 	}
 
 	RenderComponent() :
-		Component() {}
+		Component() {
+	}
 
 	virtual ~RenderComponent() override = default;
 

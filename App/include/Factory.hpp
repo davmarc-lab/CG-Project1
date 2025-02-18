@@ -20,3 +20,5 @@ Shared<Entity> createTriangle(const glm::vec3 &pos, const glm::vec3 &scale, cons
 Shared<Entity> createProjectile(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rot, const glm::vec4 &color = {1, 1, 1, 1});
 
 Shared<MultiShape> createEnemy(const ogl::ShaderProgram& shader, const EnemyType &type, const BasicInfo &info);
+
+unsigned int factorySquare(const BasicInfo& info, const glm::vec4& color = {1, 0, 0, 1}, const EnemyInfo& stats = {});
