@@ -24,7 +24,11 @@ public:
 		return id;
 	}
 
-	bool removeEntity(const Index &id);
+	bool removeEntity(const Index &id) {
+        // AAAAAAAAAAA
+		this->m_entities.erase(std::find(ALL(this->m_entities), id));
+		return false;
+	}
 
 	inline bool isEntityValid(const Index &id) { return this->m_ettComponent.count(id); }
 
@@ -46,6 +50,12 @@ public:
 			this->m_compEntity.at(name).push_back(id);
 		}
 		return comp;
+	}
+
+	template <typename T>
+	inline bool entityHasComponent(const unsigned int &id) {
+		return this->m_compEntity.count(CLASSNAME(T)) > 0 &&
+			std::find(ALL(this->m_compEntity.at(CLASSNAME(T))), id) != this->m_compEntity.at(CLASSNAME(T)).end();
 	}
 
 	template <typename T>

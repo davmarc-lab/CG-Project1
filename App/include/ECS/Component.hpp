@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <glm/trigonometric.hpp>
+#include <utility>
 #include <vector>
 
 class Component {
@@ -232,6 +233,47 @@ public:
 	std::map<unsigned int, std::function<void()>> callbacks;
 };
 
+struct GunInfo {
+	float lastShoot = 0;
+	float coolDown = 0.5;
+	glm::vec4 projColor = {1, 0, 0, 1};
+};
+
+class GunComponent : public Component {
+public:
+	GunInfo info{};
+
+	GunComponent() :
+		Component() {}
+
+	GunComponent(const GunInfo &info) :
+		info(info), Component() {}
+
+	virtual ~GunComponent() override = default;
+};
+
+class Animation : public Component {
+public:
+	void updateTick(const float &currentTime) {
+		if (this->startTime + this->timeToLive >= currentTime)
+			this->func();
+		else
+			this->dead = true;
+	}
+
+	Animation() = delete;
+
+	Animation(const float &startTime, const float &timeToLive, std::function<void()> &&func) :
+		startTime(startTime), timeToLive(timeToLive), func(func), Component() {}
+
+	virtual ~Animation() override = default;
+
+	std::function<void()> func{};
+	float startTime;
+	float timeToLive;
+	bool dead = false;
+};
+
 class AABB : public Component {
 public:
 	glm::vec3 botLeft{};
@@ -276,17 +318,3 @@ public:
 
 	virtual ~AABB() override = default;
 };
-
-// Mesh is not a component but an extended Entity
-/* class Mesh : public Component {
-public:
-	Mesh() :
-		Component() {}
-
-	virtual ~Mesh() override = default;
-
-private:
-	VertexComponent m_vertex{};
-	ShaderComponent m_shader{};
-	RenderComponent m_render{};
-}; */

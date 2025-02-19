@@ -73,6 +73,13 @@ namespace systems {
 			return c->position;
 		}
 
+		glm::vec3 getScale(const unsigned int &id) {
+			auto c = em->getComponentFromId<Transform>(id);
+			ASSERT(c != nullptr);
+
+			return c->scale;
+		}
+
 		glm::mat4 getModelMatrix(const unsigned int &id) {
 			auto tc = em->getComponentFromId<Transform>(id);
 			ASSERT(tc != nullptr);
@@ -163,6 +170,46 @@ namespace systems {
 			ic->registerAction(key, func);
 		}
 	} // namespace input
+
+	namespace gun {
+		float getLastShoot(const unsigned int &id) {
+			auto c = em->getComponentFromId<GunComponent>(id);
+			ASSERT(c != nullptr);
+
+			return c->info.lastShoot;
+		}
+		void updateLastShoot(const unsigned int &id, const float &time) {
+			auto c = em->getComponentFromId<GunComponent>(id);
+			ASSERT(c != nullptr);
+
+			c->info.lastShoot = time;
+		}
+
+        float getCooldown(const unsigned int &id) {
+			auto c = em->getComponentFromId<GunComponent>(id);
+			ASSERT(c != nullptr);
+
+			return c->info.coolDown;
+        }
+	} // namespace gun
+
+    namespace animation {
+        void executeNextFrame(const float& currentTime) {
+            std::vector<unsigned int> torm{};
+            for (auto ett : em->getEntitiesFromComponent<Animation>()) {
+                auto c = em->getComponentFromId<Animation>(ett);
+                ASSERT(c != nullptr);
+
+                c->updateTick(currentTime);
+                if (c->dead) {
+                    torm.push_back(ett);
+                }
+            }
+            for (auto e : torm) {
+                EntityManager::instance()->removeEntity(e);
+            }
+        }
+    }
 
 	namespace render {
 		void renderAllMeshes() {

@@ -33,31 +33,42 @@ const glm::vec3 PLAYER_VEL = {50, 50, 0};
 const glm::vec3 PROJ_OFFSET = {2, 2, 0};
 const glm::vec3 HEALTH_BAR_SIZE = {300, 20, 0};
 
+struct Player {
+	unsigned int id;
+	GunInfo gunInfo{};
+	ProjInfo projInfo{20, PROJ_RANGE, PROJ_COLOR};
+} player;
+
 bool outOfScreen(const Pair<float> &size, const glm::vec3 &pos, const glm::vec3 &scale) {
 	return (pos.y + scale.y > size.y) || (pos.y - scale.y < 0) || (pos.x + scale.x > size.x) || (pos.x - scale.x < 0);
 }
 
-// void shootProjectile(const glm::vec3 &direction, const glm::vec3 &pos, const glm::vec3 &scale, Scene &scene, const ShaderProgram &shader) {
-// 	if (direction == glm::vec3{0, 0, 0})
-// 		return;
-//
-// 	if (glfwGetTime() - enem->getLastShoot() > enem->getCooldown() || enem->getCooldown() == 0) {
-// 		// create projectile and add to the scene
-// 		glm::vec3 offset{0, 0, 0};
-// 		if (direction.x == 0) {
-// 			// Y-Axis
-// 			offset.y = direction.y * (scale.y / 2 + PROJ_SIZE.y / 2);
-// 		} else {
-// 			// X-Axis
-// 			offset.x = direction.x * (scale.x / 2 + PROJ_SIZE.x / 2);
-// 		}
-// 		auto p = CreateShared<Projectile>(ProjInfo{enem->getDamage(), enem->getRange()}, pos + offset + (direction * PROJ_OFFSET), shader);
-// 		p->setVelocity(direction * PROJ_VEL);
-// 		p->init();
-// 		scene.addEntity(shader.getId(), std::move(p));
-// 		enem->setLastShoot(glfwGetTime());
-// 	}
-// }
+void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<BasicScene> &scene, Shared<ogl::ShaderProgram> shader) {
+	if (direction == glm::vec3(0))
+		return;
+
+	if (!EntityManager::instance()->entityHasComponent<GunComponent>(id))
+		return;
+
+	auto ls = systems::gun::getLastShoot(id);
+	auto cd = systems::gun::getCooldown(id);
+
+	if (glfwGetTime() - ls > cd || cd == 0) {
+		auto pos = systems::transform::getPosition(id);
+		auto scale = systems::transform::getScale(id);
+		glm::vec3 offset{0};
+		if (direction.x == 0)
+			offset.y = direction.y * (scale.y + PROJ_SIZE.y);
+		else
+			offset.x = direction.x * (scale.x + PROJ_SIZE.x);
+		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, {1, 1, 0, 1}, ProjInfo{});
+		EntityManager::instance()->addComponent<Animation>(p, glfwGetTime(), 5, [p, direction]() {
+			systems::transform::addPosition(p, direction * PROJ_VEL);
+		});
+		scene->addEntity(shader, p);
+		systems::gun::updateLastShoot(id, glfwGetTime());
+	}
+}
 
 int main(int argc, char *argv[]) {
 	// WindowSettings s{};
@@ -74,22 +85,6 @@ int main(int argc, char *argv[]) {
 	// em->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
 	// em->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
 	// em->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
-	//
-	// const auto rm = ResourceManager::instance();
-	//
-	// Scene basic{};
-	// basic.onAttach();
-	// em->subscribe(event::loop::LOOP_RENDER, [&basic]() { basic.onRender(); });
-	//
-	// auto igscene = im.addPanel<ImGuiScene>(basic);
-	// igscene->setRenderFunc([&basic]() {
-	// 	ImGui::Begin("Basic Scene");
-	// 	auto b = basic.isDebugEnabled();
-	// 	if (ImGui::Checkbox("View BB", &b)) {
-	// 		basic.setDebug(b);
-	// 	}
-	// 	ImGui::End();
-	// });
 	//
 	// ShaderProgram shader{"vertexShader.glsl", "fragmentShader.glsl"};
 	// shader.createShaderProgram();
@@ -180,61 +175,6 @@ int main(int argc, char *argv[]) {
 	//
 	// basic.addEntity(shader.getId(), enem);
 	//
-	// em->subscribe(event::loop::LOOP_INPUT, [&w, &basic, &shader]() {
-	// 	auto pos = enem->getPosition();
-	// 	auto scale = enem->getScale();
-	//
-	// 	// movement
-	// 	if (glfwGetKey(w.getContext(), GLFW_KEY_W) == GLFW_PRESS) {
-	// 		pos += PLAYER_VEL * glm::vec3(0, 1, 0) * 0.1f;
-	// 	}
-	// 	if (glfwGetKey(w.getContext(), GLFW_KEY_S) == GLFW_PRESS) {
-	// 		pos += PLAYER_VEL * glm::vec3(0, -1, 0) * 0.1f;
-	// 	}
-	// 	if (glfwGetKey(w.getContext(), GLFW_KEY_A) == GLFW_PRESS) {
-	// 		pos += PLAYER_VEL * glm::vec3(-1, 0, 0) * 0.1f;
-	// 	}
-	// 	if (glfwGetKey(w.getContext(), GLFW_KEY_D) == GLFW_PRESS) {
-	// 		pos += PLAYER_VEL * glm::vec3(1, 0, 0) * 0.1f;
-	// 	}
-	// 	enem->setPosition(pos);
-	// 	// update the player pos
-	//
-	// 	// shoot
-	// 	if (glfwGetKey(w.getContext(), GLFW_KEY_RIGHT)) {
-	// 		shootProjectile({1, 0, 0}, pos, scale, basic, shader);
-	// 	}
-	// 	if (glfwGetKey(w.getContext(), GLFW_KEY_LEFT)) {
-	// 		shootProjectile({-1, 0, 0}, pos, scale, basic, shader);
-	// 	}
-	// 	if (glfwGetKey(w.getContext(), GLFW_KEY_UP)) {
-	// 		shootProjectile({0, 1, 0}, pos, scale, basic, shader);
-	// 	}
-	// 	if (glfwGetKey(w.getContext(), GLFW_KEY_DOWN)) {
-	// 		shootProjectile({0, -1, 0}, pos, scale, basic, shader);
-	// 	}
-	// });
-	//
-	// // collision solver
-	// em->subscribe(event::loop::LOOP_UPDATE, [&w, &basic]() {
-	// 	// player solver
-	// 	{
-	// 		auto pos = enem->getPosition();
-	// 		auto scale = enem->getScale();
-	// 		if (pos.y + scale.y > w.getHeight()) {
-	// 			pos = {pos.x, w.getHeight() - scale.y, 0};
-	// 		}
-	// 		if (pos.y - scale.y < 0) {
-	// 			pos = {pos.x, scale.y, 0};
-	// 		}
-	// 		if (pos.x - scale.x < 0) {
-	// 			pos = {scale.x, pos.y, 0};
-	// 		}
-	// 		if (pos.x + scale.x > w.getWidth()) {
-	// 			pos = {w.getWidth() - scale.x, pos.y, 0};
-	// 		}
-	// 		enem->setPosition(pos);
-	// 	}
 	// 	// bullets collision
 	// 	std::vector<Shared<Entity>> toRemove{};
 	// 	{
@@ -283,35 +223,6 @@ int main(int argc, char *argv[]) {
 	// 		basic.removeEntity(e);
 	// 	}
 	// });
-	//
-	// UniformBuffer ubo{"Matrices"};
-	// glm::mat4 proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
-	// ubo.onAttach();
-	// ubo.setup(sizeof(glm::mat4), 0, 0, 0);
-	// ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
-	// em->subscribe(event::shader::SHADER_PROJECTION_CHANGED, [&w, &ubo]() {
-	// 	auto proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
-	// 	ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
-	// });
-	//
-	// auto gg = createEnemy(shader, EnemyType::EMENY_SLIME, {{800, 800, 1}, ENEMY_SLIME_SIZE, {}});
-	// gg->setCollidable(true);
-	// basic.addEntity(shader.getId(), gg);
-	//
-	// em->subscribe(event::loop::LOOP_UPDATE,
-	//               [&gg]() { gg->moveEntities(gg->getPosition() + glm::vec3(1, 0, 0) * glm::vec3(10) * glm::vec3(glm::sin(glfwGetTime() * 4))); });
-	//
-	// while (!glfwWindowShouldClose(w.getContext())) {
-	// 	em->post(event::loop::LOOP_INPUT);
-	// 	em->post(event::loop::LOOP_UPDATE);
-	// 	em->post(event::loop::LOOP_BEGIN_RENDER);
-	// 	em->post(event::loop::LOOP_RENDER);
-	// 	em->post(event::loop::LOOP_END_RENDER);
-	// }
-	//
-	// basic.onDetach();
-	// im.onDetach();
-	// w.onDetach();
 
 	WindowSettings s{};
 	s.decorated = false;
@@ -336,9 +247,11 @@ int main(int argc, char *argv[]) {
 
 	auto ett = EntityManager::instance();
 
-	auto first = factorySquare(BasicInfo{{1400, 800, 0}, {40, 40, 1}, {}}, {1, 0, 0, 1});
+	auto first = factorySquare(BasicInfo{{1400, 800, 0}, {20, 10, 1}, {}}, {1, 0, 0, 1});
 	ecs->addEntity(shader, first);
+	ett->addComponent<GunComponent>(first, player.gunInfo);
 
+	// movement
 	systems::input::setKeyCallback(first, GLFW_KEY_W, [&first]() {
 		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(0, 1, 0));
 	});
@@ -350,6 +263,38 @@ int main(int argc, char *argv[]) {
 	});
 	systems::input::setKeyCallback(first, GLFW_KEY_D, [&first]() {
 		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(1, 0, 0));
+	});
+
+	// shoot
+	systems::input::setKeyCallback(first, GLFW_KEY_UP, [&first, ecs, shader]() {
+		playerShoot(first, glm::vec3{0, 1, 0}, ecs, shader);
+	});
+	systems::input::setKeyCallback(first, GLFW_KEY_LEFT, [&first, ecs, shader]() {
+		playerShoot(first, glm::vec3{-1, 0, 0}, ecs, shader);
+	});
+	systems::input::setKeyCallback(first, GLFW_KEY_DOWN, [&first, ecs, shader]() {
+		playerShoot(first, glm::vec3{0, -1, 0}, ecs, shader);
+	});
+	systems::input::setKeyCallback(first, GLFW_KEY_RIGHT, [&first, ecs, shader]() {
+		playerShoot(first, glm::vec3{1, 0, 0}, ecs, shader);
+	});
+
+	em->subscribe(event::loop::LOOP_UPDATE, [&first, &w]() {
+		auto pos = systems::transform::getPosition(first);
+		auto scale = systems::transform::getScale(first);
+		if (pos.y + scale.y > w.getHeight()) {
+			pos = {pos.x, w.getHeight() - scale.y, 0};
+		}
+		if (pos.y - scale.y < 0) {
+			pos = {pos.x, scale.y, 0};
+		}
+		if (pos.x - scale.x < 0) {
+			pos = {scale.x, pos.y, 0};
+		}
+		if (pos.x + scale.x > w.getWidth()) {
+			pos = {w.getWidth() - scale.x, pos.y, 0};
+		}
+		systems::transform::updatePosition(first, pos);
 	});
 
 	auto second = factoryProjectile(BasicInfo{{1000, 800, 0}, {40, 40, 1}, {}}, {1, 1, 0, 1}, {});
@@ -387,7 +332,7 @@ int main(int argc, char *argv[]) {
 		if (ImGui::Checkbox("View BB", &b)) {
 			igdebug->showBoundingBox(b);
 		}
-        ImGui::Text("Collision count: %ld", systems::collision::getCollisions().size());
+		ImGui::Text("Collision count: %ld", systems::collision::getCollisions().size());
 		ImGui::End();
 	});
 
@@ -405,14 +350,15 @@ int main(int argc, char *argv[]) {
 		if (ImGui::DragFloat3("Pos", &pos[0])) {
 			systems::transform::updatePosition(igscene->getCurrentId(), pos);
 		}
+
+		auto scale = systems::transform::getScale(igscene->getCurrentId());
+		if (ImGui::DragFloat3("Scale", &scale[0])) {
+			systems::transform::updateScale(igscene->getCurrentId(), scale);
+		}
 		ImGui::End();
 	});
 
-	// collision manager
-	// em->subscribe(event::loop::LOOP_UPDATE, [&first, &second]() {
-	// auto coll = systems::collision::getCollisions();
-	// std::cout << coll.size() << "\n";
-	// });
+	em->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::executeNextFrame(glfwGetTime()); });
 	em->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
 	em->subscribe(event::loop::LOOP_RENDER, [&igdebug]() { if (igdebug->isBoundingBoxVisible()) systems::render::renderBoundingBox(); });
 

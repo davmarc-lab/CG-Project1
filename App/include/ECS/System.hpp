@@ -43,6 +43,17 @@ namespace systems {
 		void setKeyCallback(const unsigned int &id, const unsigned int &key, std::function<void()> func);
 	} // namespace input
 
+	namespace gun {
+		float getLastShoot(const unsigned int &id);
+		void updateLastShoot(const unsigned int &id, const float &time);
+
+        float getCooldown(const unsigned int& id);
+	} // namespace gun
+
+    namespace animation {
+        void executeNextFrame(const float& currentTime);
+    }
+
 	namespace render {
 		void renderAllMeshes();
 
