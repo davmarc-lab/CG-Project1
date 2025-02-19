@@ -23,6 +23,8 @@ void BasicScene::removeEntity(Shared<ogl::ShaderProgram> &shader, const unsigned
 void BasicScene::removeEntity(const unsigned int &ett) {
 	auto rmv = std::vector<unsigned int>{};
 	for (auto [key, etts] : this->m_entities) {
+		std::cout << "BEFORE: " << etts.size() << "\n";
 		etts.erase(std::find(ALL(etts), ett));
+		std::cout << "AFTER: " << etts.size() << "\n";
 	}
 }

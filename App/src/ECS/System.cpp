@@ -1,7 +1,9 @@
 #include "../../include/ECS/System.hpp"
+#include <GLFW/glfw3.h>
 #include <algorithm>
 #include <functional>
 #include <glm/ext/matrix_float4x4.hpp>
+#include <iostream>
 #include <vector>
 #include "../../include/ECS/Component.hpp"
 #include "../../include/ECS/EcsScene.hpp"
@@ -185,31 +187,36 @@ namespace systems {
 			c->info.lastShoot = time;
 		}
 
-        float getCooldown(const unsigned int &id) {
+		float getCooldown(const unsigned int &id) {
 			auto c = em->getComponentFromId<GunComponent>(id);
 			ASSERT(c != nullptr);
 
 			return c->info.coolDown;
-        }
+		}
 	} // namespace gun
 
-    namespace animation {
-        void executeNextFrame(const float& currentTime) {
-            std::vector<unsigned int> torm{};
-            for (auto ett : em->getEntitiesFromComponent<Animation>()) {
-                auto c = em->getComponentFromId<Animation>(ett);
-                ASSERT(c != nullptr);
+	namespace animation {
+		void executeNextFrame(const Shared<BasicScene> &scene, const float &currentTime) {
+			std::vector<unsigned int> torm{};
+			for (auto ett : em->getEntitiesFromComponent<Animation>()) {
+				auto c = em->getComponentFromId<Animation>(ett);
+				ASSERT(c != nullptr);
 
-                c->updateTick(currentTime);
-                if (c->dead) {
-                    torm.push_back(ett);
-                }
-            }
-            for (auto e : torm) {
+				if (c->dead)
+					continue;
+
+				c->updateTick(currentTime);
+
+				if (c->dead) {
+					torm.push_back(ett);
+				}
+			}
+			for (auto e : torm) {
                 EntityManager::instance()->removeEntity(e);
-            }
-        }
-    }
+                scene->removeEntity(e);
+			}
+		}
+	} // namespace animation
 
 	namespace render {
 		void renderAllMeshes() {

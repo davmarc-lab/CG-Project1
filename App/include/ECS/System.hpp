@@ -7,6 +7,7 @@
 
 #include "../../../Opengl-Core/include/Core.hpp"
 #include "Component.hpp"
+#include "EcsScene.hpp"
 #include "Ett.hpp"
 
 namespace systems {
@@ -47,12 +48,12 @@ namespace systems {
 		float getLastShoot(const unsigned int &id);
 		void updateLastShoot(const unsigned int &id, const float &time);
 
-        float getCooldown(const unsigned int& id);
+		float getCooldown(const unsigned int &id);
 	} // namespace gun
 
-    namespace animation {
-        void executeNextFrame(const float& currentTime);
-    }
+	namespace animation {
+		void executeNextFrame(const Shared<BasicScene> &scene, const float &currentTime);
+	}
 
 	namespace render {
 		void renderAllMeshes();

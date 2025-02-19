@@ -62,7 +62,7 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 		else
 			offset.x = direction.x * (scale.x + PROJ_SIZE.x);
 		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, {1, 1, 0, 1}, ProjInfo{});
-		EntityManager::instance()->addComponent<Animation>(p, glfwGetTime(), 5, [p, direction]() {
+		EntityManager::instance()->addComponent<Animation>(p, glfwGetTime(), 1, [p, direction]() {
 			systems::transform::addPosition(p, direction * PROJ_VEL);
 		});
 		scene->addEntity(shader, p);
@@ -358,7 +358,7 @@ int main(int argc, char *argv[]) {
 		ImGui::End();
 	});
 
-	em->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::executeNextFrame(glfwGetTime()); });
+	em->subscribe(event::loop::LOOP_BEGIN_RENDER, [ecs]() { systems::animation::executeNextFrame(ecs, glfwGetTime()); });
 	em->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
 	em->subscribe(event::loop::LOOP_RENDER, [&igdebug]() { if (igdebug->isBoundingBoxVisible()) systems::render::renderBoundingBox(); });
 

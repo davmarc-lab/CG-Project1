@@ -27,6 +27,7 @@ public:
 	bool removeEntity(const Index &id) {
         // AAAAAAAAAAA
 		this->m_entities.erase(std::find(ALL(this->m_entities), id));
+        // this->m_ettComponent.erase(id);
 		return false;
 	}
 
