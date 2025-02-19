@@ -1,12 +1,13 @@
 #pragma once
 
 #include "../../Opengl-Core/include/Core.hpp"
-#include "Scene.hpp"
 
 using namespace ogl;
 
 class ImGuiStats : public ImGuiPanel {
 public:
+	virtual void onRender() override;
+
 	ImGuiStats() :
 		ImGuiPanel("Stats", 0) {}
 
@@ -15,15 +16,29 @@ public:
 private:
 };
 
-class ImGuiScene : public ImGuiPanel {
+class ImGuiDebug : public ImGuiPanel {
 public:
-	ImGuiScene(Scene &scene) :
-		ImGuiPanel("Scene", 0), m_scene(scene) {}
+	bool isBoundingBoxVisible() const { return this->m_boundingBox; }
 
-	virtual ~ImGuiScene() override = default;
+	void showBoundingBox(const bool &val = true) { this->m_boundingBox = val; }
+
+	ImGuiDebug() :
+		ImGuiPanel("Debug", 0) {
+		EventManager::instance()->post(event::shader::INIT_DEFAULT_SHADER);
+	}
+
+	virtual ~ImGuiDebug() = default;
 
 private:
-	Scene &m_scene;
+	bool m_boundingBox = false;
+};
+
+class ImGuiScene : public ImGuiPanel {
+public:
+	ImGuiScene() :
+		ImGuiPanel("Scene", 0) {}
+
+	virtual ~ImGuiScene() override = default;
 };
 
 class ImGuiModel : public ImGuiPanel {

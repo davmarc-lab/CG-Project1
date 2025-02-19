@@ -109,6 +109,17 @@ public:
 	bool enableModel = true;
 };
 
+class MultiMesh : public Component {
+public:
+	MultiMesh() :
+		Component() {}
+
+	virtual ~MultiMesh() override = default;
+
+	std::vector<unsigned int> entities{};
+	unsigned int anchor = 0;
+};
+
 class BufferComponent : public Component {
 public:
 	BufferComponent() = default;

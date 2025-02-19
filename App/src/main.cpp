@@ -6,7 +6,6 @@
 #include "../include/Factory.hpp"
 #include "../include/MultiShape.hpp"
 #include "../include/Projectile.hpp"
-#include "../include/Scene.hpp"
 
 #include "../include/ECS/Component.hpp"
 #include "../include/ECS/Ett.hpp"
@@ -38,27 +37,27 @@ bool outOfScreen(const Pair<float> &size, const glm::vec3 &pos, const glm::vec3 
 	return (pos.y + scale.y > size.y) || (pos.y - scale.y < 0) || (pos.x + scale.x > size.x) || (pos.x - scale.x < 0);
 }
 
-void shootProjectile(const glm::vec3 &direction, const glm::vec3 &pos, const glm::vec3 &scale, Scene &scene, const ShaderProgram &shader) {
-	if (direction == glm::vec3{0, 0, 0})
-		return;
-
-	if (glfwGetTime() - enem->getLastShoot() > enem->getCooldown() || enem->getCooldown() == 0) {
-		// create projectile and add to the scene
-		glm::vec3 offset{0, 0, 0};
-		if (direction.x == 0) {
-			// Y-Axis
-			offset.y = direction.y * (scale.y / 2 + PROJ_SIZE.y / 2);
-		} else {
-			// X-Axis
-			offset.x = direction.x * (scale.x / 2 + PROJ_SIZE.x / 2);
-		}
-		auto p = CreateShared<Projectile>(ProjInfo{enem->getDamage(), enem->getRange()}, pos + offset + (direction * PROJ_OFFSET), shader);
-		p->setVelocity(direction * PROJ_VEL);
-		p->init();
-		scene.addEntity(shader.getId(), std::move(p));
-		enem->setLastShoot(glfwGetTime());
-	}
-}
+// void shootProjectile(const glm::vec3 &direction, const glm::vec3 &pos, const glm::vec3 &scale, Scene &scene, const ShaderProgram &shader) {
+// 	if (direction == glm::vec3{0, 0, 0})
+// 		return;
+//
+// 	if (glfwGetTime() - enem->getLastShoot() > enem->getCooldown() || enem->getCooldown() == 0) {
+// 		// create projectile and add to the scene
+// 		glm::vec3 offset{0, 0, 0};
+// 		if (direction.x == 0) {
+// 			// Y-Axis
+// 			offset.y = direction.y * (scale.y / 2 + PROJ_SIZE.y / 2);
+// 		} else {
+// 			// X-Axis
+// 			offset.x = direction.x * (scale.x / 2 + PROJ_SIZE.x / 2);
+// 		}
+// 		auto p = CreateShared<Projectile>(ProjInfo{enem->getDamage(), enem->getRange()}, pos + offset + (direction * PROJ_OFFSET), shader);
+// 		p->setVelocity(direction * PROJ_VEL);
+// 		p->init();
+// 		scene.addEntity(shader.getId(), std::move(p));
+// 		enem->setLastShoot(glfwGetTime());
+// 	}
+// }
 
 int main(int argc, char *argv[]) {
 	// WindowSettings s{};
@@ -328,6 +327,8 @@ int main(int argc, char *argv[]) {
 	em->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
 	em->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
 
+	im.addPanel<ImGuiStats>();
+
 	Shared<ShaderProgram> shader = CreateShared<ShaderProgram>("vertexShader.glsl", "fragmentShader.glsl");
 	shader->createShaderProgram();
 
@@ -338,10 +339,23 @@ int main(int argc, char *argv[]) {
 	auto first = factorySquare(BasicInfo{{1400, 800, 0}, {40, 40, 1}, {}}, {1, 0, 0, 1});
 	ecs->addEntity(shader, first);
 
+	systems::input::setKeyCallback(first, GLFW_KEY_W, [&first]() {
+		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(0, 1, 0));
+	});
+	systems::input::setKeyCallback(first, GLFW_KEY_A, [&first]() {
+		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(-1, 0, 0));
+	});
+	systems::input::setKeyCallback(first, GLFW_KEY_S, [&first]() {
+		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(0, -1, 0));
+	});
+	systems::input::setKeyCallback(first, GLFW_KEY_D, [&first]() {
+		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(1, 0, 0));
+	});
+
 	auto second = factoryProjectile(BasicInfo{{1000, 800, 0}, {40, 40, 1}, {}}, {1, 1, 0, 1}, {});
 	ecs->addEntity(shader, second);
 
-	auto third = factoryProjectile(BasicInfo{{1050, 800, 0}, {40, 40, 1}, {}}, {1, 1, 0, 1}, {});
+	auto third = factoryHermite(BasicInfo{{1050, 800, 0}, ENEMY_SLIME_SIZE, {}}, "./resources/hermite/slime.txt");
 	ecs->addEntity(shader, third);
 
 	// Entity Manager callbacks
@@ -356,13 +370,6 @@ int main(int argc, char *argv[]) {
 		}
 	});
 
-	// collision manager
-	em->subscribe(event::loop::LOOP_UPDATE, [&first, &second]() {
-		auto coll = systems::collision::getCollisions();
-		std::cout << coll.size() << "\n";
-	});
-	em->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
-
 	UniformBuffer ubo{"Matrices"};
 	glm::mat4 proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
 	ubo.onAttach();
@@ -371,6 +378,17 @@ int main(int argc, char *argv[]) {
 	em->subscribe(event::shader::SHADER_PROJECTION_CHANGED, [&w, &ubo]() {
 		auto proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
 		ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
+	});
+
+	auto igdebug = im.addPanel<ImGuiDebug>();
+	igdebug->setRenderFunc([&igdebug]() {
+		ImGui::Begin("Debug");
+		auto b = igdebug->isBoundingBoxVisible();
+		if (ImGui::Checkbox("View BB", &b)) {
+			igdebug->showBoundingBox(b);
+		}
+        ImGui::Text("Collision count: %ld", systems::collision::getCollisions().size());
+		ImGui::End();
 	});
 
 	auto igscene = im.addPanel<ImGuiModel>(first);
@@ -387,12 +405,16 @@ int main(int argc, char *argv[]) {
 		if (ImGui::DragFloat3("Pos", &pos[0])) {
 			systems::transform::updatePosition(igscene->getCurrentId(), pos);
 		}
-		auto b = bc->botLeft;
-		auto t = bc->topRight;
-		ImGui::DragFloat3("Bot", &b[0]);
-		ImGui::DragFloat3("Top", &t[0]);
 		ImGui::End();
 	});
+
+	// collision manager
+	// em->subscribe(event::loop::LOOP_UPDATE, [&first, &second]() {
+	// auto coll = systems::collision::getCollisions();
+	// std::cout << coll.size() << "\n";
+	// });
+	em->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
+	em->subscribe(event::loop::LOOP_RENDER, [&igdebug]() { if (igdebug->isBoundingBoxVisible()) systems::render::renderBoundingBox(); });
 
 	while (!glfwWindowShouldClose(w.getContext())) {
 		em->post(event::loop::LOOP_INPUT);

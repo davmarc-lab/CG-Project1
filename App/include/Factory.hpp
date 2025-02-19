@@ -13,15 +13,12 @@ struct BasicInfo {
 
 std::vector<glm::vec4> getColorVector(const glm::vec4 &color, const size_t &size);
 
-Shared<Entity> createSquare(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rot, const glm::vec4 &color = {1, 0, 0, 1});
-Shared<Entity> createCircle(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rot, const Pair<float> &center, const Pair<float> &radius,
-							const unsigned int &numTriangles, const glm::vec4 &color = {1, 0, 0, 1});
-Shared<Entity> createTriangle(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rot, const glm::vec4 &color = {1, 0, 0, 1});
-
-Shared<Entity> createProjectile(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rot, const glm::vec4 &color = {1, 1, 1, 1});
-
 Shared<MultiShape> createEnemy(const ogl::ShaderProgram &shader, const EnemyType &type, const BasicInfo &info);
 
 unsigned int factorySquare(const BasicInfo &info, const glm::vec4 &color = {1, 0, 0, 1}, const EnemyInfo &stats = {});
 
 unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, const ProjInfo &projInfo);
+
+unsigned int factoryHermite(const BasicInfo &info, const std::string &path, const glm::vec4 &color = {1, 0, 0, 1});
+
+unsigned int factoryEnemy(const BasicInfo& info);

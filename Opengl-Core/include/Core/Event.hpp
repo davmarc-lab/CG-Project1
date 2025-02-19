@@ -16,7 +16,8 @@ namespace ogl {
 
 		Event() = delete;
 
-		Event(const EventType& name) : m_name(std::move(name)) {}
+		Event(const EventType &name) :
+			m_name(std::move(name)) {}
 
 		~Event() = default;
 
@@ -26,13 +27,13 @@ namespace ogl {
 
 	class EventManager {
 	public:
-		void post(const Event& event) const;
+		void post(const Event &event) const;
 
-		void subscribe(const Event& event, std::function<void()>&& func);
+		void subscribe(const Event &event, std::function<void()> &&func);
 
-		EventManager(EventManager& other) = delete;
+		EventManager(EventManager &other) = delete;
 
-		void operator=(const EventManager& other) = delete;
+		void operator=(const EventManager &other) = delete;
 
 		inline static Shared<EventManager> instance() {
 			if (s_pointer == nullptr) {
@@ -74,6 +75,7 @@ namespace ogl {
 
 		namespace shader {
 			const Event SHADER_PROJECTION_CHANGED = Event("Shader Projection Changed");
-		}
-	}     // namespace event
-}         // namespace ogl
+			const Event INIT_DEFAULT_SHADER = Event("Initialize Default Shader");
+		} // namespace shader
+	} // namespace event
+} // namespace ogl

@@ -45,5 +45,7 @@ namespace systems {
 
 	namespace render {
 		void renderAllMeshes();
-	}
+
+		void renderBoundingBox();
+	} // namespace render
 } // namespace systems

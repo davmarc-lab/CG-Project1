@@ -91,8 +91,6 @@ OBJECTS := \
 	$(OBJDIR)/Factory.o \
 	$(OBJDIR)/HermiteFactory.o \
 	$(OBJDIR)/MultiShape.o \
-	$(OBJDIR)/Projectile.o \
-	$(OBJDIR)/Scene.o \
 	$(OBJDIR)/main.o \
 
 RESOURCES := \
@@ -174,12 +172,6 @@ $(OBJDIR)/HermiteFactory.o: src/HermiteFactory.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/MultiShape.o: src/MultiShape.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/Projectile.o: src/Projectile.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/Scene.o: src/Scene.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/main.o: src/main.cpp

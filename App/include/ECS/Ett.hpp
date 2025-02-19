@@ -28,6 +28,8 @@ public:
 
 	inline bool isEntityValid(const Index &id) { return this->m_ettComponent.count(id); }
 
+	unsigned int getEntitiesCount() const { return this->m_entities.size(); }
+
 	template <typename T, typename... Args>
 	inline Shared<T> addComponent(const Index &id, Args &&...args) {
 		if (!this->isEntityValid(id))
@@ -65,7 +67,7 @@ public:
 			return nullptr;
 		}
 
-        // finds T component by using dynamic cast.
+		// finds T component by using dynamic cast.
 		return std::dynamic_pointer_cast<T>(*std::find_if(ALL(this->m_ettComponent.at(id)), [](auto e) {
 			return std::dynamic_pointer_cast<T>(e) != nullptr;
 		}));

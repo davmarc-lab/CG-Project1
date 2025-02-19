@@ -10,6 +10,18 @@
 const auto em = EntityManager::instance();
 const auto ecs = BasicScene::instance();
 
+const auto BOUNDING_BOX_COLOR = glm::vec4{1, 0, 0, 1};
+
+struct BoundingBox {
+	ogl::ShaderProgram program = ogl::ShaderProgram("vertexShader.glsl", "fragmentShader.glsl");
+	ogl::VertexArray vao{};
+	ogl::VertexBuffer vbog{};
+	ogl::VertexBuffer vboc{};
+	std::vector<glm::vec3> coords{};
+	std::vector<glm::vec4> colors{};
+	bool init = false;
+} defaultShader;
+
 namespace systems {
 	namespace transform {
 		void updatePosition(const unsigned int &id, const glm::vec3 &position) {
@@ -132,11 +144,11 @@ namespace systems {
 	namespace input {
 		// it can be optimized merging from each InputComponent all callbacks.
 		std::vector<std::pair<unsigned int, std::function<void()>>> getKeysCallback(const unsigned int &id) {
-	        std::cerr << "Optimize this method (read comment above implementation): LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
+			// std::cerr << "Optimize this method (read comment above implementation): LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
 			std::vector<std::pair<unsigned int, std::function<void()>>> res{};
 			auto ic = em->getComponentFromId<InputComponent>(id);
-            ASSERT(ic != nullptr);
-            
+			ASSERT(ic != nullptr);
+
 			for (auto k : ic->getAllKeys()) {
 				res.emplace_back(k, ic->callbacks.at(k));
 			}
@@ -144,10 +156,11 @@ namespace systems {
 		}
 
 		void setKeyCallback(const unsigned int &id, const unsigned int &key, std::function<void()> func) {
-            auto ic = em->getComponentFromId<InputComponent>(id);
-            if (ic == nullptr) return;
+			auto ic = em->getComponentFromId<InputComponent>(id);
+			if (ic == nullptr)
+				return;
 
-            ic->registerAction(key, func);
+			ic->registerAction(key, func);
 		}
 	} // namespace input
 
@@ -160,6 +173,42 @@ namespace systems {
 					shader->setMat4("model", ::systems::transform::getModelMatrix(id));
 					rc->call();
 				}
+			}
+		}
+
+		void renderBoundingBox() {
+			if (!defaultShader.init) {
+				defaultShader.program.createShaderProgram();
+				defaultShader.vao.onAttach();
+				defaultShader.vbog.onAttach();
+				defaultShader.vboc.onAttach();
+				for (int i = 0; i < 8; i++)
+					defaultShader.colors.push_back(BOUNDING_BOX_COLOR);
+				defaultShader.init = true;
+			}
+
+			defaultShader.program.use();
+			for (auto ett : em->getEntitiesFromComponent<AABB>()) {
+				auto box = em->getComponentFromId<AABB>(ett);
+				defaultShader.coords.clear();
+				defaultShader.coords.push_back(box->botLeft);
+				defaultShader.coords.push_back({box->topRight.x, box->botLeft.y, 0});
+				defaultShader.coords.push_back({box->topRight.x, box->botLeft.y, 0});
+				defaultShader.coords.push_back(box->topRight);
+				defaultShader.coords.push_back(box->topRight);
+				defaultShader.coords.push_back({box->botLeft.x, box->topRight.y, 0});
+				defaultShader.coords.push_back({box->botLeft.x, box->topRight.y, 0});
+				defaultShader.coords.push_back(box->botLeft);
+
+				defaultShader.vao.bind();
+				defaultShader.vbog.setup(defaultShader.coords.data(), defaultShader.coords.size(), GL_STATIC_DRAW);
+				defaultShader.vao.linkAttribFast(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+				defaultShader.vboc.setup(defaultShader.colors.data(), defaultShader.colors.size(), GL_STATIC_DRAW);
+				defaultShader.vao.linkAttribFast(1, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+
+				defaultShader.program.setMat4("model", glm::mat4(1)[0][0]);
+				glDrawArrays(GL_LINES, 0, defaultShader.coords.size());
 			}
 		}
 	} // namespace render
