@@ -52,7 +52,9 @@ namespace systems {
 	} // namespace gun
 
 	namespace animation {
-		void executeNextFrame(const Shared<BasicScene> &scene, const float &currentTime);
+		void executeNextFrame(const float &currentTime);
+
+		void cleanDeadAnimations();
 	}
 
 	namespace render {
@@ -60,4 +62,4 @@ namespace systems {
 
 		void renderBoundingBox();
 	} // namespace render
-} // namespace systems
+}     // namespace systems

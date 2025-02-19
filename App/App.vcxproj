@@ -104,7 +104,6 @@
     <ClInclude Include="include\HermiteFactory.hpp" />
     <ClInclude Include="include\MultiShape.hpp" />
     <ClInclude Include="include\Projectile.hpp" />
-    <ClInclude Include="include\Scene.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AppGui.cpp" />
@@ -116,8 +115,6 @@
     <ClCompile Include="src\HermiteFactory.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MultiShape.cpp" />
-    <ClCompile Include="src\Projectile.cpp" />
-    <ClCompile Include="src\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\hermite\other.txt" />

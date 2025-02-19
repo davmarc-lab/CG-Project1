@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <functional>
-#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/glm.hpp>
 #include <iostream>
 #include <vector>
 #include "../../include/ECS/Component.hpp"
@@ -84,7 +84,7 @@ namespace systems {
 
 		glm::mat4 getModelMatrix(const unsigned int &id) {
 			auto tc = em->getComponentFromId<Transform>(id);
-			ASSERT(tc != nullptr);
+			// ASSERT(tc != nullptr);
 
 			if (tc->isDirty())
 				updateModelMatrix(id);
@@ -180,6 +180,7 @@ namespace systems {
 
 			return c->info.lastShoot;
 		}
+
 		void updateLastShoot(const unsigned int &id, const float &time) {
 			auto c = em->getComponentFromId<GunComponent>(id);
 			ASSERT(c != nullptr);
@@ -196,8 +197,8 @@ namespace systems {
 	} // namespace gun
 
 	namespace animation {
-		void executeNextFrame(const Shared<BasicScene> &scene, const float &currentTime) {
-			std::vector<unsigned int> torm{};
+		void executeNextFrame(const float &currentTime) {
+			std::vector<unsigned int> rmv{};
 			for (auto ett : em->getEntitiesFromComponent<Animation>()) {
 				auto c = em->getComponentFromId<Animation>(ett);
 				ASSERT(c != nullptr);
@@ -206,15 +207,16 @@ namespace systems {
 					continue;
 
 				c->updateTick(currentTime);
+				if (c->dead)
+					rmv.push_back(ett);
+			}
+			for (auto e : rmv) {
+				ecs->removeEntity(e);
+				EntityManager::instance()->removeEntity(e);
+			}
+		}
 
-				if (c->dead) {
-					torm.push_back(ett);
-				}
-			}
-			for (auto e : torm) {
-                EntityManager::instance()->removeEntity(e);
-                scene->removeEntity(e);
-			}
+		void cleanDeadAnimations() {
 		}
 	} // namespace animation
 
@@ -261,7 +263,7 @@ namespace systems {
 				defaultShader.vboc.setup(defaultShader.colors.data(), defaultShader.colors.size(), GL_STATIC_DRAW);
 				defaultShader.vao.linkAttribFast(1, 4, GL_FLOAT, GL_FALSE, 0, NULL);
 
-				defaultShader.program.setMat4("model", glm::mat4(1)[0][0]);
+				defaultShader.program.setMat4("model", glm::mat4(1));
 				glDrawArrays(GL_LINES, 0, defaultShader.coords.size());
 			}
 		}

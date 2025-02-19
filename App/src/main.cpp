@@ -27,7 +27,7 @@ Shared<Enemy> enem;
 
 using namespace ogl;
 
-const auto em = EventManager::instance();
+const auto ed = EventManager::instance();
 
 const glm::vec3 PLAYER_VEL = {50, 50, 0};
 const glm::vec3 PROJ_OFFSET = {2, 2, 0};
@@ -76,15 +76,15 @@ int main(int argc, char *argv[]) {
 	//
 	// Window w{s};
 	// w.onAttach();
-	// em->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
-	// em->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
+	// ed->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
+	// ed->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
 	//
 	// ImGuiManager im{"", w};
 	// im.onAttach();
-	// em->subscribe(event::loop::LOOP_UPDATE, [&im]() { im.onUpdate(); });
-	// em->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
-	// em->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
-	// em->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
+	// ed->subscribe(event::loop::LOOP_UPDATE, [&im]() { im.onUpdate(); });
+	// ed->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
+	// ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
+	// ed->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
 	//
 	// ShaderProgram shader{"vertexShader.glsl", "fragmentShader.glsl"};
 	// shader.createShaderProgram();
@@ -228,15 +228,15 @@ int main(int argc, char *argv[]) {
 	s.decorated = false;
 	Window w{s};
 	w.onAttach();
-	em->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
-	em->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
+	ed->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
+	ed->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
 
 	ImGuiManager im{"", w};
 	im.onAttach();
-	em->subscribe(event::loop::LOOP_UPDATE, [&im]() { im.onUpdate(); });
-	em->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
-	em->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
-	em->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
+	ed->subscribe(event::loop::LOOP_UPDATE, [&im]() { im.onUpdate(); });
+	ed->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
+	ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
+	ed->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
 
 	im.addPanel<ImGuiStats>();
 
@@ -279,7 +279,7 @@ int main(int argc, char *argv[]) {
 		playerShoot(first, glm::vec3{1, 0, 0}, ecs, shader);
 	});
 
-	em->subscribe(event::loop::LOOP_UPDATE, [&first, &w]() {
+	ed->subscribe(event::loop::LOOP_UPDATE, [&first, &w]() {
 		auto pos = systems::transform::getPosition(first);
 		auto scale = systems::transform::getScale(first);
 		if (pos.y + scale.y > w.getHeight()) {
@@ -305,7 +305,7 @@ int main(int argc, char *argv[]) {
 
 	// Entity Manager callbacks
 	std::cerr << "Move this operation in EventManger: LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
-	em->subscribe(event::loop::LOOP_INPUT, [&w, &ett]() {
+	ed->subscribe(event::loop::LOOP_INPUT, [&w, &ett]() {
 		for (auto e : ett->getEntitiesFromComponent<InputComponent>()) {
 			for (auto [key, f] : systems::input::getKeysCallback(e)) {
 				if (glfwGetKey(w.getContext(), key) == GLFW_PRESS) {
@@ -320,7 +320,7 @@ int main(int argc, char *argv[]) {
 	ubo.onAttach();
 	ubo.setup(sizeof(glm::mat4), 0, 0, 0);
 	ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
-	em->subscribe(event::shader::SHADER_PROJECTION_CHANGED, [&w, &ubo]() {
+	ed->subscribe(event::shader::SHADER_PROJECTION_CHANGED, [&w, &ubo]() {
 		auto proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
 		ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
 	});
@@ -332,7 +332,7 @@ int main(int argc, char *argv[]) {
 		if (ImGui::Checkbox("View BB", &b)) {
 			igdebug->showBoundingBox(b);
 		}
-		ImGui::Text("Collision count: %ld", systems::collision::getCollisions().size());
+		ImGui::Text("Collision count: %zu", systems::collision::getCollisions().size());
 		ImGui::End();
 	});
 
@@ -358,16 +358,17 @@ int main(int argc, char *argv[]) {
 		ImGui::End();
 	});
 
-	em->subscribe(event::loop::LOOP_BEGIN_RENDER, [ecs]() { systems::animation::executeNextFrame(ecs, glfwGetTime()); });
-	em->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
-	em->subscribe(event::loop::LOOP_RENDER, [&igdebug]() { if (igdebug->isBoundingBoxVisible()) systems::render::renderBoundingBox(); });
+	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::executeNextFrame(glfwGetTime()); });
+	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::cleanDeadAnimations(); });
+	ed->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
+	ed->subscribe(event::loop::LOOP_RENDER, [&igdebug]() { if (igdebug->isBoundingBoxVisible()) systems::render::renderBoundingBox(); });
 
 	while (!glfwWindowShouldClose(w.getContext())) {
-		em->post(event::loop::LOOP_INPUT);
-		em->post(event::loop::LOOP_UPDATE);
-		em->post(event::loop::LOOP_BEGIN_RENDER);
-		em->post(event::loop::LOOP_RENDER);
-		em->post(event::loop::LOOP_END_RENDER);
+		ed->post(event::loop::LOOP_INPUT);
+		ed->post(event::loop::LOOP_UPDATE);
+		ed->post(event::loop::LOOP_BEGIN_RENDER);
+		ed->post(event::loop::LOOP_RENDER);
+		ed->post(event::loop::LOOP_END_RENDER);
 	}
 
 	im.onDetach();

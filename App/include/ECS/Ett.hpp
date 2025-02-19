@@ -25,9 +25,19 @@ public:
 	}
 
 	bool removeEntity(const Index &id) {
-        // AAAAAAAAAAA
+		// AAAAAAAAAAA
 		this->m_entities.erase(std::find(ALL(this->m_entities), id));
-        // this->m_ettComponent.erase(id);
+		this->m_ettComponent.erase(id);
+		for (auto it = this->m_compEntity.begin(); it != this->m_compEntity.end();) {
+			auto &ids = it->second;
+			ids.erase(std::remove(ALL(ids), id), ids.end());
+
+			if (ids.empty())
+				it = this->m_compEntity.erase(it);
+			else
+				++it;
+		}
+
 		return false;
 	}
 
@@ -36,7 +46,7 @@ public:
 	unsigned int getEntitiesCount() const { return this->m_entities.size(); }
 
 	template <typename T, typename... Args>
-	inline Shared<T> addComponent(const Index &id, Args &&...args) {
+	inline Shared<T> addComponent(const Index &id, Args &&... args) {
 		if (!this->isEntityValid(id))
 			return nullptr;
 
