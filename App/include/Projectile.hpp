@@ -7,7 +7,7 @@
 const glm::vec3 PROJ_SIZE = {10, 10, 1};
 const glm::vec4 PROJ_COLOR = {0, 1, 0, 1};
 const float PROJ_VEL = 5;
-const float PROJ_RANGE = 400.f;
+const float PROJ_RANGE = 50.f;
 
 struct ProjInfo {
 	float damage{};

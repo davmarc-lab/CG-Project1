@@ -3,6 +3,7 @@
 #include "../../../Opengl-Core/include/Core.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/geometric.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 #include <functional>
@@ -235,7 +236,7 @@ public:
 
 struct GunInfo {
 	float lastShoot = 0;
-	float coolDown = 0.01;
+	float coolDown = 0.6;
 	glm::vec4 projColor = {1, 0, 0, 1};
 };
 
@@ -252,7 +253,7 @@ public:
 	virtual ~GunComponent() override = default;
 };
 
-class Animation : public Component {
+class TimeAnimation : public Component {
 public:
 	void updateTick(const float &currentTime) {
 		if (this->startTime + this->timeToLive >= currentTime)
@@ -261,16 +262,36 @@ public:
 			this->dead = true;
 	}
 
-	Animation() = delete;
+	TimeAnimation() = delete;
 
-	Animation(const float &startTime, const float &timeToLive, std::function<void()> &&func) :
+	TimeAnimation(const float &startTime, const float &timeToLive, std::function<void()> &&func) :
 		startTime(startTime), timeToLive(timeToLive), func(func), Component() {}
 
-	virtual ~Animation() override = default;
+	virtual ~TimeAnimation() override = default;
 
 	std::function<void()> func{};
 	float startTime;
 	float timeToLive;
+	bool dead = false;
+};
+
+class DistanceAnimation : public Component {
+public:
+	void updateTick(const glm::vec3 &pos) {
+		if (glm::length(pos - this->startPos) <= distance)
+			this->func();
+		else
+			this->dead = true;
+	}
+
+	DistanceAnimation(const glm::vec3 &startPos, const float &distance, std::function<void()> &&func) :
+		startPos(startPos), distance(distance), func(std::move(func)) {}
+
+	virtual ~DistanceAnimation() override = default;
+
+	glm::vec3 startPos{};
+	float distance;
+	std::function<void()> func{};
 	bool dead = false;
 };
 

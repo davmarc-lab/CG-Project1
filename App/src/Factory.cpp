@@ -152,7 +152,7 @@ unsigned int factorySquare(const BasicInfo &info, const glm::vec4 &color, const 
 	return id;
 }
 
-unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, const ProjInfo &projInfo) {
+unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, const ProjInfo &projInfo, const glm::vec3 &direction) {
 	auto id = em->createEntity();
 	em->addComponent<Transform>(id);
 	systems::transform::updatePosition(id, info.position);
@@ -172,6 +172,11 @@ unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, co
 	bc->vbo_c.onAttach();
 	bc->vbo_c.setup(vc->getColorsCoords().data(), vc->getColorsCoords().size(), GL_STATIC_DRAW);
 	bc->vao.linkAttribFast(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+	// animation
+	em->addComponent<DistanceAnimation>(id, info.position, projInfo.range, [id, direction]() {
+		systems::transform::addPosition(id, direction * PROJ_VEL);
+	});
 
 	em->addComponent<InputComponent>(id);
 	auto cc = em->addComponent<RenderComponent>(id);
@@ -215,6 +220,6 @@ unsigned int factoryHermite(const BasicInfo &info, const std::string &path, cons
 }
 
 unsigned int factoryEnemy() {
-    auto id = em->createEntity();
-    return id;
+	auto id = em->createEntity();
+	return id;
 }

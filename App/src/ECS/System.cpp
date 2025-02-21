@@ -199,8 +199,8 @@ namespace systems {
 	namespace animation {
 		void executeNextFrame(const float &currentTime) {
 			std::vector<unsigned int> rmv{};
-			for (auto ett : em->getEntitiesFromComponent<Animation>()) {
-				auto c = em->getComponentFromId<Animation>(ett);
+			for (auto ett : em->getEntitiesFromComponent<TimeAnimation>()) {
+				auto c = em->getComponentFromId<TimeAnimation>(ett);
 				ASSERT(c != nullptr);
 
 				if (c->dead)
@@ -212,7 +212,26 @@ namespace systems {
 			}
 			for (auto e : rmv) {
 				ecs->removeEntity(e);
-				EntityManager::instance()->removeEntity(e);
+				em->removeEntity(e);
+			}
+		}
+
+		void updateDistanceAnimation() {
+			std::vector<unsigned int> rmv{};
+			for (auto ett : em->getEntitiesFromComponent<DistanceAnimation>()) {
+				auto c = em->getComponentFromId<DistanceAnimation>(ett);
+				ASSERT(c != nullptr);
+
+				if (c->dead)
+					continue;
+
+                c->updateTick(systems::transform::getPosition(ett));
+				if (c->dead)
+					rmv.push_back(ett);
+			}
+			for (auto e : rmv) {
+				ecs->removeEntity(e);
+				em->removeEntity(e);
 			}
 		}
 	} // namespace animation

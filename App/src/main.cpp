@@ -61,10 +61,12 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 			offset.y = direction.y * (scale.y + PROJ_SIZE.y);
 		else
 			offset.x = direction.x * (scale.x + PROJ_SIZE.x);
-		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, player.projInfo.color, ProjInfo{});
-		EntityManager::instance()->addComponent<Animation>(p, glfwGetTime(), 1, [p, direction]() {
-			systems::transform::addPosition(p, direction * PROJ_VEL);
-		});
+		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, player.projInfo.color, ProjInfo{}, direction);
+        std::cout << "OOUT " << p << "\n";
+		// EntityManager::instance()->addComponent<TimeAnimation>(p, glfwGetTime(), 1, [p, direction]() {
+		// 	auto pos = systems::transform::getPosition(p);
+		// 	systems::transform::addPosition(p, direction * PROJ_VEL);
+		// });
 		scene->addEntity(shader, p);
 		systems::gun::updateLastShoot(id, glfwGetTime());
 	}
@@ -260,8 +262,8 @@ int main(int argc, char *argv[]) {
 		systems::transform::updatePosition(first, pos);
 	});
 
-	auto second = factoryProjectile(BasicInfo{{1000, 800, 0}, {40, 40, 1}, {}}, {1, 1, 0, 1}, {});
-	ecs->addEntity(shader, second);
+	// auto second = factoryProjectile(BasicInfo{{1000, 800, 0}, {40, 40, 1}, {}}, {1, 1, 0, 1}, {});
+	// ecs->addEntity(shader, second);
 
 	auto third = factoryHermite(BasicInfo{{1050, 800, 0}, ENEMY_SLIME_SIZE, {}}, "./resources/hermite/slime.txt");
 	ecs->addEntity(shader, third);
@@ -344,11 +346,12 @@ int main(int argc, char *argv[]) {
 	// 	for (int i = 0; i < hatCount; i++) {
 	// 		ImGui::Text("Hat %d -> %d", i, hats[i]);
 	// 	}
-	// 	
+	//
 	// 	ImGui::End();
 	// });
 
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::executeNextFrame(glfwGetTime()); });
+	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::updateDistanceAnimation(); });
 	ed->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
 	ed->subscribe(event::loop::LOOP_RENDER, [&igdebug]() {
 		if (igdebug->isBoundingBoxVisible())

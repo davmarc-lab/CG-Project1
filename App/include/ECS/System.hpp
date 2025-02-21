@@ -53,6 +53,7 @@ namespace systems {
 
 	namespace animation {
 		void executeNextFrame(const float &currentTime);
+		void updateDistanceAnimation();
 	}
 
 	namespace render {

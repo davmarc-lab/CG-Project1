@@ -17,8 +17,8 @@ Shared<MultiShape> createEnemy(const ogl::ShaderProgram &shader, const EnemyType
 
 unsigned int factorySquare(const BasicInfo &info, const glm::vec4 &color = {1, 0, 0, 1}, const EnemyInfo &stats = {});
 
-unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, const ProjInfo &projInfo);
+unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, const ProjInfo &projInfo, const glm::vec3 &direction);
 
 unsigned int factoryHermite(const BasicInfo &info, const std::string &path, const glm::vec4 &color = {1, 0, 0, 1});
 
-unsigned int factoryEnemy(const BasicInfo& info);
+unsigned int factoryEnemy(const BasicInfo &info);
