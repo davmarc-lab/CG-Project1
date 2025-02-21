@@ -215,9 +215,6 @@ namespace systems {
 				EntityManager::instance()->removeEntity(e);
 			}
 		}
-
-		void cleanDeadAnimations() {
-		}
 	} // namespace animation
 
 	namespace render {

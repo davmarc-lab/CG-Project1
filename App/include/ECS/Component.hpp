@@ -235,7 +235,7 @@ public:
 
 struct GunInfo {
 	float lastShoot = 0;
-	float coolDown = 0.5;
+	float coolDown = 0.01;
 	glm::vec4 projColor = {1, 0, 0, 1};
 };
 

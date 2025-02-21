@@ -61,7 +61,7 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 			offset.y = direction.y * (scale.y + PROJ_SIZE.y);
 		else
 			offset.x = direction.x * (scale.x + PROJ_SIZE.x);
-		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, {1, 1, 0, 1}, ProjInfo{});
+		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, player.projInfo.color, ProjInfo{});
 		EntityManager::instance()->addComponent<Animation>(p, glfwGetTime(), 1, [p, direction]() {
 			systems::transform::addPosition(p, direction * PROJ_VEL);
 		});
@@ -71,43 +71,6 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 }
 
 int main(int argc, char *argv[]) {
-	// WindowSettings s{};
-	// s.decorated = false;
-	//
-	// Window w{s};
-	// w.onAttach();
-	// ed->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
-	// ed->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
-	//
-	// ImGuiManager im{"", w};
-	// im.onAttach();
-	// ed->subscribe(event::loop::LOOP_UPDATE, [&im]() { im.onUpdate(); });
-	// ed->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
-	// ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
-	// ed->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
-	//
-	// ShaderProgram shader{"vertexShader.glsl", "fragmentShader.glsl"};
-	// shader.createShaderProgram();
-	//
-	// auto back = createSquare({w.getWidth() / 2, w.getHeight() / 2, 0}, {w.getWidth(), w.getHeight(), 1}, {}, {1, 1, 0, 0.2});
-	// back->init();
-	// back->setRenderCall([&back, &shader]() {
-	// 	shader.setMat4("model", back->getModelMatrix());
-	// 	back->bindVAO();
-	// 	glDrawElements(GL_TRIANGLES, back->getIndicesVector().size(), GL_UNSIGNED_INT, 0);
-	// });
-	// basic.addEntity(shader.getId(), back);
-	//
-	// auto bubu = createSquare({w.getWidth() / 2, w.getHeight() / 2, 0}, {50, 50, 1}, {}, {1, 1, 0, 1});
-	// bubu->init();
-	// bubu->setCollidable(true);
-	// bubu->setRenderCall([&bubu, &shader]() {
-	// 	shader.setMat4("model", bubu->getModelMatrix());
-	// 	bubu->bindVAO();
-	// 	glDrawElements(GL_TRIANGLES, bubu->getIndicesVector().size(), GL_UNSIGNED_INT, 0);
-	// });
-	// basic.addEntity(shader.getId(), bubu);
-	//
 	// // basic multishape entity
 	// auto leye = createCircle({385, 710, 0}, {10, 13, 1}, {}, {0, 0}, {1, 1}, 30, {0, 0, 0, 1});
 	// leye->init();
@@ -358,10 +321,39 @@ int main(int argc, char *argv[]) {
 		ImGui::End();
 	});
 
+	// auto pad = im.addPanel<ImGuiPanel>();
+	// pad->setRenderFunc([&w]() {
+	// 	auto padid = GLFW_JOYSTICK_1;
+	// 	ImGui::Begin("Pad");
+	// 	ImGui::Text("Pad Connected: %d", glfwJoystickPresent(padid) == GLFW_TRUE);
+	// 	int axisCount;
+	// 	auto axis = glfwGetJoystickAxes(padid, &axisCount);
+	// 	ImGui::Text("Axis Count: %d", axisCount);
+	// 	for (int i = 0; i < axisCount; i++) {
+	// 		ImGui::Text("Axis %d -> %f", i, axis[i]);
+	// 	}
+	// 	int buttonCount;
+	// 	auto buttons = glfwGetJoystickButtons(padid, &buttonCount);
+	// 	ImGui::Text("Button Count: %d", buttonCount);
+	// 	for (int i = 0; i < buttonCount; i++) {
+	// 		ImGui::Text("Button %d -> %d", i, buttons[i] == GLFW_PRESS);
+	// 	}
+	// 	int hatCount;
+	// 	auto hats = glfwGetJoystickHats(padid, &hatCount);
+	// 	ImGui::Text("Hats Count: %d", hatCount);
+	// 	for (int i = 0; i < hatCount; i++) {
+	// 		ImGui::Text("Hat %d -> %d", i, hats[i]);
+	// 	}
+	// 	
+	// 	ImGui::End();
+	// });
+
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::executeNextFrame(glfwGetTime()); });
-	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::cleanDeadAnimations(); });
 	ed->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
-	ed->subscribe(event::loop::LOOP_RENDER, [&igdebug]() { if (igdebug->isBoundingBoxVisible()) systems::render::renderBoundingBox(); });
+	ed->subscribe(event::loop::LOOP_RENDER, [&igdebug]() {
+		if (igdebug->isBoundingBoxVisible())
+			systems::render::renderBoundingBox();
+	});
 
 	while (!glfwWindowShouldClose(w.getContext())) {
 		ed->post(event::loop::LOOP_INPUT);
