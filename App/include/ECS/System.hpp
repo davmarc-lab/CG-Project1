@@ -11,6 +11,12 @@
 #include "Ett.hpp"
 
 namespace systems {
+	namespace ecs {
+		bool removeEntityFromManager(const unsigned int &id);
+		void removeEntityFromScene(const unsigned int &id);
+		bool removeEntityFromAll(const unsigned int &id);
+	} // namespace ecs
+
 	namespace transform {
 		void updatePosition(const unsigned int &id, const glm::vec3 &position);
 		void updateScale(const unsigned int &id, const glm::vec3 &scale);
@@ -35,6 +41,14 @@ namespace systems {
 		void updateCollider(const unsigned int &id);
 		void updateAllColliders();
 
+		void resolveCollisions();
+
+		float getEnemyLastHit(const unsigned int &id);
+		float getPlayerLastHit(const unsigned int &id);
+
+		void updateEnemyLastHit(const unsigned int &id, const float &time);
+		void updatePlayerLastHit(const unsigned int &id, const float &time);
+
 		std::vector<Pair<unsigned int>> getCollisions();
 	} // namespace collision
 
@@ -54,11 +68,11 @@ namespace systems {
 	namespace animation {
 		void executeNextFrame(const float &currentTime);
 		void updateDistanceAnimation();
-	}
+	} // namespace animation
 
 	namespace render {
 		void renderAllMeshes();
 
 		void renderBoundingBox();
 	} // namespace render
-}     // namespace systems
+} // namespace systems

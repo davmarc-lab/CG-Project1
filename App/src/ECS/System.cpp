@@ -10,9 +10,11 @@
 #include "../../include/ECS/Ett.hpp"
 
 const auto em = EntityManager::instance();
-const auto ecs = BasicScene::instance();
+const auto scene = BasicScene::instance();
 
 const auto BOUNDING_BOX_COLOR = glm::vec4{1, 0, 0, 1};
+
+const auto HIT_COOLDOWN = 1.f;
 
 struct BoundingBox {
 	ogl::ShaderProgram program = ogl::ShaderProgram("vertexShader.glsl", "fragmentShader.glsl");
@@ -25,6 +27,18 @@ struct BoundingBox {
 } defaultShader;
 
 namespace systems {
+	namespace ecs {
+		bool removeEntityFromManager(const unsigned int &id) {
+			return em->removeEntity(id);
+		}
+		void removeEntityFromScene(const unsigned int &id) {
+			scene->removeEntity(id);
+		}
+		bool removeEntityFromAll(const unsigned int &id) {
+			scene->removeEntity(id);
+			return em->removeEntity(id);
+		}
+	} // namespace ecs
 	namespace transform {
 		void updatePosition(const unsigned int &id, const glm::vec3 &position) {
 			auto c = em->getComponentFromId<Transform>(id);
@@ -117,10 +131,12 @@ namespace systems {
 			bc->updateCollider(cc->getVertexCoords(), ::systems::transform::getModelMatrix(id));
 		}
 
-		// void updateAllColliders() {
-		// 	for (auto id : em->getEntitiesFromComponent<AABB>())
-		// 		updateCollider(id);
-		// }
+		void updateAllColliders() {
+			auto ids = em->getEntitiesFromComponent<AABB>();
+			for (auto id : em->getEntitiesFromComponent<AABB>()) {
+				updateCollider(id);
+			}
+		}
 
 		bool isColliding(const unsigned int &first, const unsigned int &second) {
 			if (first == second)
@@ -129,6 +145,109 @@ namespace systems {
 			auto sc = em->getComponentFromId<AABB>(second);
 
 			return fc->isColliding(*sc);
+		}
+
+		float getEnemyLastHit(const unsigned int &id) {
+			auto c = em->getComponentFromId<EnemyComponent>(id);
+			ASSERT(c != nullptr);
+
+			return c->lastHit;
+		}
+
+		float getPlayerLastHit(const unsigned int &id) {
+			auto c = em->getComponentFromId<PlayerComponent>(id);
+			ASSERT(c != nullptr);
+
+			return c->lastHit;
+		}
+
+		void updateEnemyLastHit(const unsigned int &id, const float &time) {
+			auto c = em->getComponentFromId<EnemyComponent>(id);
+			ASSERT(c != nullptr);
+
+			c->lastHit = time;
+		}
+
+		void updatePlayerLastHit(const unsigned int &id, const float &time) {
+			auto c = em->getComponentFromId<PlayerComponent>(id);
+			ASSERT(c != nullptr);
+
+			c->lastHit = time;
+		}
+
+		void resolveCollisions() {
+			auto time = glfwGetTime();
+            auto rmv = std::vector<unsigned int>{};
+			auto colls = getCollisions();
+			auto projs = em->getEntitiesFromComponent<ProjectileComponent>();
+			auto enems = em->getEntitiesFromComponent<EnemyComponent>();
+			auto plays = em->getEntitiesFromComponent<PlayerComponent>();
+			for (auto c : colls) {
+				// proj - proj
+				{
+					// is projectile
+					auto first = std::find(ALL(projs), c.x) != projs.end();
+					auto second = std::find(ALL(projs), c.y) != projs.end();
+					if (first && second) {
+						continue;
+					}
+				}
+				// enemy - enemy
+				{
+					auto first = std::find(ALL(enems), c.x) != enems.end();
+					auto second = std::find(ALL(enems), c.y) != enems.end();
+					if (first && second)
+						continue;
+				}
+				// proj - enemy
+				{
+					auto first = std::find(ALL(projs), c.x) != projs.end();
+					auto second = std::find(ALL(enems), c.y) != enems.end();
+					if (first && second) {
+						auto hit = getEnemyLastHit(second);
+						if (hit + HIT_COOLDOWN < time || hit == 0) {
+
+							std::cout << "Destroy Projectile\n";
+							std::cout << "Decrease Health\n";
+							updateEnemyLastHit(second, time);
+						}
+						continue;
+					}
+				}
+				// enemy - proj
+				{
+					auto first = std::find(ALL(enems), c.x) != enems.end();
+					auto second = std::find(ALL(projs), c.y) != projs.end();
+					if (first && second) {
+						auto hit = getEnemyLastHit(first);
+						if (hit + HIT_COOLDOWN < time || hit == 0) {
+							std::cout << "HIT\n";
+                            // ::systems::ecs::removeEntityFromAll(second);
+							std::cout << "Decrease Health\n";
+							updateEnemyLastHit(first, time);
+						}
+						continue;
+					}
+				}
+				// player - enemy
+				{
+					auto first = std::find(ALL(plays), c.x) != plays.end();
+					auto second = std::find(ALL(enems), c.y) != enems.end();
+					if (first && second) {
+						std::cout << "Player - Enem\n";
+						continue;
+					}
+				}
+				// enemy - player
+				{
+					auto first = std::find(ALL(enems), c.x) != enems.end();
+					auto second = std::find(ALL(plays), c.y) != plays.end();
+					if (first && second) {
+						std::cout << "Enem - Player\n";
+						continue;
+					}
+				}
+			}
 		}
 
 		std::vector<Pair<unsigned int>> getCollisions() {
@@ -211,34 +330,32 @@ namespace systems {
 					rmv.push_back(ett);
 			}
 			for (auto e : rmv) {
-				ecs->removeEntity(e);
-				em->removeEntity(e);
+				::systems::ecs::removeEntityFromAll(e);
 			}
 		}
 
 		void updateDistanceAnimation() {
 			std::vector<unsigned int> rmv{};
-			for (auto ett : em->getEntitiesFromComponent<DistanceAnimation>()) {
-				auto c = em->getComponentFromId<DistanceAnimation>(ett);
+			for (auto ett : em->getEntitiesFromComponent<ProjectileComponent>()) {
+				auto c = em->getComponentFromId<ProjectileComponent>(ett);
 				ASSERT(c != nullptr);
 
 				if (c->dead)
 					continue;
 
-                c->updateTick(systems::transform::getPosition(ett));
+				c->updateTick(systems::transform::getPosition(ett));
 				if (c->dead)
 					rmv.push_back(ett);
 			}
 			for (auto e : rmv) {
-				ecs->removeEntity(e);
-				em->removeEntity(e);
+				::systems::ecs::removeEntityFromAll(e);
 			}
 		}
 	} // namespace animation
 
 	namespace render {
 		void renderAllMeshes() {
-			for (auto [shader, etts] : ecs->getShaderEntityMap()) {
+			for (auto [shader, etts] : scene->getShaderEntityMap()) {
 				shader->use();
 				for (auto id : etts) {
 					auto rc = em->getComponentFromId<RenderComponent>(id);

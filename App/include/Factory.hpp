@@ -21,4 +21,4 @@ unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, co
 
 unsigned int factoryHermite(const BasicInfo &info, const std::string &path, const glm::vec4 &color = {1, 0, 0, 1});
 
-unsigned int factoryEnemy(const BasicInfo &info);
+unsigned int factoryEnemy(const BasicInfo& info, const glm::vec4& color);

@@ -84,7 +84,7 @@ public:
 
 		// the entity with id hasn't this component.
 		if (std::find(ALL(this->m_compEntity.at(CLASSNAME(T))), id) == this->m_compEntity.at(CLASSNAME(T)).end()) {
-			std::cerr << "The entity with id (" << id << ") doesn't have this component (" << CLASSNAME(T) << ").\n";
+			// std::cerr << "The entity with id (" << id << ") doesn't have this component (" << CLASSNAME(T) << ").\n";
 			return nullptr;
 		}
 

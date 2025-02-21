@@ -234,6 +234,16 @@ public:
 	std::map<unsigned int, std::function<void()>> callbacks;
 };
 
+class HealthComponent : public Component {
+public:
+	HealthComponent(const float &health = 100.f) :
+		health(health), Component() {}
+
+	virtual ~HealthComponent() override = default;
+
+	float health = 100.f;
+};
+
 struct GunInfo {
 	float lastShoot = 0;
 	float coolDown = 0.6;
@@ -275,7 +285,7 @@ public:
 	bool dead = false;
 };
 
-class DistanceAnimation : public Component {
+class ProjectileComponent : public Component {
 public:
 	void updateTick(const glm::vec3 &pos) {
 		if (glm::length(pos - this->startPos) <= distance)
@@ -284,15 +294,35 @@ public:
 			this->dead = true;
 	}
 
-	DistanceAnimation(const glm::vec3 &startPos, const float &distance, std::function<void()> &&func) :
-		startPos(startPos), distance(distance), func(std::move(func)) {}
+	ProjectileComponent(const glm::vec3 &startPos, const float &distance, std::function<void()> &&func) :
+		startPos(startPos), distance(distance), func(std::move(func)), Component() {}
 
-	virtual ~DistanceAnimation() override = default;
+	virtual ~ProjectileComponent() override = default;
 
 	glm::vec3 startPos{};
 	float distance;
 	std::function<void()> func{};
 	bool dead = false;
+};
+
+class EnemyComponent : public Component {
+public:
+	EnemyComponent() :
+		Component() {}
+
+	virtual ~EnemyComponent() override = default;
+
+    float lastHit = 0;
+};
+
+class PlayerComponent : public Component {
+public:
+	PlayerComponent() :
+		Component() {}
+
+	virtual ~PlayerComponent() override = default;
+
+    float lastHit = 0;
 };
 
 class AABB : public Component {
