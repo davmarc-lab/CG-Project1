@@ -4,6 +4,7 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <set>
 #include <vector>
 #include "../../include/ECS/Component.hpp"
 #include "../../include/ECS/EcsScene.hpp"
@@ -177,7 +178,7 @@ namespace systems {
 
 		void resolveCollisions() {
 			auto time = glfwGetTime();
-            auto rmv = std::vector<unsigned int>{};
+			auto rmv = std::set<unsigned int>{};
 			auto colls = getCollisions();
 			auto projs = em->getEntitiesFromComponent<ProjectileComponent>();
 			auto enems = em->getEntitiesFromComponent<EnemyComponent>();
@@ -206,10 +207,9 @@ namespace systems {
 					if (first && second) {
 						auto hit = getEnemyLastHit(second);
 						if (hit + HIT_COOLDOWN < time || hit == 0) {
-
-							std::cout << "Destroy Projectile\n";
+							rmv.insert(c.x);
 							std::cout << "Decrease Health\n";
-							updateEnemyLastHit(second, time);
+							updateEnemyLastHit(c.y, time);
 						}
 						continue;
 					}
@@ -221,10 +221,9 @@ namespace systems {
 					if (first && second) {
 						auto hit = getEnemyLastHit(first);
 						if (hit + HIT_COOLDOWN < time || hit == 0) {
-							std::cout << "HIT\n";
-                            // ::systems::ecs::removeEntityFromAll(second);
+							rmv.insert(c.y);
 							std::cout << "Decrease Health\n";
-							updateEnemyLastHit(first, time);
+							updateEnemyLastHit(c.x, time);
 						}
 						continue;
 					}
@@ -247,6 +246,10 @@ namespace systems {
 						continue;
 					}
 				}
+			}
+			for (auto e : rmv) {
+                std::cout << e << "\n";
+				::systems::ecs::removeEntityFromAll(e);
 			}
 		}
 
