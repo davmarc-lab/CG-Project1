@@ -61,7 +61,8 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 			offset.y = direction.y * (scale.y + PROJ_SIZE.y);
 		else
 			offset.x = direction.x * (scale.x + PROJ_SIZE.x);
-		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, player.projInfo.color, ProjInfo{}, direction);
+		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, player.projInfo.color, player.projInfo, direction);
+        std::cout << p << "\n";
 		scene->addEntity(shader, p);
 		systems::gun::updateLastShoot(id, glfwGetTime());
 	}

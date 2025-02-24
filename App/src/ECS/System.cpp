@@ -122,6 +122,28 @@ namespace systems {
 		}
 	} // namespace transform
 
+	namespace enemy {
+		float getHealth(const unsigned int &id) {
+			auto c = em->getComponentFromId<HealthComponent>(id);
+			ASSERT(c != nullptr);
+
+			return c->health;
+		}
+
+		void decreaseHealth(const unsigned int &id, const float &health) {
+			auto c = em->getComponentFromId<HealthComponent>(id);
+			ASSERT(c != nullptr);
+
+			c->health -= health;
+		}
+		void incrementHealth(const unsigned int &id, const float &health) {
+			auto c = em->getComponentFromId<HealthComponent>(id);
+			ASSERT(c != nullptr);
+
+			c->health += health;
+		}
+	} // namespace enemy
+
 	namespace collision {
 		void updateCollider(const unsigned int &id) {
 			auto bc = em->getComponentFromId<AABB>(id);
@@ -184,6 +206,9 @@ namespace systems {
 			auto enems = em->getEntitiesFromComponent<EnemyComponent>();
 			auto plays = em->getEntitiesFromComponent<PlayerComponent>();
 			for (auto c : colls) {
+				if (c.x == c.y)
+					continue;
+
 				// proj - proj
 				{
 					// is projectile
@@ -205,12 +230,15 @@ namespace systems {
 					auto first = std::find(ALL(projs), c.x) != projs.end();
 					auto second = std::find(ALL(enems), c.y) != enems.end();
 					if (first && second) {
-						auto hit = getEnemyLastHit(second);
+						auto hit = getEnemyLastHit(c.y);
 						if (hit + HIT_COOLDOWN < time || hit == 0) {
-							rmv.insert(c.x);
-							std::cout << "Decrease Health\n";
+							::systems::enemy::decreaseHealth(c.y, ::systems::gun::getDamage(c.x));
+							if (::systems::enemy::getHealth(c.y) <= 0) {
+								rmv.insert(c.y);
+							}
 							updateEnemyLastHit(c.y, time);
 						}
+						rmv.insert(c.x);
 						continue;
 					}
 				}
@@ -219,12 +247,15 @@ namespace systems {
 					auto first = std::find(ALL(enems), c.x) != enems.end();
 					auto second = std::find(ALL(projs), c.y) != projs.end();
 					if (first && second) {
-						auto hit = getEnemyLastHit(first);
+						auto hit = getEnemyLastHit(c.x);
 						if (hit + HIT_COOLDOWN < time || hit == 0) {
-							rmv.insert(c.y);
-							std::cout << "Decrease Health\n";
+							::systems::enemy::decreaseHealth(c.x, ::systems::gun::getDamage(c.y));
+							if (::systems::enemy::getHealth(c.x) <= 0) {
+								rmv.insert(c.x);
+							}
 							updateEnemyLastHit(c.x, time);
 						}
+						rmv.insert(c.y);
 						continue;
 					}
 				}
@@ -248,7 +279,6 @@ namespace systems {
 				}
 			}
 			for (auto e : rmv) {
-                std::cout << e << "\n";
 				::systems::ecs::removeEntityFromAll(e);
 			}
 		}
@@ -315,6 +345,13 @@ namespace systems {
 			ASSERT(c != nullptr);
 
 			return c->info.coolDown;
+		}
+
+		float getDamage(const unsigned int &id) {
+			auto c = em->getComponentFromId<ProjectileComponent>(id);
+			ASSERT(c != nullptr);
+
+			return c->damage;
 		}
 	} // namespace gun
 

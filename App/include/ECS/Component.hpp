@@ -294,13 +294,14 @@ public:
 			this->dead = true;
 	}
 
-	ProjectileComponent(const glm::vec3 &startPos, const float &distance, std::function<void()> &&func) :
-		startPos(startPos), distance(distance), func(std::move(func)), Component() {}
+	ProjectileComponent(const glm::vec3 &startPos, const float &distance, const float &damage, std::function<void()> &&func) :
+		startPos(startPos), distance(distance), damage(damage), func(std::move(func)), Component() {}
 
 	virtual ~ProjectileComponent() override = default;
 
 	glm::vec3 startPos{};
 	float distance;
+    float damage{};
 	std::function<void()> func{};
 	bool dead = false;
 };

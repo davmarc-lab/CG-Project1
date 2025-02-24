@@ -176,7 +176,7 @@ unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, co
 	bc->vao.linkAttribFast(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
 	// animation
-	em->addComponent<ProjectileComponent>(id, info.position, projInfo.range, [id, direction]() {
+	em->addComponent<ProjectileComponent>(id, info.position, projInfo.range, projInfo.damage, [id, direction]() {
 		systems::transform::addPosition(id, direction * PROJ_VEL);
 	});
 
@@ -222,7 +222,7 @@ unsigned int factoryHermite(const BasicInfo &info, const std::string &path, cons
 	return id;
 }
 
-unsigned int factoryEnemy(const BasicInfo& info, const glm::vec4& color) {
+unsigned int factoryEnemy(const BasicInfo &info, const glm::vec4 &color) {
 	auto id = em->createEntity();
 	em->addComponent<Transform>(id);
 	systems::transform::updatePosition(id, info.position);
@@ -234,6 +234,7 @@ unsigned int factoryEnemy(const BasicInfo& info, const glm::vec4& color) {
 	auto vc = em->addComponent<VertexComponent>(id, curve->vertex, curve->colors, std::vector<unsigned int>{});
 	auto bc = em->addComponent<BufferComponent>(id);
 	em->addComponent<EnemyComponent>(id);
+	em->addComponent<HealthComponent>(id);
 	em->addComponent<AABB>(id);
 	systems::collision::updateCollider(id);
 	bc->vao.onAttach();

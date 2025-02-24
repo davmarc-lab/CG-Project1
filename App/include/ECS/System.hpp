@@ -52,6 +52,12 @@ namespace systems {
 		std::vector<Pair<unsigned int>> getCollisions();
 	} // namespace collision
 
+	namespace enemy {
+		float getHealth(const unsigned int &id);
+		void decreaseHealth(const unsigned int &id, const float &health);
+		void incrementHealth(const unsigned int &id, const float &health);
+	} // namespace enemy
+
 	namespace input {
 		std::vector<std::pair<unsigned int, std::function<void()>>> getKeysCallback(const unsigned int &id);
 
@@ -63,6 +69,8 @@ namespace systems {
 		void updateLastShoot(const unsigned int &id, const float &time);
 
 		float getCooldown(const unsigned int &id);
+
+		float getDamage(const unsigned int &id);
 	} // namespace gun
 
 	namespace animation {
