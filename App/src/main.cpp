@@ -62,7 +62,6 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 		else
 			offset.x = direction.x * (scale.x + PROJ_SIZE.x);
 		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, player.projInfo.color, player.projInfo, direction);
-        std::cout << p << "\n";
 		scene->addEntity(shader, p);
 		systems::gun::updateLastShoot(id, glfwGetTime());
 	}
@@ -212,6 +211,7 @@ int main(int argc, char *argv[]) {
 	ecs->addEntity(shader, first);
 	ett->addComponent<GunComponent>(first, player.gunInfo);
 	ett->addComponent<PlayerComponent>(first);
+	ett->addComponent<HealthComponent>(first);
 
 	// movement
 	systems::input::setKeyCallback(first, GLFW_KEY_W, [&first]() {
@@ -348,6 +348,9 @@ int main(int argc, char *argv[]) {
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::updateDistanceAnimation(); });
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::collision::resolveCollisions(); });
 	ed->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
+	ed->subscribe(PLAYER_DEAD_EVENT, []() {
+		std::cout << "STOP APPLICATION\n";
+	});
 	ed->subscribe(event::loop::LOOP_RENDER, [&igdebug]() {
 		if (igdebug->isBoundingBoxVisible())
 			systems::render::renderBoundingBox();

@@ -46,7 +46,7 @@ public:
 	unsigned int getEntitiesCount() const { return this->m_entities.size(); }
 
 	template <typename T, typename... Args>
-	inline Shared<T> addComponent(const Index &id, Args &&... args) {
+	inline Shared<T> addComponent(const Index &id, Args &&...args) {
 		if (!this->isEntityValid(id))
 			return nullptr;
 
@@ -117,3 +117,7 @@ private:
 
 	EntityManager() = default;
 };
+
+#include "../../../Opengl-Core/include/Core.hpp"
+
+const auto PLAYER_DEAD_EVENT = ogl::Event("Player Dead");

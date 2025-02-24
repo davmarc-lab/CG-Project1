@@ -301,19 +301,20 @@ public:
 
 	glm::vec3 startPos{};
 	float distance;
-    float damage{};
+	float damage{};
 	std::function<void()> func{};
 	bool dead = false;
 };
 
 class EnemyComponent : public Component {
 public:
-	EnemyComponent() :
-		Component() {}
+	EnemyComponent(const float &damage = 20) :
+		damage(damage), Component() {}
 
 	virtual ~EnemyComponent() override = default;
 
-    float lastHit = 0;
+	float lastHit = 0;
+	float damage{};
 };
 
 class PlayerComponent : public Component {
@@ -323,7 +324,7 @@ public:
 
 	virtual ~PlayerComponent() override = default;
 
-    float lastHit = 0;
+	float lastHit = 0;
 };
 
 class AABB : public Component {

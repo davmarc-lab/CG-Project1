@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <functional>
 #include <glm/glm.hpp>
-#include <iostream>
 #include <set>
 #include <vector>
 #include "../../include/ECS/Component.hpp"
@@ -15,7 +14,8 @@ const auto scene = BasicScene::instance();
 
 const auto BOUNDING_BOX_COLOR = glm::vec4{1, 0, 0, 1};
 
-const auto HIT_COOLDOWN = 1.f;
+const auto HIT_PROJ_COOLDOWN = .8f;
+const auto HIT_ENEMY_COOLDOWN = 1.f;
 
 struct BoundingBox {
 	ogl::ShaderProgram program = ogl::ShaderProgram("vertexShader.glsl", "fragmentShader.glsl");
@@ -130,6 +130,13 @@ namespace systems {
 			return c->health;
 		}
 
+		float getDamage(const unsigned int &id) {
+			auto c = em->getComponentFromId<EnemyComponent>(id);
+			ASSERT(c != nullptr);
+
+			return c->damage;
+		}
+
 		void decreaseHealth(const unsigned int &id, const float &health) {
 			auto c = em->getComponentFromId<HealthComponent>(id);
 			ASSERT(c != nullptr);
@@ -231,12 +238,12 @@ namespace systems {
 					auto second = std::find(ALL(enems), c.y) != enems.end();
 					if (first && second) {
 						auto hit = getEnemyLastHit(c.y);
-						if (hit + HIT_COOLDOWN < time || hit == 0) {
+						if (hit + HIT_PROJ_COOLDOWN < time || hit == 0) {
 							::systems::enemy::decreaseHealth(c.y, ::systems::gun::getDamage(c.x));
+							updateEnemyLastHit(c.y, time);
 							if (::systems::enemy::getHealth(c.y) <= 0) {
 								rmv.insert(c.y);
 							}
-							updateEnemyLastHit(c.y, time);
 						}
 						rmv.insert(c.x);
 						continue;
@@ -248,12 +255,12 @@ namespace systems {
 					auto second = std::find(ALL(projs), c.y) != projs.end();
 					if (first && second) {
 						auto hit = getEnemyLastHit(c.x);
-						if (hit + HIT_COOLDOWN < time || hit == 0) {
+						if (hit + HIT_PROJ_COOLDOWN < time || hit == 0) {
 							::systems::enemy::decreaseHealth(c.x, ::systems::gun::getDamage(c.y));
+							updateEnemyLastHit(c.x, time);
 							if (::systems::enemy::getHealth(c.x) <= 0) {
 								rmv.insert(c.x);
 							}
-							updateEnemyLastHit(c.x, time);
 						}
 						rmv.insert(c.y);
 						continue;
@@ -264,7 +271,14 @@ namespace systems {
 					auto first = std::find(ALL(plays), c.x) != plays.end();
 					auto second = std::find(ALL(enems), c.y) != enems.end();
 					if (first && second) {
-						std::cout << "Player - Enem\n";
+						auto hit = getPlayerLastHit(c.x);
+						if (hit + HIT_ENEMY_COOLDOWN < time || hit == 0) {
+							::systems::enemy::decreaseHealth(c.x, ::systems::enemy::getDamage(c.y));
+							updatePlayerLastHit(c.x, time);
+							if (::systems::enemy::getHealth(c.x) <= 0) {
+								ogl::EventManager::instance()->post(PLAYER_DEAD_EVENT);
+							}
+						}
 						continue;
 					}
 				}
@@ -273,7 +287,14 @@ namespace systems {
 					auto first = std::find(ALL(enems), c.x) != enems.end();
 					auto second = std::find(ALL(plays), c.y) != plays.end();
 					if (first && second) {
-						std::cout << "Enem - Player\n";
+						auto hit = getPlayerLastHit(c.y);
+						if (hit + HIT_ENEMY_COOLDOWN < time || hit == 0) {
+							::systems::enemy::decreaseHealth(c.y, ::systems::enemy::getDamage(c.x));
+							updatePlayerLastHit(c.y, time);
+							if (::systems::enemy::getHealth(c.y) <= 0) {
+								rmv.insert(c.y);
+							}
+						}
 						continue;
 					}
 				}

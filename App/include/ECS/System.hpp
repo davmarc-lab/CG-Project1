@@ -54,6 +54,7 @@ namespace systems {
 
 	namespace enemy {
 		float getHealth(const unsigned int &id);
+		float getDamage(const unsigned int &id);
 		void decreaseHealth(const unsigned int &id, const float &health);
 		void incrementHealth(const unsigned int &id, const float &health);
 	} // namespace enemy
