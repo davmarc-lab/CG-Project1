@@ -186,6 +186,7 @@ int main(int argc, char *argv[]) {
 
 	WindowSettings s{};
 	s.decorated = false;
+    s.vsync = false;
 	Window w{s};
 	w.onAttach();
 	ed->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
@@ -356,7 +357,20 @@ int main(int argc, char *argv[]) {
 			systems::render::renderBoundingBox();
 	});
 
+	float currentFrame = 0, deltaTime = 0, lastFrame = 0;
+
+    auto foo = im.addPanel<ImGuiPanel>();
+    foo->setRenderFunc([&deltaTime](){
+        ImGui::Begin("Performance");
+        ImGui::Text("Delta time: %f", deltaTime);
+        ImGui::End();
+    });
+
 	while (!glfwWindowShouldClose(w.getContext())) {
+		currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		ed->post(event::loop::LOOP_INPUT);
 		ed->post(event::loop::LOOP_UPDATE);
 		ed->post(event::loop::LOOP_BEGIN_RENDER);

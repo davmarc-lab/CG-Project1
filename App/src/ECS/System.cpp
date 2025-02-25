@@ -14,7 +14,7 @@ const auto scene = BasicScene::instance();
 
 const auto BOUNDING_BOX_COLOR = glm::vec4{1, 0, 0, 1};
 
-const auto HIT_PROJ_COOLDOWN = .8f;
+const auto HIT_PROJ_COOLDOWN = .6f;
 const auto HIT_ENEMY_COOLDOWN = 1.f;
 
 struct BoundingBox {
