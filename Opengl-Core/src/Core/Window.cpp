@@ -10,13 +10,13 @@
 
 namespace ogl {
 	// error callback
-	static void errorCallback(int code, const char* description) { std::cerr << "GLFW error (" << code << ") -> (" << description << ")\n"; }
+	static void errorCallback(int code, const char *description) { std::cerr << "GLFW error (" << code << ") -> (" << description << ")\n"; }
 
 	// resize Callback
-	static void resizeCallback(GLFWwindow* window, int width, int height) {
+	static void resizeCallback(GLFWwindow *window, int width, int height) {
 		glViewport(0, 0, width, height);
 
-		auto pt = static_cast<Window*>(glfwGetWindowUserPointer(window));
+		auto pt = static_cast<Window *>(glfwGetWindowUserPointer(window));
 		if (pt != nullptr) {
 			pt->execResizeCallback(window, width, height);
 
@@ -26,10 +26,10 @@ namespace ogl {
 	}
 
 	// keyboard input callback
-	static void keyboardCallback(GLFWwindow* window, int key, int code, int action, int mod) {
+	static void keyboardCallback(GLFWwindow *window, int key, int code, int action, int mod) {
 		auto pt = glfwGetWindowUserPointer(window);
 		if (pt != nullptr) {
-			static_cast<Window*>(pt)->execKeysCallback(window, key, code, action, mod);
+			static_cast<Window *>(pt)->execKeysCallback(window, key, code, action, mod);
 		}
 
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -38,22 +38,23 @@ namespace ogl {
 	}
 
 	// mouse button callback
-	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+	static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
 		auto pt = glfwGetWindowUserPointer(window);
 		if (pt != nullptr) {
-			static_cast<Window*>(pt)->execMouseButtonCallback(window, button, action, mods);
+			static_cast<Window *>(pt)->execMouseButtonCallback(window, button, action, mods);
 		}
 	}
 
 	// cursor position callback
-	static void cursorPosCallback(GLFWwindow* window, double x, double y) {
+	static void cursorPosCallback(GLFWwindow *window, double x, double y) {
 		auto pt = glfwGetWindowUserPointer(window);
 		if (pt != nullptr) {
-			static_cast<Window*>(pt)->execCursorPosCallback(window, x, y);
+			static_cast<Window *>(pt)->execCursorPosCallback(window, x, y);
 		}
 	}
 
-	Window::Window(const WindowSettings& settings) : Layer("GLFW Window"), m_settings(settings) {}
+	Window::Window(const WindowSettings &settings) :
+		Layer("GLFW Window"), m_settings(settings) {}
 
 	void Window::toggleVsync() {
 		this->m_settings.vsync = !this->m_settings.vsync;
@@ -62,42 +63,42 @@ namespace ogl {
 
 	bool Window::isVsyncEnabled() const { return this->m_settings.vsync; }
 
-	void Window::setResizeCallback(std::function<void(GLFWwindow*, int, int)>&& func) {
+	void Window::setResizeCallback(std::function<void(GLFWwindow *, int, int)> &&func) {
 		this->m_callbacks.resizeCallback = std::move(func);
 		this->updateUserPointer();
 	}
 
-	void Window::execResizeCallback(GLFWwindow* window, const int& width, const int& height) {
+	void Window::execResizeCallback(GLFWwindow *window, const int &width, const int &height) {
 		if (this->m_callbacks.resizeCallback != nullptr)
 			this->m_callbacks.resizeCallback(window, width, height);
 	}
 
-	void Window::setKeysCallback(std::function<void(GLFWwindow*, int, int, int, int)>&& func) {
+	void Window::setKeysCallback(std::function<void(GLFWwindow *, int, int, int, int)> &&func) {
 		this->m_callbacks.keyCallback = std::move(func);
 		this->updateUserPointer();
 	}
 
-	void Window::execKeysCallback(GLFWwindow* context, const int& key, const int& code, const int& action, const int& mods) {
+	void Window::execKeysCallback(GLFWwindow *context, const int &key, const int &code, const int &action, const int &mods) {
 		if (this->m_callbacks.keyCallback != nullptr)
 			this->m_callbacks.keyCallback(context, key, code, action, mods);
 	}
 
-	void Window::setMouseButtonCallback(std::function<void(GLFWwindow*, int, int, int)>&& func) {
+	void Window::setMouseButtonCallback(std::function<void(GLFWwindow *, int, int, int)> &&func) {
 		this->m_callbacks.mouseButtonCallback = std::move(func);
 		this->updateUserPointer();
 	}
 
-	void Window::execMouseButtonCallback(GLFWwindow* context, const int& button, const int& action, const int& mods) {
+	void Window::execMouseButtonCallback(GLFWwindow *context, const int &button, const int &action, const int &mods) {
 		if (this->m_callbacks.mouseButtonCallback != nullptr)
 			this->m_callbacks.mouseButtonCallback(context, button, action, mods);
 	}
 
-	void Window::setCursorPosCallback(std::function<void(GLFWwindow*, double, double)>&& func) {
+	void Window::setCursorPosCallback(std::function<void(GLFWwindow *, double, double)> &&func) {
 		this->m_callbacks.cursorPosCallback = std::move(func);
 		this->updateUserPointer();
 	}
 
-	void Window::execCursorPosCallback(GLFWwindow* context, const double& xpos, const double& ypos) {
+	void Window::execCursorPosCallback(GLFWwindow *context, const double &xpos, const double &ypos) {
 		if (this->m_callbacks.cursorPosCallback != nullptr)
 			this->m_callbacks.cursorPosCallback(context, xpos, ypos);
 	}
@@ -112,15 +113,16 @@ namespace ogl {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
-		#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		#endif
+#ifdef __APPLE__
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 
 		glfwSetErrorCallback(errorCallback);
 
 		this->m_context = glfwCreateWindow(this->m_settings.size.x, this->m_settings.size.y, this->m_settings.name.c_str(),
-			this->m_settings.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+										   this->m_settings.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
 		ASSERT(this->m_context != nullptr);
 
 		glfwMakeContextCurrent(this->m_context);
@@ -136,6 +138,9 @@ namespace ogl {
 
 		if (this->m_settings.decorated)
 			glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+
+		if (this->m_settings.vsync)
+			glfwSwapInterval(1);
 
 		// icon???
 
