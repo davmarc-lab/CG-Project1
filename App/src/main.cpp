@@ -32,7 +32,8 @@ const auto ed = EventManager::instance();
 
 const glm::vec3 PLAYER_VEL = {50, 50, 0};
 const glm::vec3 PROJ_OFFSET = {2, 2, 0};
-const glm::vec3 HEALTH_BAR_SIZE = {300, 20, 0};
+const glm::vec3 HEALTH_BAR_SIZE = {200, 10, 0};
+const float HP_FACTOR = 2.f;
 
 struct Player {
 	unsigned int id;
@@ -55,15 +56,17 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 	auto cd = systems::gun::getCooldown(id);
 
 	if (glfwGetTime() - ls > cd || cd == 0) {
-		auto pos = systems::transform::getPosition(id);
-		auto scale = systems::transform::getScale(id);
-		glm::vec3 offset{0};
-		if (direction.x == 0)
-			offset.y = direction.y * (scale.y + PROJ_SIZE.y);
-		else
-			offset.x = direction.x * (scale.x + PROJ_SIZE.x);
-		auto p = factoryProjectile(BasicInfo{{pos + offset + (direction * PROJ_OFFSET)}, {PROJ_SIZE}}, player.projInfo.color, player.projInfo, direction);
-		scene->addEntity(shader, p);
+		auto box = systems::collision::getCollider(id);
+		glm::vec3 pos{0};
+		if (direction.x == 0) {
+			pos.y = (box.x.y + (box.y.y - box.x.y) / 2) + direction.y * ((box.y.y - box.x.y) / 2);
+			pos.x = (box.y.x - box.x.x) / 2 + box.x.x;
+		} else {
+			pos.x = (box.x.x + (box.y.x - box.x.x) / 2) + direction.x * ((box.y.x - box.x.x) / 2);
+			pos.y = (box.y.y - box.x.y) / 2 + box.x.y;
+		}
+		auto offset = direction * (PROJ_SIZE * glm::vec3(1, 1, 0) + PROJ_OFFSET);
+		scene->addEntity(shader, factoryProjectile(BasicInfo{{pos + offset}, {PROJ_SIZE}}, player.projInfo.color, player.projInfo, direction));
 		systems::gun::updateLastShoot(id, glfwGetTime());
 	}
 }
@@ -209,11 +212,20 @@ int main(int argc, char *argv[]) {
 
 	auto ett = EntityManager::instance();
 
-	auto first = factorySquare(BasicInfo{{1400, 800, 0}, {20, 10, 1}, {}}, {1, 0, 0, 1});
+	auto first = factoryHermite(BasicInfo{{1400, 800, 0}, {40, 50, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0, 0, 1});
 	ecs->addEntity(shader, first);
 	ett->addComponent<GunComponent>(first, player.gunInfo);
 	ett->addComponent<PlayerComponent>(first);
 	ett->addComponent<HealthComponent>(first);
+
+	auto healthBar = factorySquare(BasicInfo{{10 + HEALTH_BAR_SIZE.x, w.getHeight() - HEALTH_BAR_SIZE.y - 10, 1}, HEALTH_BAR_SIZE, {}}, {1, 0, 0, 1});
+	ecs->addEntity(shader, healthBar);
+
+	ed->subscribe(event::loop::LOOP_UPDATE, [&healthBar, &first, &w]() {
+		auto health = systems::enemy::getHealth(first);
+		systems::transform::updatePosition(healthBar, {10 + health * HP_FACTOR, w.getHeight() - HEALTH_BAR_SIZE.y - 10, 0});
+		systems::transform::updateScale(healthBar, {health * HP_FACTOR, HEALTH_BAR_SIZE.y, 1});
+	});
 
 	// movement
 	systems::input::setKeyCallback(first, GLFW_KEY_W, [&first]() {

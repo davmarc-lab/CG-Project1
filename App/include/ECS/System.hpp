@@ -46,6 +46,8 @@ namespace systems {
 		float getEnemyLastHit(const unsigned int &id);
 		float getPlayerLastHit(const unsigned int &id);
 
+		Pair<glm::vec3> getCollider(const unsigned int &id);
+
 		void updateEnemyLastHit(const unsigned int &id, const float &time);
 		void updatePlayerLastHit(const unsigned int &id, const float &time);
 

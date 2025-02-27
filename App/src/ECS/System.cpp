@@ -205,6 +205,13 @@ namespace systems {
 			c->lastHit = time;
 		}
 
+		Pair<glm::vec3> getCollider(const unsigned int &id) {
+			auto c = em->getComponentFromId<AABB>(id);
+			ASSERT(c != nullptr);
+
+			return {c->botLeft, c->topRight};
+		}
+
 		void resolveCollisions() {
 			auto time = glfwGetTime();
 			auto rmv = std::set<unsigned int>{};

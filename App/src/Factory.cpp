@@ -128,8 +128,6 @@ unsigned int factorySquare(const BasicInfo &info, const glm::vec4 &color, const 
 	systems::transform::updateRotation(id, info.rotation);
 	auto vc = em->addComponent<VertexComponent>(id, squareVertices, getColorVector(color, squareVertices.size()), squareIndices);
 	auto bc = em->addComponent<BufferComponent>(id);
-	em->addComponent<AABB>(id);
-	systems::collision::updateCollider(id);
 	bc->vao.onAttach();
 	bc->vao.bind();
 
