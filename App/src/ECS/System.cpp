@@ -30,13 +30,25 @@ struct BoundingBox {
 namespace systems {
 	namespace ecs {
 		bool removeEntityFromManager(const unsigned int &id) {
+			auto c = em->getComponentFromId<ParentComponent>(id);
+			if (c != nullptr) {
+				for (auto child : c->children) {
+					removeEntityFromManager(child);
+				}
+			}
 			return em->removeEntity(id);
 		}
 		void removeEntityFromScene(const unsigned int &id) {
+			auto c = em->getComponentFromId<ParentComponent>(id);
+			if (c != nullptr) {
+				for (auto child : c->children) {
+					scene->removeEntity(child);
+				}
+			}
 			scene->removeEntity(id);
 		}
 		bool removeEntityFromAll(const unsigned int &id) {
-			scene->removeEntity(id);
+			removeEntityFromScene(id);
 			return em->removeEntity(id);
 		}
 	} // namespace ecs
@@ -44,6 +56,16 @@ namespace systems {
 		void updatePosition(const unsigned int &id, const glm::vec3 &position) {
 			auto c = em->getComponentFromId<Transform>(id);
 			ASSERT(c != nullptr);
+
+			auto p = em->getComponentFromId<ParentComponent>(id);
+			if (p != nullptr) {
+				for (auto child : p->children) {
+					auto cpos = getPosition(child);
+					auto offset = cpos - c->getPosition();
+					offset.z = 0;
+					updatePosition(child, position + offset);
+				}
+			}
 
 			c->setPosition(position);
 		}
@@ -59,12 +81,29 @@ namespace systems {
 			auto c = em->getComponentFromId<Transform>(id);
 			ASSERT(c != nullptr);
 
+			auto p = em->getComponentFromId<ParentComponent>(id);
+			if (p != nullptr) {
+				for (auto child : p->children) {
+					updateRotation(child, rotation);
+				}
+			}
+
 			c->setRotation(rotation);
 		}
 
 		void addPosition(const unsigned int &id, const glm::vec3 &offset) {
 			auto c = em->getComponentFromId<Transform>(id);
 			ASSERT(c != nullptr);
+
+			auto p = em->getComponentFromId<ParentComponent>(id);
+			if (p != nullptr) {
+				for (auto child : p->children) {
+					auto cpos = getPosition(child);
+					auto modelOffset = cpos - c->getPosition();
+					modelOffset.z = 0;
+					updatePosition(child, c->getPosition() + modelOffset + offset);
+				}
+			}
 
 			c->addPosition(offset);
 		}
@@ -329,6 +368,22 @@ namespace systems {
 		}
 
 	} // namespace collision
+
+	namespace parent {
+		void addChild(const unsigned int &parent, const unsigned int &child) {
+			auto c = em->getComponentFromId<ParentComponent>(parent);
+			ASSERT(c != nullptr);
+
+			c->children.push_back(child);
+		}
+
+		void removeChild(const unsigned int &parent, const unsigned int &child) {
+			auto c = em->getComponentFromId<ParentComponent>(parent);
+			ASSERT(c != nullptr);
+
+			c->children.erase(std::find(ALL(c->children), child));
+		}
+	} // namespace parent
 
 	namespace input {
 		// it can be optimized merging from each InputComponent all callbacks.

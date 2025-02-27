@@ -175,6 +175,16 @@ private:
 	std::vector<unsigned int> m_index{};
 };
 
+class ParentComponent : public Component {
+public:
+	ParentComponent() :
+		Component() {}
+
+	virtual ~ParentComponent() = default;
+
+	std::vector<unsigned int> children{};
+};
+
 class ShaderComponent : public Component {
 public:
 	ShaderComponent() :

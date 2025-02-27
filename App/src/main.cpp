@@ -212,11 +212,17 @@ int main(int argc, char *argv[]) {
 
 	auto ett = EntityManager::instance();
 
-	auto first = factoryHermite(BasicInfo{{1400, 800, 0}, {40, 50, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0, 0, 1});
+	auto first = factoryHermite(BasicInfo{{1400, 800, 0}, {40, 50, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
 	ecs->addEntity(shader, first);
 	ett->addComponent<GunComponent>(first, player.gunInfo);
 	ett->addComponent<PlayerComponent>(first);
 	ett->addComponent<HealthComponent>(first);
+	ett->addComponent<ParentComponent>(first);
+
+	auto head = factoryCircle(BasicInfo{{1400, 820, 1}, {20, 15, 1}, {}}, {1, 1, 0, 1}, 40);
+	ett->addComponent<AABB>(head);
+	systems::parent::addChild(first, head);
+	ecs->addEntity(shader, head);
 
 	auto healthBar = factorySquare(BasicInfo{{10 + HEALTH_BAR_SIZE.x, w.getHeight() - HEALTH_BAR_SIZE.y - 10, 1}, HEALTH_BAR_SIZE, {}}, {1, 0, 0, 1});
 	ecs->addEntity(shader, healthBar);

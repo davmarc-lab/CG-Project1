@@ -151,6 +151,34 @@ unsigned int factorySquare(const BasicInfo &info, const glm::vec4 &color, const 
 	return id;
 }
 
+unsigned int factoryCircle(const BasicInfo &info, const glm::vec4 &color, const unsigned int &numTriangles, const Pair<float> &center, const Pair<float> &radius, const EnemyInfo &stats) {
+	auto id = em->createEntity();
+	em->addComponent<Transform>(id);
+	systems::transform::updatePosition(id, info.position);
+	systems::transform::updateScale(id, info.scale);
+	systems::transform::updateRotation(id, info.rotation);
+	auto vertex = getCircleVertices(center, radius, numTriangles, color, color);
+	auto vc = em->addComponent<VertexComponent>(id, vertex.coords, vertex.colors, std::vector<unsigned int>{});
+	auto bc = em->addComponent<BufferComponent>(id);
+	bc->vao.onAttach();
+	bc->vao.bind();
+
+	bc->vbo_g.onAttach();
+	bc->vbo_g.setup(vc->getVertexCoords().data(), vc->getVertexCoords().size(), GL_STATIC_DRAW);
+	bc->vao.linkAttribFast(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+	bc->vbo_c.onAttach();
+	bc->vbo_c.setup(vc->getColorsCoords().data(), vc->getColorsCoords().size(), GL_STATIC_DRAW);
+	bc->vao.linkAttribFast(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+	auto cc = em->addComponent<RenderComponent>(id);
+	cc->setRenderCall([vc, bc]() {
+		bc->vao.bind();
+		glDrawArrays(GL_TRIANGLE_FAN, 0, vc->getVertexCoords().size());
+	});
+	return id;
+}
+
 unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, const ProjInfo &projInfo, const glm::vec3 &direction) {
 	auto id = em->createEntity();
 	em->addComponent<Transform>(id);
@@ -178,7 +206,6 @@ unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, co
 		systems::transform::addPosition(id, direction * PROJ_VEL);
 	});
 
-	em->addComponent<InputComponent>(id);
 	auto cc = em->addComponent<RenderComponent>(id);
 	cc->setRenderCall([vc, bc]() {
 		bc->vao.bind();

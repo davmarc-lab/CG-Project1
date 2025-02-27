@@ -61,6 +61,11 @@ namespace systems {
 		void incrementHealth(const unsigned int &id, const float &health);
 	} // namespace enemy
 
+	namespace parent {
+		void addChild(const unsigned int &parent, const unsigned int &child);
+		void removeChild(const unsigned int &parent, const unsigned int &child);
+	} // namespace parent
+
 	namespace input {
 		std::vector<std::pair<unsigned int, std::function<void()>>> getKeysCallback(const unsigned int &id);
 
