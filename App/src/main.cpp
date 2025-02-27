@@ -24,8 +24,6 @@
 #include "../include/ECS/EcsScene.hpp"
 #include "../include/HermiteFactory.hpp"
 
-Shared<Enemy> enem;
-
 using namespace ogl;
 
 const auto ed = EventManager::instance();
@@ -34,6 +32,8 @@ const glm::vec3 PLAYER_VEL = {50, 50, 0};
 const glm::vec3 PROJ_OFFSET = {2, 2, 0};
 const glm::vec3 HEALTH_BAR_SIZE = {200, 10, 0};
 const float HP_FACTOR = 2.f;
+
+const glm::vec4 EYE_COLOR = {0.2274, 0.4627, 0.9411, 1};
 
 struct Player {
 	unsigned int id;
@@ -72,122 +72,6 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 }
 
 int main(int argc, char *argv[]) {
-	// // basic multishape entity
-	// auto leye = createCircle({385, 710, 0}, {10, 13, 1}, {}, {0, 0}, {1, 1}, 30, {0, 0, 0, 1});
-	// leye->init();
-	// leye->setRenderCall([&leye, &shader]() {
-	// 	shader.setMat4("model", leye->getModelMatrix());
-	// 	leye->bindVAO();
-	// 	glDrawArrays(GL_TRIANGLE_FAN, 0, leye->getCoordsVector().size());
-	// });
-	// auto reye = createCircle({415, 710, 0}, {10, 13, 1}, {}, {0, 0}, {1, 1}, 30, {0, 0, 0, 1});
-	// reye->init();
-	// reye->setRenderCall([&reye, &shader]() {
-	// 	shader.setMat4("model", reye->getModelMatrix());
-	// 	reye->bindVAO();
-	// 	glDrawArrays(GL_TRIANGLE_FAN, 0, reye->getCoordsVector().size());
-	// });
-	// auto quad = createSquare({400, 700, 0}, {60, 60, 1}, {}, {1, 1, 0, 1});
-	// quad->init();
-	// quad->setRenderCall([&quad, &shader]() {
-	// 	shader.setMat4("model", quad->getModelMatrix());
-	// 	quad->bindVAO();
-	// 	glDrawElements(GL_TRIANGLES, quad->getIndicesVector().size(), GL_UNSIGNED_INT, 0);
-	// });
-	//
-	// Shared<MultiShape> sh = CreateShared<MultiShape>(shader, quad);
-	// sh->addEntity(leye);
-	// sh->addEntity(reye);
-	// basic.addEntity(shader.getId(), sh);
-	//
-	// // hermite
-	// auto mesh = readDataFromFile("./resources/hermite/other.txt");
-	// buildHermite({1, 0, 0, 1}, {1, 0, 0, 1}, mesh);
-	// auto ent = CreateShared<Entity>(EntityVertex{mesh->vertex, mesh->colors, {}}, EntityModel{});
-	// ent->setPosition({400, 400, 0});
-	// ent->setScale({40, 40, 0});
-	// ent->setCollidable(true);
-	// ent->init();
-	// ent->setRenderCall([&shader, &ent]() {
-	// 	shader.setMat4("model", ent->getModelMatrix());
-	// 	ent->bindVAO();
-	// 	glDrawArrays(GL_TRIANGLE_FAN, 0, ent->getCoordsVector().size());
-	// });
-	// basic.addEntity(shader.getId(), ent);
-	//
-	// {
-	// 	auto var = createSquare({800, 50, 0}, {20, 40, 1}, {}, {1, 1, 1, 1});
-	// 	enem = CreateShared<Enemy>(EnemyInfo{0, 0.6, 20, 100, 400}, EntityVertex{var->getCoordsVector(), var->getColorVector(), var->getIndicesVector()},
-	// 	                           EntityModel{{800, 50, 0}, {20, 40, 1}, {}});
-	// }
-	// enem->init();
-	// enem->setRenderCall([&shader]() {
-	// 	shader.setMat4("model", enem->getModelMatrix());
-	// 	enem->bindVAO();
-	// 	glDrawElements(GL_TRIANGLES, enem->getIndicesVector().size(), GL_UNSIGNED_INT, 0);
-	// });
-	// enem->setShootCallback([]() {
-	// });
-	// auto healthBar = createSquare({10 + (HEALTH_BAR_SIZE.x / 2), w.getHeight() - 20, 0}, HEALTH_BAR_SIZE, {}, {1, 0, 0, 1});
-	// healthBar->init();
-	// healthBar->setRenderCall([healthBar, &shader]() {
-	// 	shader.setMat4("model", healthBar->getModelMatrix());
-	// 	healthBar->bindVAO();
-	// 	glDrawElements(GL_TRIANGLES, healthBar->getIndicesVector().size(), GL_UNSIGNED_INT, 0);
-	// });
-	// basic.addEntity(shader.getId(), healthBar);
-	//
-	// basic.addEntity(shader.getId(), enem);
-	//
-	// 	// bullets collision
-	// 	std::vector<Shared<Entity>> toRemove{};
-	// 	{
-	// 		for (auto e : basic.getAllEntities()) {
-	// 			// the entity is a projectile
-	// 			if (std::dynamic_pointer_cast<Projectile>(e) != nullptr) {
-	// 				if (outOfScreen({w.getWidth(), w.getHeight()}, e->getPosition(), e->getScale())) {
-	// 					basic.removeEntity(e);
-	// 					continue;
-	// 				}
-	// 				auto cast = std::static_pointer_cast<Projectile>(e);
-	//
-	// 				// bullet collision
-	// 				auto bullet = cast->getBoundingBox();
-	// 				for (auto ent : basic.getAllEntities()) {
-	// 					// no collision between projectiles
-	// 					if (std::dynamic_pointer_cast<Projectile>(ent) == nullptr) {
-	// 						if (ent->isCollidable()) {
-	// 							auto bb = ent->getBoundingBox();
-	// 							bool cx = bb.botLeft.x <= bullet.topRight.x && bb.topRight.x >= bullet.botLeft.x;
-	// 							bool cy = bb.botLeft.y <= bullet.topRight.y && bb.topRight.y >= bullet.botLeft.y;
-	// 							if (cx && cy) {
-	// 								auto ce = std::dynamic_pointer_cast<Enemy>(ent);
-	// 								if (ce != nullptr) {
-	// 									ce->damage(cast->getDamage());
-	// 									if (ce->isDead()) {
-	// 										if (std::find(ALL(toRemove), ce) == toRemove.end())
-	// 											toRemove.push_back(ent);
-	// 									}
-	// 									cast->endLife();
-	// 								}
-	// 							}
-	// 						}
-	// 					}
-	// 				}
-	//
-	// 				if (cast->isDead()) {
-	// 					if (std::find(ALL(toRemove), cast) == toRemove.end())
-	// 						toRemove.push_back(cast);
-	// 					continue;
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// 	for (auto e : toRemove) {
-	// 		basic.removeEntity(e);
-	// 	}
-	// });
-
 	WindowSettings s{};
 	s.decorated = false;
 	s.vsync = true;
@@ -212,17 +96,42 @@ int main(int argc, char *argv[]) {
 
 	auto ett = EntityManager::instance();
 
-	auto first = factoryHermite(BasicInfo{{1400, 800, 0}, {40, 50, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
+	auto first = factoryHermite(BasicInfo{{1400, 800, 0}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
 	ecs->addEntity(shader, first);
 	ett->addComponent<GunComponent>(first, player.gunInfo);
 	ett->addComponent<PlayerComponent>(first);
 	ett->addComponent<HealthComponent>(first);
 	ett->addComponent<ParentComponent>(first);
 
-	auto head = factoryCircle(BasicInfo{{1400, 820, 1}, {20, 15, 1}, {}}, {1, 1, 0, 1}, 40);
+	auto head = factoryCircle(BasicInfo{{1399, 824, 1}, {27, 20, 1}, {}}, {1, 1, 0, 1}, 40);
 	ett->addComponent<AABB>(head);
 	systems::parent::addChild(first, head);
 	ecs->addEntity(shader, head);
+
+	auto leye = factoryCircle(BasicInfo{{1387, 828, 0}, {5, 7, 1}, {}}, EYE_COLOR);
+	systems::parent::addChild(first, leye);
+	ecs->addEntity(shader, leye);
+	auto reye = factoryCircle(BasicInfo{{1412, 828, 0}, {5, 7, 1}, {}}, EYE_COLOR);
+	systems::parent::addChild(first, reye);
+	ecs->addEntity(shader, reye);
+
+	auto igscene = im.addPanel<ImGuiModel>(reye);
+	igscene->setRenderFunc([&ett, &igscene]() {
+		auto tc = ett->getComponentFromId<Transform>(igscene->getCurrentId());
+		if (tc == nullptr)
+			return;
+		ImGui::Begin("Basic Scene");
+		auto pos = systems::transform::getPosition(igscene->getCurrentId());
+		if (ImGui::DragFloat3("Pos", &pos[0])) {
+			systems::transform::updatePosition(igscene->getCurrentId(), pos);
+		}
+
+		auto scale = systems::transform::getScale(igscene->getCurrentId());
+		if (ImGui::DragFloat3("Scale", &scale[0])) {
+			systems::transform::updateScale(igscene->getCurrentId(), scale);
+		}
+		ImGui::End();
+	});
 
 	auto healthBar = factorySquare(BasicInfo{{10 + HEALTH_BAR_SIZE.x, w.getHeight() - HEALTH_BAR_SIZE.y - 10, 1}, HEALTH_BAR_SIZE, {}}, {1, 0, 0, 1});
 	ecs->addEntity(shader, healthBar);
@@ -312,28 +221,6 @@ int main(int argc, char *argv[]) {
 			igdebug->showBoundingBox(b);
 		}
 		ImGui::Text("Collision count: %zu", systems::collision::getCollisions().size());
-		ImGui::End();
-	});
-
-	auto igscene = im.addPanel<ImGuiModel>(first);
-	igscene->setRenderFunc([&ett, &igscene]() {
-		auto tc = ett->getComponentFromId<Transform>(igscene->getCurrentId());
-		auto bc = ett->getComponentFromId<AABB>(igscene->getCurrentId());
-		if (tc == nullptr)
-			return;
-		if (bc == nullptr)
-			return;
-
-		ImGui::Begin("Basic Scene");
-		auto pos = systems::transform::getPosition(igscene->getCurrentId());
-		if (ImGui::DragFloat3("Pos", &pos[0])) {
-			systems::transform::updatePosition(igscene->getCurrentId(), pos);
-		}
-
-		auto scale = systems::transform::getScale(igscene->getCurrentId());
-		if (ImGui::DragFloat3("Scale", &scale[0])) {
-			systems::transform::updateScale(igscene->getCurrentId(), scale);
-		}
 		ImGui::End();
 	});
 
