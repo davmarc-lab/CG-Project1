@@ -56,24 +56,64 @@ class Texture {
         this->fastCreateTexture2D(data);
     }
 
+    /*
+     * Creates the texture already binded.
+     *
+     * @param *data Pointer to texture's data.
+     */
     void fastCreateTexture2D(void *data);
 
+    /*
+     * Generates the binded texture mipmap, only if the texture is created.
+     */
     void generateMipmap();
 
+    /*
+     * Retrieves the texture id.
+     *
+     * @returns texture id.
+     */
     inline unsigned int getId() const { return this->m_id; }
 
+    /*
+     * Retrieves the texture width.
+     *
+     * @returns texture width.
+     */
     inline unsigned int getWidth() const { return this->m_size.x; }
+
+    /*
+     * Changes texture width.
+     *
+     * @param width Texture width.
+     */
     inline void setWidth(const unsigned int &width) {
         this->m_size.x = width;
         this->rescaleTexture();
     }
 
+    /*
+     * Retrieves the texture height.
+     *
+     * @returns texture height.
+     */
     inline unsigned int getHeight() const { return this->m_size.y; }
+
+    /*
+     * Changes texture height.
+     *
+     * @param height Texture height.
+     */
     inline void setHeight(const unsigned int &height) {
         this->m_size.y = height;
         this->rescaleTexture();
     }
-
+    
+    /*
+     * Retrieves the texture size.
+     *
+     * @returns texture size.
+     */
     inline Pair<unsigned int> getSize() const { return this->m_size; }
     inline void setSize(const Pair<unsigned int> &size) {
         this->m_size = size;
@@ -88,6 +128,7 @@ class Texture {
     ~Texture() = default;
 
   private:
+    /// Rescales the texture with new width and height.
     void rescaleTexture() const;
 
     unsigned int m_id = 0;
