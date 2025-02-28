@@ -65,6 +65,10 @@ namespace systems {
 		float getDamage(const unsigned int &id);
 		void decreaseHealth(const unsigned int &id, const float &health);
 		void incrementHealth(const unsigned int &id, const float &health);
+
+		void setBehaviour(const unsigned int &id, std::function<void()> &&func);
+		void execBehaviourFunc(const unsigned int &id);
+		void execAllBehaviourFunc();
 	} // namespace enemy
 
 	namespace parent {

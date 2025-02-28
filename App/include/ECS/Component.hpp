@@ -295,6 +295,16 @@ public:
 	bool dead = false;
 };
 
+class BehaviourComponent : public Component {
+public:
+	BehaviourComponent() :
+		Component() {}
+
+	virtual ~BehaviourComponent() = default;
+
+	std::function<void()> func = nullptr;
+};
+
 class ProjectileComponent : public Component {
 public:
 	void updateTick(const glm::vec3 &pos) {

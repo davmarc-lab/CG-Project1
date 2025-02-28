@@ -188,6 +188,26 @@ namespace systems {
 
 			c->health += health;
 		}
+
+		void setBehaviour(const unsigned int &id, std::function<void()> &&func) {
+			auto c = em->getComponentFromId<BehaviourComponent>(id);
+			ASSERT(c != nullptr);
+
+			c->func = std::move(func);
+		}
+
+		void execBehaviourFunc(const unsigned int &id) {
+			auto c = em->getComponentFromId<BehaviourComponent>(id);
+			ASSERT(c != nullptr);
+
+			if (c->func != nullptr)
+				c->func();
+		}
+		void execAllBehaviourFunc() {
+			for (auto id : em->getEntitiesFromComponent<BehaviourComponent>()) {
+				execBehaviourFunc(id);
+			}
+		}
 	} // namespace enemy
 
 	namespace collision {

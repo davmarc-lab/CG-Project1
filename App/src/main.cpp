@@ -17,6 +17,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <glm/ext/quaternion_geometric.hpp>
+#include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/trigonometric.hpp>
 #include <iostream>
@@ -37,6 +39,7 @@ const float HEIGHT = 900.f;
 const auto ENEMY_SPAWN_DELAY = 5;
 const auto ENEMY_MAX_ENTITIES = 5;
 const glm::vec4 ENEMY_COLOR = {1, 0, 0, 1};
+const float ENEMY_VEL = 3.f;
 
 float lastEnemySpawnTime = 0;
 unsigned int enemyCount = 0;
@@ -282,8 +285,13 @@ int main(int argc, char *argv[]) {
 	});
 
 	// event for spawning an enemy
-	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &shader]() {
+	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &shader, &first]() {
 		auto id = factoryEnemy(BasicInfo{{getRandomPos()}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
+		ett->addComponent<BehaviourComponent>(id);
+		systems::enemy::setBehaviour(id, [id, first]() {
+			auto target = systems::transform::getPosition(first) - systems::transform::getPosition(id);
+			systems::transform::addPosition(id, glm::normalize(target) * ENEMY_VEL);
+		});
 		ecs->addEntity(shader, id);
 		enemyCount++;
 	});
@@ -293,6 +301,7 @@ int main(int argc, char *argv[]) {
 		enemyCount--;
 	});
 
+	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::enemy::execAllBehaviourFunc(); });
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::executeNextFrame(glfwGetTime()); });
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::updateDistanceAnimation(); });
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::collision::resolveCollisions(); });
