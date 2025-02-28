@@ -350,6 +350,7 @@ namespace systems {
 							updateEnemyLastHit(c.y, time);
 							if (::systems::enemy::getHealth(c.y) <= 0) {
 								rmv.insert(c.y);
+								ogl::EventManager::instance()->post(EVENT_ENEMY_DEAD);
 							}
 						}
 						rmv.insert(c.x);
@@ -367,6 +368,7 @@ namespace systems {
 							updateEnemyLastHit(c.x, time);
 							if (::systems::enemy::getHealth(c.x) <= 0) {
 								rmv.insert(c.x);
+								ogl::EventManager::instance()->post(EVENT_ENEMY_DEAD);
 							}
 						}
 						rmv.insert(c.y);

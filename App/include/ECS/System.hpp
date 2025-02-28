@@ -10,6 +10,9 @@
 #include "EcsScene.hpp"
 #include "Ett.hpp"
 
+const auto EVENT_ENEMY_SPAWN = ogl::Event("Spawn Enemy Event");
+const auto EVENT_ENEMY_DEAD = ogl::Event("Dead Enemy Event");
+
 namespace systems {
 	namespace ecs {
 		bool removeEntityFromManager(const unsigned int &id);

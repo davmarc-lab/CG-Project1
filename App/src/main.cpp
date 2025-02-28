@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/trigonometric.hpp>
 #include <iostream>
@@ -27,6 +29,17 @@
 using namespace ogl;
 
 const auto ed = EventManager::instance();
+const auto ecs = BasicScene::instance();
+
+const float WIDTH = 1600.f;
+const float HEIGHT = 900.f;
+
+const auto ENEMY_SPAWN_DELAY = 5;
+const auto ENEMY_MAX_ENTITIES = 5;
+const glm::vec4 ENEMY_COLOR = {1, 0, 0, 1};
+
+float lastEnemySpawnTime = 0;
+unsigned int enemyCount = 0;
 
 const glm::vec3 PLAYER_VEL = {50, 50, 0};
 const glm::vec3 PROJ_OFFSET = {2, 2, 0};
@@ -38,8 +51,14 @@ const glm::vec4 EYE_COLOR = {0.2274, 0.4627, 0.9411, 1};
 struct Player {
 	unsigned int id;
 	GunInfo gunInfo{};
-	ProjInfo projInfo{20, PROJ_RANGE, PROJ_COLOR};
+	ProjInfo projInfo{100, PROJ_RANGE, PROJ_COLOR};
 } player;
+
+glm::vec3 getRandomPos() {
+	auto x = rand() % (int)WIDTH;
+	auto y = rand() % (int)HEIGHT;
+	return {x, y, 0};
+}
 
 bool outOfScreen(const Pair<float> &size, const glm::vec3 &pos, const glm::vec3 &scale) {
 	return (pos.y + scale.y > size.y) || (pos.y - scale.y < 0) || (pos.x + scale.x > size.x) || (pos.x - scale.x < 0);
@@ -72,9 +91,12 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 }
 
 int main(int argc, char *argv[]) {
+	srand(time(NULL));
+
 	WindowSettings s{};
 	s.decorated = false;
 	s.vsync = true;
+	s.size = {WIDTH, HEIGHT};
 	Window w{s};
 	w.onAttach();
 	ed->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
@@ -91,8 +113,6 @@ int main(int argc, char *argv[]) {
 
 	Shared<ShaderProgram> shader = CreateShared<ShaderProgram>("vertexShader.glsl", "fragmentShader.glsl");
 	shader->createShaderProgram();
-
-	const auto ecs = BasicScene::instance();
 
 	auto ett = EntityManager::instance();
 
@@ -157,16 +177,16 @@ int main(int argc, char *argv[]) {
 	});
 
 	// shoot
-	systems::input::setKeyCallback(first, GLFW_KEY_UP, [&first, ecs, shader]() {
+	systems::input::setKeyCallback(first, GLFW_KEY_UP, [&first, shader]() {
 		playerShoot(first, glm::vec3{0, 1, 0}, ecs, shader);
 	});
-	systems::input::setKeyCallback(first, GLFW_KEY_LEFT, [&first, ecs, shader]() {
+	systems::input::setKeyCallback(first, GLFW_KEY_LEFT, [&first, shader]() {
 		playerShoot(first, glm::vec3{-1, 0, 0}, ecs, shader);
 	});
-	systems::input::setKeyCallback(first, GLFW_KEY_DOWN, [&first, ecs, shader]() {
+	systems::input::setKeyCallback(first, GLFW_KEY_DOWN, [&first, shader]() {
 		playerShoot(first, glm::vec3{0, -1, 0}, ecs, shader);
 	});
-	systems::input::setKeyCallback(first, GLFW_KEY_RIGHT, [&first, ecs, shader]() {
+	systems::input::setKeyCallback(first, GLFW_KEY_RIGHT, [&first, shader]() {
 		playerShoot(first, glm::vec3{1, 0, 0}, ecs, shader);
 	});
 
@@ -187,9 +207,6 @@ int main(int argc, char *argv[]) {
 		}
 		systems::transform::updatePosition(first, pos);
 	});
-
-	auto third = factoryEnemy(BasicInfo{{1050, 800, 0}, ENEMY_SLIME_SIZE, {}}, {1, 0, 0, 1});
-	ecs->addEntity(shader, third);
 
 	// Entity Manager callbacks
 	std::cerr << "Move this operation in EventManger: LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
@@ -251,6 +268,31 @@ int main(int argc, char *argv[]) {
 	// 	ImGui::End();
 	// });
 
+	// spawn enemy if they are less then MAX_ENENMIES, if not they spwan after ENEMY_DELAY seconds
+	ed->subscribe(event::loop::LOOP_END_RENDER, []() {
+		auto time = glfwGetTime();
+		if (enemyCount <= ENEMY_MAX_ENTITIES) {
+			ed->post(EVENT_ENEMY_SPAWN);
+		} else {
+			if (time - lastEnemySpawnTime > ENEMY_SPAWN_DELAY) {
+				lastEnemySpawnTime = time;
+				ed->post(EVENT_ENEMY_SPAWN);
+			}
+		}
+	});
+
+	// event for spawning an enemy
+	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &shader]() {
+		auto id = factoryEnemy(BasicInfo{{getRandomPos()}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
+		ecs->addEntity(shader, id);
+		enemyCount++;
+	});
+
+	// event to decrease enemy counter
+	ed->subscribe(EVENT_ENEMY_DEAD, []() {
+		enemyCount--;
+	});
+
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::executeNextFrame(glfwGetTime()); });
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::updateDistanceAnimation(); });
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::collision::resolveCollisions(); });
@@ -263,8 +305,8 @@ int main(int argc, char *argv[]) {
 			systems::render::renderBoundingBox();
 	});
 
-    // compress all BoundingBox
-    systems::collision::compressBoundingBox();
+	// compress all BoundingBox
+	systems::collision::compressBoundingBox();
 
 	while (!glfwWindowShouldClose(w.getContext())) {
 		ed->post(event::loop::LOOP_INPUT);
