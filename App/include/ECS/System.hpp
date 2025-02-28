@@ -38,8 +38,11 @@ namespace systems {
 	} // namespace transform
 
 	namespace collision {
+		void updateParentCollider(const unsigned int &id);
 		void updateCollider(const unsigned int &id);
 		void updateAllColliders();
+
+		void compressBoundingBox();
 
 		void resolveCollisions();
 

@@ -191,11 +191,28 @@ namespace systems {
 	} // namespace enemy
 
 	namespace collision {
+		void updateParentCollider(const unsigned int &id) {
+			auto box = em->getComponentFromId<AABB>(id);
+			auto tc = em->getComponentFromId<Transform>(id);
+			auto offset = tc->position - box->position;
+			box->position = tc->position;
+			box->botLeft += offset;
+			box->topRight += offset;
+		}
+
 		void updateCollider(const unsigned int &id) {
 			auto bc = em->getComponentFromId<AABB>(id);
 			if (bc == nullptr)
 				return;
 
+			auto pc = em->getComponentFromId<ParentComponent>(id);
+			// has children
+			if (pc != nullptr && !pc->children.empty()) {
+				updateParentCollider(id);
+				return;
+			}
+
+			// default collider update
 			auto cc = em->getComponentFromId<VertexComponent>(id);
 			bc->updateCollider(cc->getVertexCoords(), ::systems::transform::getModelMatrix(id));
 		}
@@ -249,6 +266,50 @@ namespace systems {
 			ASSERT(c != nullptr);
 
 			return {c->botLeft, c->topRight};
+		}
+
+		void compressBoundingBox() {
+			for (auto id : em->getEntitiesFromComponent<ParentComponent>()) {
+				auto c = em->getComponentFromId<ParentComponent>(id);
+				auto pv = em->getComponentFromId<VertexComponent>(id);
+				auto box = em->getComponentFromId<AABB>(id);
+				// remove AABB component from each children and update the parent
+				for (auto child : c->children) {
+					if (em->entityHasComponent<AABB>(child)) {
+						auto cv = em->getComponentFromId<VertexComponent>(child);
+						auto model = ::systems::transform::getModelMatrix(child);
+						auto bot = glm::vec3(1, 1, 0);
+						bool first = true;
+
+						for (auto vertex : cv->getVertexCoords()) {
+							auto elem = model * glm::vec4(vertex, 1);
+							if (first) {
+								bot = elem;
+								first = false;
+							}
+							bot.x = bot.x >= elem.x ? elem.x : bot.x;
+							bot.y = bot.y >= elem.y ? elem.y : bot.y;
+						}
+
+						auto top = glm::vec3(1, 1, 0);
+						first = true;
+						for (auto vertex : cv->getVertexCoords()) {
+							auto elem = model * glm::vec4(vertex, 1);
+							if (first) {
+								top = elem;
+								first = false;
+							}
+							top.x = top.x <= elem.x ? elem.x : top.x;
+							top.y = top.y <= elem.y ? elem.y : top.y;
+						}
+						box->botLeft.x = box->botLeft.x < bot.x ? box->botLeft.x : bot.x;
+						box->botLeft.y = box->botLeft.y < bot.y ? box->botLeft.y : bot.y;
+						box->topRight.x = box->topRight.x > top.x ? box->topRight.x : top.x;
+						box->topRight.y = box->topRight.y > top.y ? box->topRight.y : top.y;
+						em->removeComponent<AABB>(child);
+					}
+				}
+			}
 		}
 
 		void resolveCollisions() {
@@ -356,6 +417,18 @@ namespace systems {
 				for (auto other : em->getEntitiesFromComponent<AABB>()) {
 					if (first == other)
 						continue;
+					{
+						auto fc = em->getComponentFromId<ParentComponent>(first);
+						if (fc != nullptr) {
+							if (std::find(ALL(fc->children), other) != fc->children.end())
+								continue;
+						}
+						auto oc = em->getComponentFromId<ParentComponent>(other);
+						if (oc != nullptr) {
+							if (std::find(ALL(oc->children), first) != oc->children.end())
+								continue;
+						}
+					}
 					if (isColliding(first, other)) {
 						if (std::find(ALL(coll), Pair<unsigned int>{first, other}) == coll.end() &&
 							std::find(ALL(coll), Pair<unsigned int>{other, first}) == coll.end()) {

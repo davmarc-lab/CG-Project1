@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
 	systems::parent::addChild(first, reye);
 	ecs->addEntity(shader, reye);
 
-	auto igscene = im.addPanel<ImGuiModel>(reye);
+	auto igscene = im.addPanel<ImGuiModel>(first);
 	igscene->setRenderFunc([&ett, &igscene]() {
 		auto tc = ett->getComponentFromId<Transform>(igscene->getCurrentId());
 		if (tc == nullptr)
@@ -262,6 +262,9 @@ int main(int argc, char *argv[]) {
 		if (igdebug->isBoundingBoxVisible())
 			systems::render::renderBoundingBox();
 	});
+
+    // compress all BoundingBox
+    systems::collision::compressBoundingBox();
 
 	while (!glfwWindowShouldClose(w.getContext())) {
 		ed->post(event::loop::LOOP_INPUT);

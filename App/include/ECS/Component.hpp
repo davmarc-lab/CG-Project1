@@ -339,6 +339,7 @@ public:
 
 class AABB : public Component {
 public:
+	glm::vec3 position{};
 	glm::vec3 botLeft{};
 	glm::vec3 topRight{};
 
@@ -370,6 +371,7 @@ public:
 
 		this->botLeft = bot;
 		this->topRight = top;
+		this->position = model[3];
 	}
 
 	bool isColliding(const AABB &other) const {

@@ -64,6 +64,17 @@ public:
 	}
 
 	template <typename T>
+	inline bool removeComponent(const unsigned int &id) {
+		if (!this->entityHasComponent<T>(id))
+			return false;
+
+		this->m_compEntity.at(CLASSNAME(T)).erase(std::find(ALL(this->m_compEntity.at(CLASSNAME(T))), id));
+		auto c = this->getComponentFromId<T>(id);
+		this->m_ettComponent.at(id).erase(std::find(ALL(this->m_ettComponent.at(id)), c));
+		return this->entityHasComponent<T>(id);
+	}
+
+	template <typename T>
 	inline bool entityHasComponent(const unsigned int &id) {
 		return this->m_compEntity.count(CLASSNAME(T)) > 0 &&
 			std::find(ALL(this->m_compEntity.at(CLASSNAME(T))), id) != this->m_compEntity.at(CLASSNAME(T)).end();
