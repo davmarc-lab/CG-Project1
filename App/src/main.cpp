@@ -23,6 +23,7 @@
 #include <glm/trigonometric.hpp>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "../include/ECS/EcsScene.hpp"
@@ -43,6 +44,8 @@ const float ENEMY_VEL = 3.f;
 
 float lastEnemySpawnTime = 0;
 unsigned int enemyCount = 0;
+
+unsigned int levelCount = 1;
 
 const glm::vec3 PLAYER_VEL = {50, 50, 0};
 const glm::vec3 PROJ_OFFSET = {2, 2, 0};
@@ -117,11 +120,11 @@ int main(int argc, char *argv[]) {
 	ed->subscribe(event::loop::LOOP_RENDER, [&tm]() { tm->onRender(); });
 
 	TextHelper helper{};
-	helper.text = "Lorem Ipsum";
-	helper.position = {100, 400};
-    helper.color = {0, 1, 0};
+	helper.text = std::string{"Level: " + std::to_string(levelCount)};
+	helper.position = {w.getWidth() - 200, w.getHeight() - 50};
+	helper.color = {0, 0, 0};
 	helper.scale = 1;
-	tm->addText(helper);
+	auto level = tm->addText(helper);
 
 	im.addPanel<ImGuiStats>();
 

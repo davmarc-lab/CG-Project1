@@ -115,7 +115,6 @@ namespace ogl {
 		auto t = CreateShared<Text>(config);
 		t->init();
 		this->m_text.push_back(t);
-		std::cout << this->m_text.size() << "\n";
 		return t;
 	}
 } // namespace ogl
