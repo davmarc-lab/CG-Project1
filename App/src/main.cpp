@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
 	TextHelper helper{};
 	helper.text = std::string{"Level: " + std::to_string(levelCount)};
 	helper.position = {w.getWidth() - 200, w.getHeight() - 50};
-	helper.color = {0, 0, 0};
+	helper.color = {1, 1, 1};
 	helper.scale = 1;
 	auto level = tm->addText(helper);
 
