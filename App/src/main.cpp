@@ -154,6 +154,8 @@ int main(int argc, char *argv[]) {
 	systems::parent::addChild(first, reye);
 	ecs->addEntity(shader, reye);
 
+    // auto pr = factoryHermite(BasicInfo{{}, {}, {}}, "hermite/mouth.txt", {});
+
 	auto igscene = im.addPanel<ImGuiModel>(first);
 	igscene->setRenderFunc([&ett, &igscene]() {
 		auto tc = ett->getComponentFromId<Transform>(igscene->getCurrentId());
