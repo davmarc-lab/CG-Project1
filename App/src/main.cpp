@@ -112,6 +112,17 @@ int main(int argc, char *argv[]) {
 	ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
 	ed->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
 
+	const auto tm = TextManager::instance();
+	tm->onAttach();
+	ed->subscribe(event::loop::LOOP_RENDER, [&tm]() { tm->onRender(); });
+
+	TextHelper helper{};
+	helper.text = "Lorem Ipsum";
+	helper.position = {100, 400};
+    helper.color = {0, 1, 0};
+	helper.scale = 1;
+	tm->addText(helper);
+
 	im.addPanel<ImGuiStats>();
 
 	Shared<ShaderProgram> shader = CreateShared<ShaderProgram>("vertexShader.glsl", "fragmentShader.glsl");

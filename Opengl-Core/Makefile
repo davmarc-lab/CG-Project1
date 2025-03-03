@@ -31,7 +31,7 @@ ifeq ($(config),debug)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -lGL -lglfw -lX11 -lXrandr -lXi -ldl
+  LIBS += -lGL -lglfw -lfreetype -lX11 -lXrandr -lXi -ldl
   LDDEPS +=
   ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64
   LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
@@ -67,7 +67,7 @@ ifeq ($(config),release)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -lGL -lglfw -lX11 -lXrandr -lXi -ldl
+  LIBS += -lGL -lglfw -lfreetype -lX11 -lXrandr -lXi -ldl
   LDDEPS +=
   ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64
   LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
@@ -94,6 +94,7 @@ OBJECTS := \
 	$(OBJDIR)/Resource.o \
 	$(OBJDIR)/Window.o \
 	$(OBJDIR)/Shader.o \
+	$(OBJDIR)/TextManager.o \
 	$(OBJDIR)/Texture.o \
 	$(OBJDIR)/glad.o \
 	$(OBJDIR)/imgui.o \
@@ -192,6 +193,9 @@ $(OBJDIR)/Window.o: src/Core/Window.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Shader.o: src/Shader/Shader.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/TextManager.o: src/Text/TextManager.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Texture.o: src/Texture/Texture.cpp

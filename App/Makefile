@@ -31,7 +31,7 @@ ifeq ($(config),debug)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../bin/linux-x86_64/Debug/Opengl-Core/libOpengl-Core.a -lglfw
+  LIBS += ../bin/linux-x86_64/Debug/Opengl-Core/libOpengl-Core.a -lglfw -lfreetype
   LDDEPS += ../bin/linux-x86_64/Debug/Opengl-Core/libOpengl-Core.a
   ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
@@ -67,7 +67,7 @@ ifeq ($(config),release)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../bin/linux-x86_64/Release/Opengl-Core/libOpengl-Core.a -lglfw
+  LIBS += ../bin/linux-x86_64/Release/Opengl-Core/libOpengl-Core.a -lglfw -lfreetype
   LDDEPS += ../bin/linux-x86_64/Release/Opengl-Core/libOpengl-Core.a
   ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)

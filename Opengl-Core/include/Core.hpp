@@ -18,3 +18,5 @@
 #include "Shader/Shader.hpp"
 
 #include "Texture/Texture.hpp"
+
+#include "Text/TextManager.hpp"

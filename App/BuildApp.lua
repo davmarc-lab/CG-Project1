@@ -17,6 +17,7 @@ project "App"
     links {
         "Opengl-Core",
         "glfw",
+        "freetype",
     }
 
     dependson { "Opengl-Core" }

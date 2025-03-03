@@ -17,6 +17,7 @@ project "Opengl-Core"
     links {
         "GL",
         "glfw",
+        "freetype",
         "X11",
         "Xrandr",
         "Xi",
