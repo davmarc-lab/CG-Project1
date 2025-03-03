@@ -86,11 +86,8 @@ OBJECTS := \
 	$(OBJDIR)/AppGui.o \
 	$(OBJDIR)/EcsScene.o \
 	$(OBJDIR)/System.o \
-	$(OBJDIR)/Enemy.o \
-	$(OBJDIR)/Entity.o \
 	$(OBJDIR)/Factory.o \
 	$(OBJDIR)/HermiteFactory.o \
-	$(OBJDIR)/MultiShape.o \
 	$(OBJDIR)/main.o \
 
 RESOURCES := \
@@ -159,19 +156,10 @@ $(OBJDIR)/EcsScene.o: src/ECS/EcsScene.cpp
 $(OBJDIR)/System.o: src/ECS/System.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/Enemy.o: src/Enemy.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/Entity.o: src/Entity.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Factory.o: src/Factory.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/HermiteFactory.o: src/HermiteFactory.cpp
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/MultiShape.o: src/MultiShape.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/main.o: src/main.cpp

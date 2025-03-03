@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <unordered_map>
+#include <map>
 
 #include <vector>
 
@@ -12,7 +12,7 @@ public:
 	void removeEntity(Shared<ogl::ShaderProgram> &shader, const unsigned int &ett);
 	void removeEntity(const unsigned int &ett);
 
-	std::unordered_map<Shared<ogl::ShaderProgram>, std::vector<unsigned int>> getShaderEntityMap() const { return this->m_entities; }
+	std::map<Shared<ogl::ShaderProgram>, std::vector<unsigned int>> getShaderEntityMap() const { return this->m_entities; }
 
 	BasicScene(BasicScene &other) = delete;
 
@@ -29,7 +29,7 @@ public:
 	~BasicScene() = default;
 
 private:
-	std::unordered_map<Shared<ogl::ShaderProgram>, std::vector<unsigned int>> m_entities{};
+	std::map<Shared<ogl::ShaderProgram>, std::vector<unsigned int>> m_entities{};
 
 	inline static Shared<BasicScene> s_pointer = nullptr;
 

@@ -8,6 +8,7 @@ out VS_OUT {
 
 layout(std140, binding = 0) uniform Matrices {
     mat4 proj;
+    float time;
 };
 
 void main() {

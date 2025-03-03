@@ -5,6 +5,8 @@ layout (location = 1) in vec4 aColor;
 
 out vec4 color;
 
+out float Time;
+
 uniform mat4 model;
 
 layout(std140, binding = 0) uniform Matrices {
@@ -15,4 +17,5 @@ layout(std140, binding = 0) uniform Matrices {
 void main() {
     gl_Position = proj * model * vec4(aPos, 1);
     color = aColor;
+    Time = time;
 }

@@ -2,10 +2,7 @@
 #include "../../Opengl-Core/include/Graphic.hpp"
 
 #include "../include/AppGui.hpp"
-#include "../include/Enemy.hpp"
 #include "../include/Factory.hpp"
-#include "../include/MultiShape.hpp"
-#include "../include/Projectile.hpp"
 
 #include "../include/ECS/Component.hpp"
 #include "../include/ECS/Ett.hpp"
@@ -103,6 +100,7 @@ int main(int argc, char *argv[]) {
 	s.decorated = false;
 	s.vsync = true;
 	s.size = {WIDTH, HEIGHT};
+	s.bgColor = {0};
 	Window w{s};
 	w.onAttach();
 	ed->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
@@ -117,7 +115,6 @@ int main(int argc, char *argv[]) {
 
 	const auto tm = TextManager::instance();
 	tm->onAttach();
-	ed->subscribe(event::loop::LOOP_RENDER, [&tm]() { tm->onRender(); });
 
 	TextHelper helper{};
 	helper.text = std::string{"Level: " + std::to_string(levelCount)};
@@ -130,8 +127,13 @@ int main(int argc, char *argv[]) {
 
 	Shared<ShaderProgram> shader = CreateShared<ShaderProgram>("vertexShader.glsl", "fragmentShader.glsl");
 	shader->createShaderProgram();
+	Shared<ShaderProgram> backShader = CreateShared<ShaderProgram>("backVertShader.glsl", "backFragShader.glsl");
+	backShader->createShaderProgram();
 
 	auto ett = EntityManager::instance();
+
+	auto back = factorySquare({{w.getWidth() / 2, w.getHeight() / 2, 0}, {w.getWidth() / 2, w.getHeight() / 2, 0}, {}}, {0.3f, 0.3f, 0.3f, 1.0f});
+	ecs->addEntity(backShader, back);
 
 	auto first = factoryHermite(BasicInfo{{1400, 800, 0}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
 	ecs->addEntity(shader, first);
@@ -240,8 +242,14 @@ int main(int argc, char *argv[]) {
 	UniformBuffer ubo{"Matrices"};
 	glm::mat4 proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
 	ubo.onAttach();
-	ubo.setup(sizeof(glm::mat4), 0, 0, 0);
+	ubo.setup(sizeof(glm::mat4) + sizeof(float) + 12, 0, 0, 0);
 	ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
+	float time = glfwGetTime();
+	ubo.update(sizeof(glm::mat4), sizeof(float), &time);
+	ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&ubo]() {
+		float time = glfwGetTime();
+		ubo.update(sizeof(glm::mat4), sizeof(float), &time);
+	});
 	ed->subscribe(event::shader::SHADER_PROJECTION_CHANGED, [&w, &ubo]() {
 		auto proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
 		ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
@@ -327,6 +335,9 @@ int main(int argc, char *argv[]) {
 		if (igdebug->isBoundingBoxVisible())
 			systems::render::renderBoundingBox();
 	});
+
+	// Text Rendering on top of all
+	ed->subscribe(event::loop::LOOP_RENDER, [&tm]() { tm->onRender(); });
 
 	// compress all BoundingBox
 	systems::collision::compressBoundingBox();
