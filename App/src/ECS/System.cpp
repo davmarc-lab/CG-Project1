@@ -9,6 +9,8 @@
 #include "../../include/ECS/EcsScene.hpp"
 #include "../../include/ECS/Ett.hpp"
 
+#include "../../include/LevelManager.hpp"
+
 const auto em = EntityManager::instance();
 const auto scene = BasicScene::instance();
 

@@ -8,6 +8,8 @@
 #include "../include/ECS/Ett.hpp"
 #include "../include/ECS/System.hpp"
 
+#include "../include/LevelManager.hpp"
+
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <cassert>
@@ -116,12 +118,19 @@ int main(int argc, char *argv[]) {
 	const auto tm = TextManager::instance();
 	tm->onAttach();
 
+	LevelManager lm{};
+	ed->subscribe(event::loop::LOOP_UPDATE, [&lm]() { lm.onUpdate(); });
+
 	TextHelper helper{};
 	helper.text = std::string{"Level: " + std::to_string(levelCount)};
 	helper.position = {w.getWidth() - 200, w.getHeight() - 50};
 	helper.color = {1, 1, 1};
 	helper.scale = 1;
 	auto level = tm->addText(helper);
+
+	ed->subscribe(EVENT_LEVEL_COMPLETED, [&level, &lm]() {
+		level->setText("Level: " + std::to_string(lm.getCurrentLevel()));
+	});
 
 	im.addPanel<ImGuiStats>();
 
@@ -154,23 +163,14 @@ int main(int argc, char *argv[]) {
 	systems::parent::addChild(first, reye);
 	ecs->addEntity(shader, reye);
 
-    // auto pr = factoryHermite(BasicInfo{{}, {}, {}}, "hermite/mouth.txt", {});
+	// auto pr = factoryHermite(BasicInfo{{}, {}, {}}, "hermite/mouth.txt", {});
 
-	auto igscene = im.addPanel<ImGuiModel>(first);
-	igscene->setRenderFunc([&ett, &igscene]() {
-		auto tc = ett->getComponentFromId<Transform>(igscene->getCurrentId());
-		if (tc == nullptr)
-			return;
-		ImGui::Begin("Basic Scene");
-		auto pos = systems::transform::getPosition(igscene->getCurrentId());
-		if (ImGui::DragFloat3("Pos", &pos[0])) {
-			systems::transform::updatePosition(igscene->getCurrentId(), pos);
-		}
-
-		auto scale = systems::transform::getScale(igscene->getCurrentId());
-		if (ImGui::DragFloat3("Scale", &scale[0])) {
-			systems::transform::updateScale(igscene->getCurrentId(), scale);
-		}
+	auto iglevel = im.addPanel<ImGuiPanel>();
+	iglevel->setRenderFunc([&iglevel, &lm]() {
+		ImGui::Begin("Level");
+		ImGui::Text("Max Enemies: %u", lm.getMaxEnemies());
+		ImGui::Text("Spawned Enemies: %u", lm.getEnemiesSpawned());
+		ImGui::Text("Current Enemies: %u", lm.getCurrentEnemies());
 		ImGui::End();
 	});
 
@@ -296,17 +296,17 @@ int main(int argc, char *argv[]) {
 	// });
 
 	// spawn enemy if they are less then MAX_ENENMIES, if not they spwan after ENEMY_DELAY seconds
-	ed->subscribe(event::loop::LOOP_END_RENDER, []() {
-		auto time = glfwGetTime();
-		if (enemyCount <= ENEMY_MAX_ENTITIES) {
-			ed->post(EVENT_ENEMY_SPAWN);
-		} else {
-			if (time - lastEnemySpawnTime > ENEMY_SPAWN_DELAY) {
-				lastEnemySpawnTime = time;
-				ed->post(EVENT_ENEMY_SPAWN);
-			}
-		}
-	});
+	// ed->subscribe(event::loop::LOOP_END_RENDER, []() {
+	// 	auto time = glfwGetTime();
+	// 	if (enemyCount <= ENEMY_MAX_ENTITIES) {
+	// 		ed->post(EVENT_ENEMY_SPAWN);
+	// 	} else {
+	// 		if (time - lastEnemySpawnTime > ENEMY_SPAWN_DELAY) {
+	// 			lastEnemySpawnTime = time;
+	// 			ed->post(EVENT_ENEMY_SPAWN);
+	// 		}
+	// 	}
+	// });
 
 	// event for spawning an enemy
 	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &shader, &first]() {
@@ -321,8 +321,9 @@ int main(int argc, char *argv[]) {
 	});
 
 	// event to decrease enemy counter
-	ed->subscribe(EVENT_ENEMY_DEAD, []() {
+	ed->subscribe(EVENT_ENEMY_DEAD, [&lm]() {
 		enemyCount--;
+		lm.decreaseEnemies();
 	});
 
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::enemy::execAllBehaviourFunc(); });

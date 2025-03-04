@@ -88,6 +88,7 @@ OBJECTS := \
 	$(OBJDIR)/System.o \
 	$(OBJDIR)/Factory.o \
 	$(OBJDIR)/HermiteFactory.o \
+	$(OBJDIR)/LevelManager.o \
 	$(OBJDIR)/main.o \
 
 RESOURCES := \
@@ -160,6 +161,9 @@ $(OBJDIR)/Factory.o: src/Factory.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/HermiteFactory.o: src/HermiteFactory.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/LevelManager.o: src/LevelManager.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/main.o: src/main.cpp
