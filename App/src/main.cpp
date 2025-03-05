@@ -10,6 +10,7 @@
 
 #include "../include/LevelManager.hpp"
 
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <cassert>
@@ -105,6 +106,11 @@ int main(int argc, char *argv[]) {
 	s.bgColor = {0};
 	Window w{s};
 	w.onAttach();
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	w.addClearMask(GL_STENCIL_BUFFER_BIT);
+
 	ed->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
 	ed->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
 
@@ -141,13 +147,15 @@ int main(int argc, char *argv[]) {
 
 	auto ett = EntityManager::instance();
 
-	auto back = factorySquare({{w.getWidth() / 2, w.getHeight() / 2, 0}, {w.getWidth() / 2, w.getHeight() / 2, 0}, {}}, {0.3f, 0.3f, 0.3f, 1.0f});
+	auto back = factorySquare({{w.getWidth() / 2, w.getHeight() / 2, -0.9}, {w.getWidth() / 2, w.getHeight() / 2, 0}, {}}, {0.3f, 0.3f, 0.3f, 1.0f});
+	ett->removeComponent<Outlined>(back);
 	ecs->addEntity(backShader, back);
 
 	auto first = factoryHermite(BasicInfo{{1400, 800, 0}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
 	ecs->addEntity(shader, first);
 	ett->addComponent<GunComponent>(first, player.gunInfo);
 	ett->addComponent<PlayerComponent>(first);
+	ett->addComponent<InputComponent>(first);
 	ett->addComponent<HealthComponent>(first);
 	ett->addComponent<ParentComponent>(first);
 
@@ -162,8 +170,9 @@ int main(int argc, char *argv[]) {
 	auto reye = factoryCircle(BasicInfo{{1412, 828, 0}, {5, 7, 1}, {}}, EYE_COLOR);
 	systems::parent::addChild(first, reye);
 	ecs->addEntity(shader, reye);
-
-	// auto pr = factoryHermite(BasicInfo{{}, {}, {}}, "hermite/mouth.txt", {});
+	auto mouth = factoryHermite(BasicInfo{{1399, 816, 0}, {10, 11, 1}, {0, 0, 180}}, "./resources/hermite/mouth.txt");
+	systems::parent::addChild(first, mouth);
+	ecs->addEntity(shader, mouth);
 
 	auto iglevel = im.addPanel<ImGuiPanel>();
 	iglevel->setRenderFunc([&iglevel, &lm]() {
@@ -295,19 +304,6 @@ int main(int argc, char *argv[]) {
 	// 	ImGui::End();
 	// });
 
-	// spawn enemy if they are less then MAX_ENENMIES, if not they spwan after ENEMY_DELAY seconds
-	// ed->subscribe(event::loop::LOOP_END_RENDER, []() {
-	// 	auto time = glfwGetTime();
-	// 	if (enemyCount <= ENEMY_MAX_ENTITIES) {
-	// 		ed->post(EVENT_ENEMY_SPAWN);
-	// 	} else {
-	// 		if (time - lastEnemySpawnTime > ENEMY_SPAWN_DELAY) {
-	// 			lastEnemySpawnTime = time;
-	// 			ed->post(EVENT_ENEMY_SPAWN);
-	// 		}
-	// 	}
-	// });
-
 	// event for spawning an enemy
 	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &shader, &first]() {
 		auto id = factoryEnemy(BasicInfo{{getRandomPos()}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
@@ -324,6 +320,10 @@ int main(int argc, char *argv[]) {
 	ed->subscribe(EVENT_ENEMY_DEAD, [&lm]() {
 		enemyCount--;
 		lm.decreaseEnemies();
+	});
+
+	ed->subscribe(EVENT_SPAWN_ITEM, [&lm]() {
+		lm.setPause(5);
 	});
 
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::enemy::execAllBehaviourFunc(); });
@@ -344,6 +344,8 @@ int main(int argc, char *argv[]) {
 
 	// compress all BoundingBox
 	systems::collision::compressBoundingBox();
+
+	systems::render::initStencilShader();
 
 	while (!glfwWindowShouldClose(w.getContext())) {
 		ed->post(event::loop::LOOP_INPUT);

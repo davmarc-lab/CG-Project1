@@ -42,7 +42,7 @@ float voronoiNoise(vec2 p) {
 
 void main() {
     vec3 base = vec3(0.7, 0.3, 0.3);
-    vec3 grid = vec3(0);
+    vec3 grid = vec3(0.2);
     
     float time = Time;
     // vec2 anim_offset = vec2(sin(time), cos(time));

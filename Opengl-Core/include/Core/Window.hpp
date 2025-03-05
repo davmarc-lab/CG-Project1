@@ -49,6 +49,8 @@ namespace ogl {
 		void toggleVsync();
 		bool isVsyncEnabled() const;
 
+		void addClearMask(const unsigned int &val) { this->m_clearMask |= val; }
+
 		void setResizeCallback(std::function<void(GLFWwindow *, int, int)> &&func);
 		void execResizeCallback(GLFWwindow *context, const int &width, const int &height);
 

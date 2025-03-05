@@ -6,6 +6,7 @@
 #define MAX_POSSIBLE_ENEMIES 10
 
 const auto EVENT_LEVEL_COMPLETED = ogl::Event("Level Completed");
+const auto EVENT_SPAWN_ITEM = ogl::Event("Spawn Item");
 const auto EVENT_SPAWN_HEALTH = ogl::Event("Spawn Health Item");
 const auto EVENT_SPAWN_POWERUP = ogl::Event("Spawn Powerup Item");
 const auto EVENT_ENEMY_SPAWN = ogl::Event("Spawn Enemy Event");
@@ -18,6 +19,8 @@ struct LevelModifiers {
 };
 
 struct LevelData {
+	float pauseTime = 0.f;
+	float lastPauseTime = 0.f;
 	unsigned int numEnemies = 0;
 	unsigned int enemiesSpawned = 0;
 	float lastEnemySpawnTime = 0;
@@ -40,6 +43,11 @@ public:
 	inline unsigned int getCurrentEnemies() const { return this->m_data.numEnemies; }
 
 	inline unsigned int getCurrentLevel() const { return this->m_currentLevel; }
+
+	inline void setPause(const float &time) {
+		this->m_data.pauseTime = time;
+		this->m_data.lastPauseTime = glfwGetTime();
+	}
 
 	inline void decreaseEnemies(const unsigned int val = 1) { this->m_data.numEnemies -= val; }
 

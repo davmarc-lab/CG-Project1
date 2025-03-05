@@ -103,7 +103,7 @@ unsigned int factorySquare(const BasicInfo &info, const glm::vec4 &color, const 
 	bc->ebo.onAttach();
 	bc->ebo.setup(vc->getIndexCoords().data(), vc->getIndexCoords().size(), GL_STATIC_DRAW);
 
-	em->addComponent<InputComponent>(id);
+	em->addComponent<Outlined>(id);
 	auto cc = em->addComponent<RenderComponent>(id);
 	cc->setRenderCall([vc, bc]() {
 		bc->vao.bind();
@@ -133,6 +133,7 @@ unsigned int factoryCircle(const BasicInfo &info, const glm::vec4 &color, const 
 	bc->vao.linkAttribFast(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
 	auto cc = em->addComponent<RenderComponent>(id);
+	em->addComponent<Outlined>(id);
 	cc->setRenderCall([vc, bc]() {
 		bc->vao.bind();
 		glDrawArrays(GL_TRIANGLE_FAN, 0, vc->getVertexCoords().size());
@@ -167,6 +168,7 @@ unsigned int factoryProjectile(const BasicInfo &info, const glm::vec4 &color, co
 		systems::transform::addPosition(id, direction * PROJ_VEL);
 	});
 
+	em->addComponent<Outlined>(id);
 	auto cc = em->addComponent<RenderComponent>(id);
 	cc->setRenderCall([vc, bc]() {
 		bc->vao.bind();
@@ -199,7 +201,7 @@ unsigned int factoryHermite(const BasicInfo &info, const std::string &path, cons
 	bc->vbo_c.setup(vc->getColorsCoords().data(), vc->getColorsCoords().size(), GL_STATIC_DRAW);
 	bc->vao.linkAttribFast(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-	em->addComponent<InputComponent>(id);
+	em->addComponent<Outlined>(id);
 	auto cc = em->addComponent<RenderComponent>(id);
 	cc->setRenderCall([vc, bc]() {
 		bc->vao.bind();
@@ -234,7 +236,7 @@ unsigned int factoryEnemy(const BasicInfo &info, const glm::vec4 &color) {
 	bc->vbo_c.setup(vc->getColorsCoords().data(), vc->getColorsCoords().size(), GL_STATIC_DRAW);
 	bc->vao.linkAttribFast(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-	em->addComponent<InputComponent>(id);
+	em->addComponent<Outlined>(id);
 	auto cc = em->addComponent<RenderComponent>(id);
 	cc->setRenderCall([vc, bc]() {
 		bc->vao.bind();

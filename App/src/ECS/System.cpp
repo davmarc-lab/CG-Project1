@@ -1,7 +1,9 @@
 #include "../../include/ECS/System.hpp"
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <functional>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
 #include <set>
 #include <vector>
@@ -28,6 +30,8 @@ struct BoundingBox {
 	std::vector<glm::vec4> colors{};
 	bool init = false;
 } defaultShader;
+
+ogl::ShaderProgram stencil = ogl::ShaderProgram("vertexShader.glsl", "stencilShader.glsl");
 
 namespace systems {
 	namespace ecs {
@@ -574,14 +578,49 @@ namespace systems {
 	} // namespace animation
 
 	namespace render {
+		void initStencilShader() {
+			stencil.createShaderProgram();
+		}
+
 		void renderAllMeshes() {
+			auto outlines = em->getEntitiesFromComponent<Outlined>();
 			for (auto [shader, etts] : scene->getShaderEntityMap()) {
 				shader->use();
 				for (auto id : etts) {
-					auto rc = em->getComponentFromId<RenderComponent>(id);
-					shader->setMat4("model", ::systems::transform::getModelMatrix(id));
-					rc->call();
+					if (std::find(ALL(outlines), id) == outlines.end()) {
+						glStencilMask(0x00);
+						glStencilFunc(GL_ALWAYS, 0, 0xFF);
+						auto rc = em->getComponentFromId<RenderComponent>(id);
+						shader->setMat4("model", ::systems::transform::getModelMatrix(id));
+						rc->call();
+					} else {
+						// render normal mesh
+						glStencilFunc(GL_ALWAYS, 1, 0xFF);
+						glStencilMask(0xFF);
+						auto rc = em->getComponentFromId<RenderComponent>(id);
+						shader->setMat4("model", ::systems::transform::getModelMatrix(id));
+						rc->call();
+					}
 				}
+				glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+				glStencilMask(0x00);
+				glDisable(GL_DEPTH_TEST);
+				stencil.use();
+				for (auto id : outlines) {
+					if (std::find(ALL(etts), id) != outlines.end()) {
+						// render a bigger mesh using stencil buffer
+						auto model = glm::mat4(1);
+						model = glm::translate(model, ::systems::transform::getPosition(id));
+						model = glm::scale(model, ::systems::transform::getScale(id) + glm::vec3{3});
+						// miss rotation
+						stencil.setMat4("model", model);
+						auto rc = em->getComponentFromId<RenderComponent>(id);
+						rc->call();
+					}
+				}
+				glStencilMask(0xFF);
+				glStencilFunc(GL_ALWAYS, 0, 0xFF);
+				glEnable(GL_DEPTH_TEST);
 			}
 		}
 

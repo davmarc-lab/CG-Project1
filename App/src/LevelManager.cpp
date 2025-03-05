@@ -10,7 +10,7 @@ void LevelManager::incrementLevel() {
 	}
 	this->m_data.lastEnemySpawnTime = glfwGetTime();
 	this->m_currentLevel++;
-    ogl::EventManager::instance()->post(EVENT_LEVEL_COMPLETED);
+	ogl::EventManager::instance()->post(EVENT_LEVEL_COMPLETED);
 }
 
 void LevelManager::clearLevel() {
@@ -20,6 +20,15 @@ void LevelManager::clearLevel() {
 }
 
 void LevelManager::onUpdate() {
+	auto time = glfwGetTime();
+
+	if (this->m_data.pauseTime > 0) {
+		if (time - this->m_data.lastPauseTime > this->m_data.pauseTime) {
+			this->m_data.pauseTime = 0;
+		}
+		return;
+	}
+
 	if (this->isLevelCompleted() || this->m_currentLevel == 0)
 		this->incrementLevel();
 
@@ -34,7 +43,6 @@ void LevelManager::onUpdate() {
 		return;
 	}
 
-	auto time = glfwGetTime();
 	if (time - this->m_data.lastEnemySpawnTime > this->m_modifiers.enemiesSpawnDelay) {
 		ogl::EventManager::instance()->post(EVENT_ENEMY_SPAWN);
 		this->m_data.lastEnemySpawnTime = time;

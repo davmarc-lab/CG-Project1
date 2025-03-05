@@ -10,7 +10,6 @@
 #include "EcsScene.hpp"
 #include "Ett.hpp"
 
-
 namespace systems {
 	namespace ecs {
 		bool removeEntityFromManager(const unsigned int &id);
@@ -95,6 +94,8 @@ namespace systems {
 	} // namespace animation
 
 	namespace render {
+		void initStencilShader();
+
 		void renderAllMeshes();
 
 		void renderBoundingBox();

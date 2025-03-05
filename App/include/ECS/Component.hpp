@@ -216,6 +216,14 @@ private:
 	std::function<void()> m_renderCall = nullptr;
 };
 
+class Outlined : public Component {
+public:
+	Outlined() :
+		Component() {}
+
+	virtual ~Outlined() = default;
+};
+
 class InputComponent : public Component {
 public:
 	inline void registerAction(const unsigned int &key, const std::function<void()> &callback) {

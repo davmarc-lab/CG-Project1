@@ -2,6 +2,7 @@
 
 #include "../../include/Graphic.hpp"
 
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <functional>
@@ -171,7 +172,9 @@ namespace ogl {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		this->m_clearMask |= GL_COLOR_BUFFER_BIT;
 
-		// missing depth and cull structs
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		this->m_clearMask |= GL_DEPTH_BUFFER_BIT;
 
 		this->m_attached = true;
 	}
