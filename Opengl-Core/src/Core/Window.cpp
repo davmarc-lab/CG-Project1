@@ -182,8 +182,6 @@ namespace ogl {
 	void Window::onDetach() { glfwDestroyWindow(this->m_context); }
 
 	void Window::onUpdate() {
-		glfwPollEvents();
-		glfwSwapBuffers(this->m_context);
 	}
 
 	void Window::onRender() {
@@ -191,7 +189,10 @@ namespace ogl {
 		glClear(this->m_clearMask);
 	}
 
-	void Window::begin() {}
+	void Window::begin() {
+		glfwPollEvents();
+		glfwSwapBuffers(this->m_context);
+	}
 
 	void Window::end() {}
 } // namespace ogl

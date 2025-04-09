@@ -10,21 +10,7 @@
 
 #include "../include/LevelManager.hpp"
 
-#include <GL/gl.h>
-#include <GLFW/glfw3.h>
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
-#include <glm/ext/quaternion_geometric.hpp>
-#include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/trigonometric.hpp>
-#include <iostream>
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "../include/ECS/EcsScene.hpp"
 #include "../include/HermiteFactory.hpp"
@@ -58,6 +44,7 @@ struct Player {
 	unsigned int id;
 	GunInfo gunInfo{};
 	ProjInfo projInfo{100, PROJ_RANGE, PROJ_COLOR};
+	bool dead = false;
 } player;
 
 glm::vec3 getRandomPos() {
@@ -112,6 +99,7 @@ int main(int argc, char *argv[]) {
 	w.addClearMask(GL_STENCIL_BUFFER_BIT);
 
 	ed->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
+	ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&w]() { w.begin(); });
 	ed->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
 
 	ImGuiManager im{"", w};
@@ -331,8 +319,14 @@ int main(int argc, char *argv[]) {
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::updateDistanceAnimation(); });
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::collision::resolveCollisions(); });
 	ed->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
-	ed->subscribe(PLAYER_DEAD_EVENT, []() {
-		std::cout << "STOP APPLICATION\n";
+
+	ed->subscribe(PLAYER_DEAD_EVENT, [&w, &tm]() {
+		player.dead = true;
+		TextHelper h{};
+		h.position = {w.getWidth() / 2 - 138, w.getHeight() / 2 + 30};
+		h.text = "You are Dead";
+		h.color = {1, 1, 1};
+		auto l = tm->addText(h);
 	});
 	ed->subscribe(event::loop::LOOP_RENDER, [&igdebug]() {
 		if (igdebug->isBoundingBoxVisible())
@@ -349,7 +343,9 @@ int main(int argc, char *argv[]) {
 
 	while (!glfwWindowShouldClose(w.getContext())) {
 		ed->post(event::loop::LOOP_INPUT);
-		ed->post(event::loop::LOOP_UPDATE);
+		if (!player.dead) {
+			ed->post(event::loop::LOOP_UPDATE);
+		}
 		ed->post(event::loop::LOOP_BEGIN_RENDER);
 		ed->post(event::loop::LOOP_RENDER);
 		ed->post(event::loop::LOOP_END_RENDER);
