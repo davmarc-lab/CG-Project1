@@ -11,10 +11,13 @@ endif
 ifeq ($(config),debug)
   App_config = debug
   Opengl_Core_config = debug
-endif
-ifeq ($(config),release)
+
+else ifeq ($(config),release)
   App_config = release
   Opengl_Core_config = release
+
+else
+  $(error "invalid configuration $(config)")
 endif
 
 PROJECTS := App Opengl-Core

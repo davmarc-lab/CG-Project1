@@ -173,7 +173,7 @@ namespace ogl {
 		this->m_clearMask |= GL_COLOR_BUFFER_BIT;
 
 		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
+		glDepthFunc(GL_ALWAYS);
 		this->m_clearMask |= GL_DEPTH_BUFFER_BIT;
 
 		this->m_attached = true;

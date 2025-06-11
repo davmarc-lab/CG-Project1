@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
 	ett->removeComponent<Outlined>(back);
 	ecs->addEntity(backShader, back);
 
-	auto first = factoryHermite(BasicInfo{{1400, 800, 0}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
+	auto first = factoryHermite(BasicInfo{{1400, 800, 1}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
 	ecs->addEntity(shader, first);
 	ett->addComponent<GunComponent>(first, player.gunInfo);
 	ett->addComponent<PlayerComponent>(first);
@@ -152,13 +152,13 @@ int main(int argc, char *argv[]) {
 	systems::parent::addChild(first, head);
 	ecs->addEntity(shader, head);
 
-	auto leye = factoryCircle(BasicInfo{{1387, 828, 0}, {5, 7, 1}, {}}, EYE_COLOR);
+	auto leye = factoryCircle(BasicInfo{{1387, 828, 1}, {5, 7, 1}, {}}, EYE_COLOR);
 	systems::parent::addChild(first, leye);
 	ecs->addEntity(shader, leye);
-	auto reye = factoryCircle(BasicInfo{{1412, 828, 0}, {5, 7, 1}, {}}, EYE_COLOR);
+	auto reye = factoryCircle(BasicInfo{{1412, 828, 1}, {5, 7, 1}, {}}, EYE_COLOR);
 	systems::parent::addChild(first, reye);
 	ecs->addEntity(shader, reye);
-	auto mouth = factoryHermite(BasicInfo{{1399, 816, 0}, {10, 11, 1}, {0, 0, 180}}, "./resources/hermite/mouth.txt");
+	auto mouth = factoryHermite(BasicInfo{{1399, 816, 1}, {10, 11, 1}, {0, 0, 180}}, "./resources/hermite/mouth.txt");
 	systems::parent::addChild(first, mouth);
 	ecs->addEntity(shader, mouth);
 
@@ -264,33 +264,6 @@ int main(int argc, char *argv[]) {
 		ImGui::Text("Collision count: %zu", systems::collision::getCollisions().size());
 		ImGui::End();
 	});
-
-	// auto pad = im.addPanel<ImGuiPanel>();
-	// pad->setRenderFunc([&w]() {
-	// 	auto padid = GLFW_JOYSTICK_1;
-	// 	ImGui::Begin("Pad");
-	// 	ImGui::Text("Pad Connected: %d", glfwJoystickPresent(padid) == GLFW_TRUE);
-	// 	int axisCount;
-	// 	auto axis = glfwGetJoystickAxes(padid, &axisCount);
-	// 	ImGui::Text("Axis Count: %d", axisCount);
-	// 	for (int i = 0; i < axisCount; i++) {
-	// 		ImGui::Text("Axis %d -> %f", i, axis[i]);
-	// 	}
-	// 	int buttonCount;
-	// 	auto buttons = glfwGetJoystickButtons(padid, &buttonCount);
-	// 	ImGui::Text("Button Count: %d", buttonCount);
-	// 	for (int i = 0; i < buttonCount; i++) {
-	// 		ImGui::Text("Button %d -> %d", i, buttons[i] == GLFW_PRESS);
-	// 	}
-	// 	int hatCount;
-	// 	auto hats = glfwGetJoystickHats(padid, &hatCount);
-	// 	ImGui::Text("Hats Count: %d", hatCount);
-	// 	for (int i = 0; i < hatCount; i++) {
-	// 		ImGui::Text("Hat %d -> %d", i, hats[i]);
-	// 	}
-	//
-	// 	ImGui::End();
-	// });
 
 	// event for spawning an enemy
 	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &shader, &first]() {

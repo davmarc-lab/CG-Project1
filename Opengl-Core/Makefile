@@ -8,118 +8,123 @@ ifndef verbose
   SILENT = @
 endif
 
-.PHONY: clean prebuild prelink
-
-ifeq ($(config),debug)
-  ifeq ($(origin CC), default)
-    CC = gcc
-  endif
-  ifeq ($(origin CXX), default)
-    CXX = g++
-  endif
-  ifeq ($(origin AR), default)
-    AR = ar
-  endif
-  RESCOMP = windres
-  TARGETDIR = ../bin/linux-x86_64/Debug/Opengl-Core
-  TARGET = $(TARGETDIR)/libOpengl-Core.a
-  OBJDIR = ../bin/int/linux-x86_64/Debug/Opengl-Core
-  DEFINES += -DDEBUG
-  INCLUDES += -Iinclude -Ivendor/include
-  FORCE_INCLUDE +=
-  ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g
-  ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -lGL -lglfw -lfreetype -lX11 -lXrandr -lXi -ldl
-  LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64
-  LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
-  define PREBUILDCMDS
-  endef
-  define PRELINKCMDS
-  endef
-  define POSTBUILDCMDS
-  endef
-all: prebuild prelink $(TARGET)
-	@:
-
-endif
-
-ifeq ($(config),release)
-  ifeq ($(origin CC), default)
-    CC = gcc
-  endif
-  ifeq ($(origin CXX), default)
-    CXX = g++
-  endif
-  ifeq ($(origin AR), default)
-    AR = ar
-  endif
-  RESCOMP = windres
-  TARGETDIR = ../bin/linux-x86_64/Release/Opengl-Core
-  TARGET = $(TARGETDIR)/libOpengl-Core.a
-  OBJDIR = ../bin/int/linux-x86_64/Release/Opengl-Core
-  DEFINES += -DNDEBUG
-  INCLUDES += -Iinclude -Ivendor/include
-  FORCE_INCLUDE +=
-  ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
-  ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -lGL -lglfw -lfreetype -lX11 -lXrandr -lXi -ldl
-  LDDEPS +=
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64
-  LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
-  define PREBUILDCMDS
-  endef
-  define PRELINKCMDS
-  endef
-  define POSTBUILDCMDS
-  endef
-all: prebuild prelink $(TARGET)
-	@:
-
-endif
-
-OBJECTS := \
-	$(OBJDIR)/ElementBuffer.o \
-	$(OBJDIR)/FrameBuffer.o \
-	$(OBJDIR)/RenderBuffer.o \
-	$(OBJDIR)/UniformBuffer.o \
-	$(OBJDIR)/VertexArray.o \
-	$(OBJDIR)/VertexBuffer.o \
-	$(OBJDIR)/Event.o \
-	$(OBJDIR)/ImGuiManager.o \
-	$(OBJDIR)/Resource.o \
-	$(OBJDIR)/Window.o \
-	$(OBJDIR)/Shader.o \
-	$(OBJDIR)/TextManager.o \
-	$(OBJDIR)/Texture.o \
-	$(OBJDIR)/glad.o \
-	$(OBJDIR)/imgui.o \
-	$(OBJDIR)/imgui_demo.o \
-	$(OBJDIR)/imgui_draw.o \
-	$(OBJDIR)/imgui_impl_glfw.o \
-	$(OBJDIR)/imgui_impl_opengl3.o \
-	$(OBJDIR)/imgui_tables.o \
-	$(OBJDIR)/imgui_widgets.o \
-
-RESOURCES := \
-
-CUSTOMFILES := \
+.PHONY: clean prebuild
 
 SHELLTYPE := posix
-ifeq (.exe,$(findstring .exe,$(ComSpec)))
+ifeq ($(shell echo "test"), "test")
 	SHELLTYPE := msdos
 endif
 
-$(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES) | $(TARGETDIR)
+# Configurations
+# #############################################
+
+ifeq ($(origin CC), default)
+  CC = gcc
+endif
+ifeq ($(origin CXX), default)
+  CXX = g++
+endif
+ifeq ($(origin AR), default)
+  AR = ar
+endif
+RESCOMP = windres
+INCLUDES += -Iinclude -Ivendor/include
+FORCE_INCLUDE +=
+ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
+ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
+LIBS += -lGL -lglfw -lfreetype -lX11 -lXrandr -lXi -ldl
+LDDEPS +=
+ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib64 -m64
+LINKCMD = $(AR) -rcs "$@" $(OBJECTS)
+define PREBUILDCMDS
+endef
+define PRELINKCMDS
+endef
+define POSTBUILDCMDS
+endef
+
+ifeq ($(config),debug)
+TARGETDIR = ../bin/linux-x86_64/Debug/Opengl-Core
+TARGET = $(TARGETDIR)/libOpengl-Core.a
+OBJDIR = ../bin/int/linux-x86_64/Debug/Opengl-Core
+DEFINES += -DDEBUG
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g
+
+else ifeq ($(config),release)
+TARGETDIR = ../bin/linux-x86_64/Release/Opengl-Core
+TARGET = $(TARGETDIR)/libOpengl-Core.a
+OBJDIR = ../bin/int/linux-x86_64/Release/Opengl-Core
+DEFINES += -DNDEBUG
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
+
+endif
+
+# Per File Configurations
+# #############################################
+
+
+# File sets
+# #############################################
+
+GENERATED :=
+OBJECTS :=
+
+GENERATED += $(OBJDIR)/ElementBuffer.o
+GENERATED += $(OBJDIR)/Event.o
+GENERATED += $(OBJDIR)/FrameBuffer.o
+GENERATED += $(OBJDIR)/ImGuiManager.o
+GENERATED += $(OBJDIR)/RenderBuffer.o
+GENERATED += $(OBJDIR)/Resource.o
+GENERATED += $(OBJDIR)/Shader.o
+GENERATED += $(OBJDIR)/TextManager.o
+GENERATED += $(OBJDIR)/Texture.o
+GENERATED += $(OBJDIR)/UniformBuffer.o
+GENERATED += $(OBJDIR)/VertexArray.o
+GENERATED += $(OBJDIR)/VertexBuffer.o
+GENERATED += $(OBJDIR)/Window.o
+GENERATED += $(OBJDIR)/glad.o
+GENERATED += $(OBJDIR)/imgui.o
+GENERATED += $(OBJDIR)/imgui_demo.o
+GENERATED += $(OBJDIR)/imgui_draw.o
+GENERATED += $(OBJDIR)/imgui_impl_glfw.o
+GENERATED += $(OBJDIR)/imgui_impl_opengl3.o
+GENERATED += $(OBJDIR)/imgui_tables.o
+GENERATED += $(OBJDIR)/imgui_widgets.o
+OBJECTS += $(OBJDIR)/ElementBuffer.o
+OBJECTS += $(OBJDIR)/Event.o
+OBJECTS += $(OBJDIR)/FrameBuffer.o
+OBJECTS += $(OBJDIR)/ImGuiManager.o
+OBJECTS += $(OBJDIR)/RenderBuffer.o
+OBJECTS += $(OBJDIR)/Resource.o
+OBJECTS += $(OBJDIR)/Shader.o
+OBJECTS += $(OBJDIR)/TextManager.o
+OBJECTS += $(OBJDIR)/Texture.o
+OBJECTS += $(OBJDIR)/UniformBuffer.o
+OBJECTS += $(OBJDIR)/VertexArray.o
+OBJECTS += $(OBJDIR)/VertexBuffer.o
+OBJECTS += $(OBJDIR)/Window.o
+OBJECTS += $(OBJDIR)/glad.o
+OBJECTS += $(OBJDIR)/imgui.o
+OBJECTS += $(OBJDIR)/imgui_demo.o
+OBJECTS += $(OBJDIR)/imgui_draw.o
+OBJECTS += $(OBJDIR)/imgui_impl_glfw.o
+OBJECTS += $(OBJDIR)/imgui_impl_opengl3.o
+OBJECTS += $(OBJDIR)/imgui_tables.o
+OBJECTS += $(OBJDIR)/imgui_widgets.o
+
+# Rules
+# #############################################
+
+all: $(TARGET)
+	@:
+
+$(TARGET): $(GENERATED) $(OBJECTS) $(LDDEPS) | $(TARGETDIR)
+	$(PRELINKCMDS)
 	@echo Linking Opengl-Core
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
-
-$(CUSTOMFILES): | $(OBJDIR)
 
 $(TARGETDIR):
 	@echo Creating $(TARGETDIR)
@@ -141,92 +146,101 @@ clean:
 	@echo Cleaning Opengl-Core
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
+	$(SILENT) rm -rf $(GENERATED)
 	$(SILENT) rm -rf $(OBJDIR)
 else
 	$(SILENT) if exist $(subst /,\\,$(TARGET)) del $(subst /,\\,$(TARGET))
+	$(SILENT) if exist $(subst /,\\,$(GENERATED)) del /s /q $(subst /,\\,$(GENERATED))
 	$(SILENT) if exist $(subst /,\\,$(OBJDIR)) rmdir /s /q $(subst /,\\,$(OBJDIR))
 endif
 
-prebuild:
+prebuild: | $(OBJDIR)
 	$(PREBUILDCMDS)
 
-prelink: $(OBJECTS)
-	$(PRELINKCMDS)
-
 ifneq (,$(PCH))
-$(OBJECTS): $(GCH) $(PCH) | $(OBJDIR)
-$(GCH): $(PCH) | $(OBJDIR)
+$(OBJECTS): $(GCH) | $(PCH_PLACEHOLDER)
+$(GCH): $(PCH) | prebuild
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -x c++-header $(ALL_CXXFLAGS) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
+$(PCH_PLACEHOLDER): $(GCH) | $(OBJDIR)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) touch "$@"
 else
-$(OBJECTS): | $(OBJDIR)
+	$(SILENT) echo $null >> "$@"
+endif
+else
+$(OBJECTS): | prebuild
 endif
 
+
+# File Rules
+# #############################################
+
 $(OBJDIR)/ElementBuffer.o: src/Buffer/ElementBuffer.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/FrameBuffer.o: src/Buffer/FrameBuffer.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/RenderBuffer.o: src/Buffer/RenderBuffer.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/UniformBuffer.o: src/Buffer/UniformBuffer.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/VertexArray.o: src/Buffer/VertexArray.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/VertexBuffer.o: src/Buffer/VertexBuffer.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Event.o: src/Core/Event.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/ImGuiManager.o: src/Core/ImGuiManager.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Resource.o: src/Core/Resource.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Window.o: src/Core/Window.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Shader.o: src/Shader/Shader.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/TextManager.o: src/Text/TextManager.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Texture.o: src/Texture/Texture.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/glad.o: vendor/src/glad/src/glad.c
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui.o: vendor/src/imgui/imgui.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui_demo.o: vendor/src/imgui/imgui_demo.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui_draw.o: vendor/src/imgui/imgui_draw.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui_impl_glfw.o: vendor/src/imgui/imgui_impl_glfw.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui_impl_opengl3.o: vendor/src/imgui/imgui_impl_opengl3.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui_tables.o: vendor/src/imgui/imgui_tables.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/imgui_widgets.o: vendor/src/imgui/imgui_widgets.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)
 ifneq (,$(PCH))
-  -include $(OBJDIR)/$(notdir $(PCH)).d
+  -include $(PCH_PLACEHOLDER).d
 endif
