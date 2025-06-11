@@ -611,7 +611,7 @@ namespace systems {
 						// render a bigger mesh using stencil buffer
 						auto model = glm::mat4(1);
 						model = glm::translate(model, ::systems::transform::getPosition(id));
-						model = glm::scale(model, ::systems::transform::getScale(id) + glm::vec3{3});
+						model = glm::scale(model, ::systems::transform::getScale(id) + glm::vec3{4});
 						// miss rotation
 						stencil.setMat4("model", model);
 						auto rc = em->getComponentFromId<RenderComponent>(id);

@@ -14,7 +14,7 @@ const auto EVENT_ENEMY_DEAD = ogl::Event("Dead Enemy Event");
 
 struct LevelModifiers {
 	unsigned int enemiesMaxNumber = 5;
-	float enemiesSpawnDelay = 7.f;
+	float enemiesSpawnDelay = 5.f;
 	unsigned int numEnemiesWave = 3;
 };
 

@@ -3,6 +3,19 @@
 
 void LevelManager::incrementLevel() {
 	this->clearLevel();
+	if (this->m_currentLevel % 3 == 0) {
+		this->m_modifiers.enemiesMaxNumber++;
+	}
+
+	if (this->m_currentLevel % 5 == 0) {
+		this->m_modifiers.numEnemiesWave++;
+	}
+
+	if (this->m_currentLevel % 10 == 0) {
+		if (this->m_modifiers.enemiesSpawnDelay >= 0.5f) {
+			this->m_modifiers.enemiesSpawnDelay -= 0.2f;
+		}
+	}
 	for (auto i = 0; i < this->m_modifiers.numEnemiesWave; i++) {
 		ogl::EventManager::instance()->post(EVENT_ENEMY_SPAWN);
 		this->m_data.numEnemies++;

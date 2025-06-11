@@ -47,6 +47,16 @@ struct Player {
 	bool dead = false;
 } player;
 
+glm::vec3 getRandomPosNear(const glm::vec3 &pos, const glm::vec3 &offset) {
+	auto x = rand() % (int)WIDTH;
+	while (x > pos.x - offset.x && x < pos.x + offset.x)
+		x = rand() % (int)WIDTH;
+	auto y = rand() % (int)HEIGHT;
+	while (y > pos.y - offset.y && y < pos.y + offset.y)
+		y = rand() % (int)HEIGHT;
+	return {x, y, 0};
+}
+
 glm::vec3 getRandomPos() {
 	auto x = rand() % (int)WIDTH;
 	auto y = rand() % (int)HEIGHT;
@@ -266,8 +276,10 @@ int main(int argc, char *argv[]) {
 	});
 
 	// event for spawning an enemy
-	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &shader, &first]() {
-		auto id = factoryEnemy(BasicInfo{{getRandomPos()}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
+	auto offset = glm::vec3{100, 100, 0};
+	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &shader, &first, &offset]() {
+		auto pos = systems::transform::getPosition(first);
+		auto id = factoryEnemy(BasicInfo{{getRandomPosNear(pos, offset)}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
 		ett->addComponent<BehaviourComponent>(id);
 		systems::enemy::setBehaviour(id, [id, first]() {
 			auto target = systems::transform::getPosition(first) - systems::transform::getPosition(id);
