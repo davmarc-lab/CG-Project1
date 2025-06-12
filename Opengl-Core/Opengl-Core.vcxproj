@@ -15,7 +15,6 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{12e0fe4a-6d54-4ee3-aba2-3695f8764c39}</ProjectGuid>
     <RootNamespace>OpenglCore</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -120,6 +119,7 @@
     <ClInclude Include="include\Graphic.hpp" />
     <ClInclude Include="include\Shader\Shader.hpp" />
     <ClInclude Include="include\Texture\Texture.hpp" />
+    <ClInclude Include="include\Text\TextManager.hpp" />
     <ClInclude Include="vendor\include\glad\glad.h" />
     <ClInclude Include="vendor\include\imgui\imconfig.h" />
     <ClInclude Include="vendor\include\imgui\imgui.h" />
@@ -145,6 +145,7 @@
     <ClCompile Include="src\Core\Window.cpp" />
     <ClCompile Include="src\Shader\Shader.cpp" />
     <ClCompile Include="src\Texture\Texture.cpp" />
+    <ClCompile Include="src\Text\TextManager.cpp" />
     <ClCompile Include="vendor\src\glad\src\glad.c" />
     <ClCompile Include="vendor\src\imgui\imgui.cpp" />
     <ClCompile Include="vendor\src\imgui\imgui_demo.cpp" />
@@ -154,7 +155,17 @@
     <ClCompile Include="vendor\src\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\src\imgui\imgui_widgets.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\freetype2.2.6.0.1\build\native\freetype2.targets" Condition="Exists('..\packages\freetype2.2.6.0.1\build\native\freetype2.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\freetype2.2.6.0.1\build\native\freetype2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\freetype2.2.6.0.1\build\native\freetype2.targets'))" />
+  </Target>
 </Project>

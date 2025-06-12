@@ -607,7 +607,7 @@ namespace systems {
 				glDisable(GL_DEPTH_TEST);
 				stencil.use();
 				for (auto id : outlines) {
-					if (std::find(ALL(etts), id) != outlines.end()) {
+					if (std::find(ALL(outlines), id) != outlines.end()) {
 						// render a bigger mesh using stencil buffer
 						auto model = glm::mat4(1);
 						model = glm::translate(model, ::systems::transform::getPosition(id));
