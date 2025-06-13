@@ -31,7 +31,7 @@ struct BoundingBox {
 	bool init = false;
 } defaultShader;
 
-ogl::ShaderProgram stencil = ogl::ShaderProgram("vertexShader.glsl", "stencilShader.glsl");
+ogl::ShaderProgram stencil = ogl::ShaderProgram("singlevs.glsl", "stencilShader.glsl");
 
 namespace systems {
 	namespace ecs {
@@ -584,8 +584,10 @@ namespace systems {
 
 		void renderAllMeshes() {
 			auto outlines = em->getEntitiesFromComponent<Outlined>();
-			for (auto [shader, etts] : scene->getShaderEntityMap()) {
+			auto shader = scene->getShader();
+			for (auto [stype, etts] : scene->getShaderEntityMap()) {
 				shader->use();
+				shader->setInt("shaderProgram", stype);
 				for (auto id : etts) {
 					if (std::find(ALL(outlines), id) == outlines.end()) {
 						glStencilMask(0x00);
@@ -606,6 +608,7 @@ namespace systems {
 				glStencilMask(0x00);
 				glDisable(GL_DEPTH_TEST);
 				stencil.use();
+                stencil.setInt("shaderProgram", ShaderType::SHADER_DEFAULT);
 				for (auto id : outlines) {
 					if (std::find(ALL(outlines), id) != outlines.end()) {
 						// render a bigger mesh using stencil buffer

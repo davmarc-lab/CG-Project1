@@ -2,15 +2,21 @@
 
 #include <algorithm>
 
-void BasicScene::addEntity(Shared<ogl::ShaderProgram> &shader, const unsigned int &ett) {
-	if (this->m_entities.find(shader) == this->m_entities.end()) {
-		this->m_entities.insert_or_assign(shader, std::vector<unsigned int>{});
-	}
-	this->m_entities.at(shader).push_back(ett);
+void BasicScene::setSingleShader(const Shared<ogl::ShaderProgram> &shader) {
+	this->m_init = true;
+	this->m_shader = shader;
 }
 
-void BasicScene::removeEntity(Shared<ogl::ShaderProgram> &shader, const unsigned int &ett) {
-	auto elem = this->m_entities.find(shader);
+void BasicScene::addEntity(const unsigned int &ett, const ShaderType &type) {
+	ASSERT(this->m_init);
+	if (this->m_entities.find(type) == this->m_entities.end()) {
+		this->m_entities.insert_or_assign(type, std::vector<unsigned int>{});
+	}
+	this->m_entities.at(type).push_back(ett);
+}
+
+void BasicScene::removeEntity(const ShaderType &type, const unsigned int &ett) {
+	auto elem = this->m_entities.find(type);
 	if (elem == this->m_entities.end()) {
 		this->removeEntity(ett);
 		return;

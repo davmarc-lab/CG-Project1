@@ -67,7 +67,7 @@ bool outOfScreen(const Pair<float> &size, const glm::vec3 &pos, const glm::vec3 
 	return (pos.y + scale.y > size.y) || (pos.y - scale.y < 0) || (pos.x + scale.x > size.x) || (pos.x - scale.x < 0);
 }
 
-void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<BasicScene> &scene, Shared<ogl::ShaderProgram> shader) {
+void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<BasicScene> &scene) {
 	if (direction == glm::vec3(0))
 		return;
 
@@ -88,7 +88,7 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 			pos.y = (box.y.y - box.x.y) / 2 + box.x.y;
 		}
 		auto offset = direction * (PROJ_SIZE * glm::vec3(1, 1, 0) + PROJ_OFFSET);
-		scene->addEntity(shader, factoryProjectile(BasicInfo{{pos + offset}, {PROJ_SIZE}}, player.projInfo.color, player.projInfo, direction));
+		scene->addEntity(factoryProjectile(BasicInfo{{pos + offset}, {PROJ_SIZE}}, player.projInfo.color, player.projInfo, direction), ShaderType::SHADER_DEFAULT);
 		systems::gun::updateLastShoot(id, glfwGetTime());
 	}
 }
@@ -138,19 +138,18 @@ int main(int argc, char *argv[]) {
 
 	im.addPanel<ImGuiStats>();
 
-	Shared<ShaderProgram> shader = CreateShared<ShaderProgram>("vertexShader.glsl", "fragmentShader.glsl");
-	shader->createShaderProgram();
-	Shared<ShaderProgram> backShader = CreateShared<ShaderProgram>("backVertShader.glsl", "backFragShader.glsl");
-	backShader->createShaderProgram();
+	Shared<ShaderProgram> ss = CreateShared<ShaderProgram>("singlevs.glsl", "singlefs.glsl");
+	ss->createShaderProgram();
+	ecs->setSingleShader(ss);
 
 	auto ett = EntityManager::instance();
 
 	auto back = factorySquare({{w.getWidth() / 2, w.getHeight() / 2, -0.9}, {w.getWidth() / 2, w.getHeight() / 2, 0}, {}}, {0.3f, 0.3f, 0.3f, 1.0f});
 	ett->removeComponent<Outlined>(back);
-	ecs->addEntity(backShader, back);
+	ecs->addEntity(back, ShaderType::SHADER_BACK);
 
 	auto first = factoryHermite(BasicInfo{{1400, 800, 1}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
-	ecs->addEntity(shader, first);
+	ecs->addEntity(first, ShaderType::SHADER_DEFAULT);
 	ett->addComponent<GunComponent>(first, player.gunInfo);
 	ett->addComponent<PlayerComponent>(first);
 	ett->addComponent<InputComponent>(first);
@@ -160,17 +159,17 @@ int main(int argc, char *argv[]) {
 	auto head = factoryCircle(BasicInfo{{1399, 824, 1}, {27, 20, 1}, {}}, {1, 1, 0, 1}, 40);
 	ett->addComponent<AABB>(head);
 	systems::parent::addChild(first, head);
-	ecs->addEntity(shader, head);
+	ecs->addEntity(head, ShaderType::SHADER_DEFAULT);
 
 	auto leye = factoryCircle(BasicInfo{{1387, 828, 1}, {5, 7, 1}, {}}, EYE_COLOR);
 	systems::parent::addChild(first, leye);
-	ecs->addEntity(shader, leye);
+	ecs->addEntity(leye, ShaderType::SHADER_DEFAULT);
 	auto reye = factoryCircle(BasicInfo{{1412, 828, 1}, {5, 7, 1}, {}}, EYE_COLOR);
 	systems::parent::addChild(first, reye);
-	ecs->addEntity(shader, reye);
+	ecs->addEntity(reye, ShaderType::SHADER_DEFAULT);
 	auto mouth = factoryHermite(BasicInfo{{1399, 816, 1}, {10, 11, 1}, {0, 0, 180}}, "./resources/hermite/mouth.txt");
 	systems::parent::addChild(first, mouth);
-	ecs->addEntity(shader, mouth);
+	ecs->addEntity(mouth, ShaderType::SHADER_DEFAULT);
 
 	auto iglevel = im.addPanel<ImGuiPanel>();
 	iglevel->setRenderFunc([&iglevel, &lm]() {
@@ -182,7 +181,7 @@ int main(int argc, char *argv[]) {
 	});
 
 	auto healthBar = factorySquare(BasicInfo{{10 + HEALTH_BAR_SIZE.x, w.getHeight() - HEALTH_BAR_SIZE.y - 10, 1}, HEALTH_BAR_SIZE, {}}, {1, 0, 0, 1});
-	ecs->addEntity(shader, healthBar);
+	ecs->addEntity(healthBar, ShaderType::SHADER_DEFAULT);
 
 	ed->subscribe(event::loop::LOOP_UPDATE, [&healthBar, &first, &w]() {
 		auto health = systems::enemy::getHealth(first);
@@ -205,17 +204,17 @@ int main(int argc, char *argv[]) {
 	});
 
 	// shoot
-	systems::input::setKeyCallback(first, GLFW_KEY_UP, [&first, shader]() {
-		playerShoot(first, glm::vec3{0, 1, 0}, ecs, shader);
+	systems::input::setKeyCallback(first, GLFW_KEY_UP, [&first]() {
+		playerShoot(first, glm::vec3{0, 1, 0}, ecs);
 	});
-	systems::input::setKeyCallback(first, GLFW_KEY_LEFT, [&first, shader]() {
-		playerShoot(first, glm::vec3{-1, 0, 0}, ecs, shader);
+	systems::input::setKeyCallback(first, GLFW_KEY_LEFT, [&first]() {
+		playerShoot(first, glm::vec3{-1, 0, 0}, ecs);
 	});
-	systems::input::setKeyCallback(first, GLFW_KEY_DOWN, [&first, shader]() {
-		playerShoot(first, glm::vec3{0, -1, 0}, ecs, shader);
+	systems::input::setKeyCallback(first, GLFW_KEY_DOWN, [&first]() {
+		playerShoot(first, glm::vec3{0, -1, 0}, ecs);
 	});
-	systems::input::setKeyCallback(first, GLFW_KEY_RIGHT, [&first, shader]() {
-		playerShoot(first, glm::vec3{1, 0, 0}, ecs, shader);
+	systems::input::setKeyCallback(first, GLFW_KEY_RIGHT, [&first]() {
+		playerShoot(first, glm::vec3{1, 0, 0}, ecs);
 	});
 
 	ed->subscribe(event::loop::LOOP_UPDATE, [&first, &w]() {
@@ -277,7 +276,7 @@ int main(int argc, char *argv[]) {
 
 	// event for spawning an enemy
 	auto offset = glm::vec3{100, 100, 0};
-	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &shader, &first, &offset]() {
+	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &first, &offset]() {
 		auto pos = systems::transform::getPosition(first);
 		auto id = factoryEnemy(BasicInfo{{getRandomPosNear(pos, offset)}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
 		ett->addComponent<BehaviourComponent>(id);
@@ -285,7 +284,7 @@ int main(int argc, char *argv[]) {
 			auto target = systems::transform::getPosition(first) - systems::transform::getPosition(id);
 			systems::transform::addPosition(id, glm::normalize(target) * ENEMY_VEL);
 		});
-		ecs->addEntity(shader, id);
+		ecs->addEntity(id, ShaderType::SHADER_DEFAULT);
 		enemyCount++;
 	});
 
