@@ -1,3 +1,4 @@
+#include <iostream>
 #include "../../include/Core/ImGui.hpp"
 
 namespace ogl {
@@ -15,7 +16,7 @@ namespace ogl {
 		style.GrabRounding = 4.f;
 		style.Colors[ImGuiCol_WindowBg].w = 0.8f;
 
-		ImGui_ImplGlfw_InitForOpenGL(this->m_window.getContext(), true);
+		ImGui_ImplGlfw_InitForOpenGL(this->m_window->getContext(), true);
 		ImGui_ImplOpenGL3_Init();
 
 		this->m_attached = true;
@@ -44,7 +45,7 @@ namespace ogl {
 	void ImGuiManager::end() {
 		ImGuiIO &io = ImGui::GetIO();
 		// use event listener when window size is changed
-		io.DisplaySize = ImVec2(this->m_window.getWidth(), this->m_window.getHeight());
+		io.DisplaySize = ImVec2(this->m_window->getWidth(), this->m_window->getHeight());
 
 		// Rendering
 		ImGui::Render();

@@ -41,14 +41,6 @@ EntityVertex getCircleVertices(const Pair<float> &center = {0, 0}, const Pair<fl
 	return res;
 }
 
-std::vector<glm::vec4> getColorVector(const glm::vec4 &color, const size_t &size) {
-	auto res = std::vector<glm::vec4>{};
-	for (size_t i = 0; i < size; i++) {
-		res.push_back(color);
-	}
-	return res;
-}
-
 const auto em = EntityManager::instance();
 
 unsigned int factoryBackground(const BasicInfo &info, const glm::vec4 &color) {

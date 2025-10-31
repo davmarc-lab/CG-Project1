@@ -1,8 +1,12 @@
 #pragma once
 
+#include "Core/Camera.hpp"
 #include "Core/Event.hpp"
 #include "Core/ImGui.hpp"
+#include "Core/InputManager.hpp"
 #include "Core/Layer.hpp"
+#include "Core/MeshVertices.hpp"
+#include "Core/Renderer.hpp"
 #include "Core/Resource.hpp"
 #include "Core/Structs.hpp"
 #include "Core/Utils.hpp"

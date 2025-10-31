@@ -48,16 +48,16 @@ TARGETDIR = ../bin/linux-x86_64/Debug/Opengl-Core
 TARGET = $(TARGETDIR)/libOpengl-Core.a
 OBJDIR = ../bin/int/linux-x86_64/Debug/Opengl-Core
 DEFINES += -DDEBUG
-ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g
-ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g -g
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -g
 
 else ifeq ($(config),release)
 TARGETDIR = ../bin/linux-x86_64/Release/Opengl-Core
 TARGET = $(TARGETDIR)/libOpengl-Core.a
 OBJDIR = ../bin/int/linux-x86_64/Release/Opengl-Core
 DEFINES += -DNDEBUG
-ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
-ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g -g
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g -g
 
 endif
 
@@ -71,11 +71,14 @@ endif
 GENERATED :=
 OBJECTS :=
 
+GENERATED += $(OBJDIR)/Camera.o
 GENERATED += $(OBJDIR)/ElementBuffer.o
 GENERATED += $(OBJDIR)/Event.o
 GENERATED += $(OBJDIR)/FrameBuffer.o
 GENERATED += $(OBJDIR)/ImGuiManager.o
+GENERATED += $(OBJDIR)/InputManager.o
 GENERATED += $(OBJDIR)/RenderBuffer.o
+GENERATED += $(OBJDIR)/Renderer.o
 GENERATED += $(OBJDIR)/Resource.o
 GENERATED += $(OBJDIR)/Shader.o
 GENERATED += $(OBJDIR)/TextManager.o
@@ -92,11 +95,14 @@ GENERATED += $(OBJDIR)/imgui_impl_glfw.o
 GENERATED += $(OBJDIR)/imgui_impl_opengl3.o
 GENERATED += $(OBJDIR)/imgui_tables.o
 GENERATED += $(OBJDIR)/imgui_widgets.o
+OBJECTS += $(OBJDIR)/Camera.o
 OBJECTS += $(OBJDIR)/ElementBuffer.o
 OBJECTS += $(OBJDIR)/Event.o
 OBJECTS += $(OBJDIR)/FrameBuffer.o
 OBJECTS += $(OBJDIR)/ImGuiManager.o
+OBJECTS += $(OBJDIR)/InputManager.o
 OBJECTS += $(OBJDIR)/RenderBuffer.o
+OBJECTS += $(OBJDIR)/Renderer.o
 OBJECTS += $(OBJDIR)/Resource.o
 OBJECTS += $(OBJDIR)/Shader.o
 OBJECTS += $(OBJDIR)/TextManager.o
@@ -194,10 +200,19 @@ $(OBJDIR)/VertexArray.o: src/Buffer/VertexArray.cpp
 $(OBJDIR)/VertexBuffer.o: src/Buffer/VertexBuffer.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Camera.o: src/Core/Camera.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Event.o: src/Core/Event.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/ImGuiManager.o: src/Core/ImGuiManager.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/InputManager.o: src/Core/InputManager.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Renderer.o: src/Core/Renderer.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Resource.o: src/Core/Resource.cpp

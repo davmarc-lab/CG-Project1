@@ -50,8 +50,6 @@ struct ProjInfo {
 	glm::vec4 color = PROJ_COLOR;
 };
 
-std::vector<glm::vec4> getColorVector(const glm::vec4 &color, const size_t &size);
-
 unsigned int factoryBackground(const BasicInfo &info, const glm::vec4 &color = {1, 0, 0, 1});
 
 unsigned int factorySquare(const BasicInfo &info, const glm::vec4 &color = {1, 0, 0, 1}, const EnemyInfo &stats = {});

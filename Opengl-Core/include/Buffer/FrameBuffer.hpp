@@ -9,32 +9,35 @@
 #include "../Core/Structs.hpp"
 
 namespace ogl {
-class FrameBuffer : public Buffer {
-  public:
-    inline unsigned int getRenderBufferId() const { return this->m_rbo.getId(); }
-    void setRenderBuffer(const RBConfig &config);
-    void setRenderBuffer(const RenderBuffer &buffer);
+	class FrameBuffer : public Buffer {
+	public:
+		inline unsigned int getRenderBufferId() const { return this->m_rbo.getId(); }
+		void setRenderBuffer(const RBConfig &config);
+		void setRenderBuffer(const RenderBuffer &buffer);
 
-    inline unsigned int getColorTexture() const { return this->m_texture.getId(); }
-    void setColorTexture(const Texture &texture);
+		inline unsigned int getColorTexture() const { return this->m_texture.getId(); }
+		void setColorTexture(const Texture &texture);
 
-    bool createFrameBuffer();
-    void rescaleFrameBuffer(const unsigned int &width, const unsigned int &height);
+		bool createFrameBuffer();
+		void rescaleFrameBuffer(const unsigned int &width, const unsigned int &height);
 
-    virtual void onAttach() override;
-    virtual void onDetach() override;
+        inline float getHeight() const { return this->m_config.height; }
 
-    virtual void bind() const override;
-    virtual void unbind() const override;
+		virtual void onAttach() override;
+		virtual void onDetach() override;
 
-    FrameBuffer() = delete;
-    FrameBuffer(const FBConfig &config) : m_config(config) {}
-    ~FrameBuffer() override;
+		virtual void bind() const override;
+		virtual void unbind() const override;
 
-  private:
-    FBConfig m_config{};
+		FrameBuffer() = delete;
+		FrameBuffer(const FBConfig &config) :
+			m_config(config) {}
+		~FrameBuffer() override;
 
-    RenderBuffer m_rbo{};
-    Texture m_texture{};
-};
+	private:
+		FBConfig m_config{};
+
+		RenderBuffer m_rbo{};
+		Texture m_texture{};
+	};
 } // namespace ogl

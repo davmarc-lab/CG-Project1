@@ -15,6 +15,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{12e0fe4a-6d54-4ee3-aba2-3695f8764c39}</ProjectGuid>
     <RootNamespace>OpenglCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -109,9 +110,13 @@
     <ClInclude Include="include\Buffer\VertexArray.hpp" />
     <ClInclude Include="include\Buffer\VertexBuffer.hpp" />
     <ClInclude Include="include\Core.hpp" />
+    <ClInclude Include="include\Core\Camera.hpp" />
     <ClInclude Include="include\Core\Event.hpp" />
     <ClInclude Include="include\Core\ImGui.hpp" />
+    <ClInclude Include="include\Core\InputManager.hpp" />
     <ClInclude Include="include\Core\Layer.hpp" />
+    <ClInclude Include="include\Core\MeshVertices.hpp" />
+    <ClInclude Include="include\Core\Renderer.hpp" />
     <ClInclude Include="include\Core\Resource.hpp" />
     <ClInclude Include="include\Core\Structs.hpp" />
     <ClInclude Include="include\Core\Utils.hpp" />
@@ -139,8 +144,11 @@
     <ClCompile Include="src\Buffer\UniformBuffer.cpp" />
     <ClCompile Include="src\Buffer\VertexArray.cpp" />
     <ClCompile Include="src\Buffer\VertexBuffer.cpp" />
+    <ClCompile Include="src\Core\Camera.cpp" />
     <ClCompile Include="src\Core\Event.cpp" />
     <ClCompile Include="src\Core\ImGuiManager.cpp" />
+    <ClCompile Include="src\Core\InputManager.cpp" />
+    <ClCompile Include="src\Core\Renderer.cpp" />
     <ClCompile Include="src\Core\Resource.cpp" />
     <ClCompile Include="src\Core\Window.cpp" />
     <ClCompile Include="src\Shader\Shader.cpp" />

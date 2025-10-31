@@ -13,7 +13,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../include/ECS/EcsScene.hpp"
-#include "../include/HermiteFactory.hpp"
 
 using namespace ogl;
 
@@ -112,7 +111,7 @@ int main(int argc, char *argv[]) {
 	ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&w]() { w.begin(); });
 	ed->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
 
-	ImGuiManager im{"", w};
+	ImGuiManager im{&w};
 	im.onAttach();
 	ed->subscribe(event::loop::LOOP_UPDATE, [&im]() { im.onUpdate(); });
 	ed->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
@@ -123,7 +122,7 @@ int main(int argc, char *argv[]) {
 	tm->onAttach();
 
 	LevelManager lm{};
-	ed->subscribe(event::loop::LOOP_UPDATE, [&lm]() { lm.onUpdate(); });
+	ed->subscribe(event::loop::LOOP_UPDATE, [&lm]() { if (!player.dead) lm.onUpdate(); });
 
 	TextHelper helper{};
 	helper.text = std::string{"Level: " + std::to_string(levelCount)};
@@ -191,30 +190,38 @@ int main(int argc, char *argv[]) {
 
 	// movement
 	systems::input::setKeyCallback(first, GLFW_KEY_W, [&first]() {
-		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(0, 1, 0));
+		if (!player.dead)
+			systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(0, 1, 0));
 	});
 	systems::input::setKeyCallback(first, GLFW_KEY_A, [&first]() {
-		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(-1, 0, 0));
+		if (!player.dead)
+			systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(-1, 0, 0));
 	});
 	systems::input::setKeyCallback(first, GLFW_KEY_S, [&first]() {
-		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(0, -1, 0));
+		if (!player.dead)
+			systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(0, -1, 0));
 	});
 	systems::input::setKeyCallback(first, GLFW_KEY_D, [&first]() {
-		systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(1, 0, 0));
+		if (!player.dead)
+			systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(1, 0, 0));
 	});
 
 	// shoot
 	systems::input::setKeyCallback(first, GLFW_KEY_UP, [&first]() {
-		playerShoot(first, glm::vec3{0, 1, 0}, ecs);
+		if (!player.dead)
+			playerShoot(first, glm::vec3{0, 1, 0}, ecs);
 	});
 	systems::input::setKeyCallback(first, GLFW_KEY_LEFT, [&first]() {
-		playerShoot(first, glm::vec3{-1, 0, 0}, ecs);
+		if (!player.dead)
+			playerShoot(first, glm::vec3{-1, 0, 0}, ecs);
 	});
 	systems::input::setKeyCallback(first, GLFW_KEY_DOWN, [&first]() {
-		playerShoot(first, glm::vec3{0, -1, 0}, ecs);
+		if (!player.dead)
+			playerShoot(first, glm::vec3{0, -1, 0}, ecs);
 	});
 	systems::input::setKeyCallback(first, GLFW_KEY_RIGHT, [&first]() {
-		playerShoot(first, glm::vec3{1, 0, 0}, ecs);
+		if (!player.dead)
+			playerShoot(first, glm::vec3{1, 0, 0}, ecs);
 	});
 
 	ed->subscribe(event::loop::LOOP_UPDATE, [&first, &w]() {
@@ -277,6 +284,8 @@ int main(int argc, char *argv[]) {
 	// event for spawning an enemy
 	auto offset = glm::vec3{100, 100, 0};
 	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &first, &offset]() {
+		if (player.dead)
+			return;
 		auto pos = systems::transform::getPosition(first);
 		auto id = factoryEnemy(BasicInfo{{getRandomPosNear(pos, offset)}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
 		ett->addComponent<BehaviourComponent>(id);
@@ -298,10 +307,10 @@ int main(int argc, char *argv[]) {
 		lm.setPause(5);
 	});
 
-	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::enemy::execAllBehaviourFunc(); });
-	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::executeNextFrame(glfwGetTime()); });
-	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::animation::updateDistanceAnimation(); });
-	ed->subscribe(event::loop::LOOP_UPDATE, []() { systems::collision::resolveCollisions(); });
+	ed->subscribe(event::loop::LOOP_UPDATE, []() { if (!player.dead) systems::enemy::execAllBehaviourFunc(); });
+	ed->subscribe(event::loop::LOOP_UPDATE, []() { if (!player.dead) systems::animation::executeNextFrame(glfwGetTime()); });
+	ed->subscribe(event::loop::LOOP_UPDATE, []() { if (!player.dead) systems::animation::updateDistanceAnimation(); });
+	ed->subscribe(event::loop::LOOP_UPDATE, []() { if (!player.dead) systems::collision::resolveCollisions(); });
 	ed->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
 
 	ed->subscribe(PLAYER_DEAD_EVENT, [&w, &tm]() {
@@ -327,9 +336,9 @@ int main(int argc, char *argv[]) {
 
 	while (!glfwWindowShouldClose(w.getContext())) {
 		ed->post(event::loop::LOOP_INPUT);
-		if (!player.dead) {
-			ed->post(event::loop::LOOP_UPDATE);
-		}
+		// if (!player.dead) {
+		ed->post(event::loop::LOOP_UPDATE);
+		// }
 		ed->post(event::loop::LOOP_BEGIN_RENDER);
 		ed->post(event::loop::LOOP_RENDER);
 		ed->post(event::loop::LOOP_END_RENDER);

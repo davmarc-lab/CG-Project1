@@ -24,6 +24,10 @@ project "Opengl-Core"
         "dl"
     }
 
+    buildoptions {
+        "-g",
+    }
+
     filter "configurations:Debug"
         defines({ "DEBUG" })
         runtime "Debug"

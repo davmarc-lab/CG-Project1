@@ -4,9 +4,6 @@
 #include "../../include/Shader/Shader.hpp"
 
 #include <ft2build.h>
-#ifdef _WIN32
-#include <freetype.h>
-#endif
 #include FT_FREETYPE_H
 
 namespace ogl {

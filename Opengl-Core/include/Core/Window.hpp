@@ -29,6 +29,7 @@ namespace ogl {
 		bool focused = false;
 		bool decorated = true;
 		bool vsync = false;
+		bool debugMode = false;
 		Color bgColor = {0.3f, 0.3f, 0.3f, 1.0f};
 	};
 
@@ -39,6 +40,8 @@ namespace ogl {
 		~Window() = default;
 
 		inline GLFWwindow *getContext() const { return this->m_context; }
+
+		inline Pair<float> getSize() const { return this->m_settings.size; }
 
 		inline float getWidth() const { return this->m_settings.size.x; }
 		void setWidth(const float &val) { this->m_settings.size.x = val; }
