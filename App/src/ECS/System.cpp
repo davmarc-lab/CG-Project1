@@ -68,8 +68,9 @@ namespace systems {
 				for (auto child : p->children) {
 					auto cpos = getPosition(child);
 					auto offset = cpos - c->getPosition();
-					offset.z = 0;
-					updatePosition(child, position + offset);
+					auto res = position + offset;
+					res.z = cpos.z;
+					updatePosition(child, res);
 				}
 			}
 
@@ -106,8 +107,9 @@ namespace systems {
 				for (auto child : p->children) {
 					auto cpos = getPosition(child);
 					auto modelOffset = cpos - c->getPosition();
-					modelOffset.z = 0;
-					updatePosition(child, c->getPosition() + modelOffset + offset);
+					auto res = c->getPosition() + modelOffset + offset;
+					res.z = cpos.z;
+					updatePosition(child, res);
 				}
 			}
 

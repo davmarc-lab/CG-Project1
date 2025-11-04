@@ -70,7 +70,7 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 	if (direction == glm::vec3(0))
 		return;
 
-    ASSERT(EntityManager::instance()->entityHasComponent<GunComponent>(id));
+	ASSERT(EntityManager::instance()->entityHasComponent<GunComponent>(id));
 
 	auto ls = systems::gun::getLastShoot(id);
 	auto cd = systems::gun::getCooldown(id);
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
 	srand(time(NULL));
 
 	WindowSettings s{};
-    s.position = {40, 40};
+	s.position = {40, 40};
 	s.decorated = false;
 	s.vsync = true;
 	s.size = {WIDTH, HEIGHT};
@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
 	ett->removeComponent<Outlined>(back);
 	ecs->addEntity(back, ShaderType::SHADER_BACK);
 
-	auto first = factoryHermite(BasicInfo{{1400, 800, 1}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
+	auto first = factoryHermite(BasicInfo{{1400, 800, 0.2}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
 	ecs->addEntity(first, ShaderType::SHADER_DEFAULT);
 	ett->addComponent<GunComponent>(first, player.gunInfo);
 	ett->addComponent<PlayerComponent>(first);
@@ -155,18 +155,18 @@ int main(int argc, char *argv[]) {
 	ett->addComponent<HealthComponent>(first);
 	ett->addComponent<ParentComponent>(first);
 
-	auto head = factoryCircle(BasicInfo{{1399, 824, 1}, {27, 20, 1}, {}}, {1, 1, 0, 1}, 40);
+	auto head = factoryCircle(BasicInfo{{1399, 824, 0.3}, {27, 20, 1}, {}}, {1, 1, 0, 1}, 40);
 	ett->addComponent<AABB>(head);
 	systems::parent::addChild(first, head);
 	ecs->addEntity(head, ShaderType::SHADER_DEFAULT);
 
-	auto leye = factoryCircle(BasicInfo{{1387, 828, 1}, {5, 7, 1}, {}}, EYE_COLOR);
+	auto leye = factoryCircle(BasicInfo{{1387, 828, 0.4}, {5, 7, 1}, {}}, EYE_COLOR);
 	systems::parent::addChild(first, leye);
 	ecs->addEntity(leye, ShaderType::SHADER_DEFAULT);
-	auto reye = factoryCircle(BasicInfo{{1412, 828, 1}, {5, 7, 1}, {}}, EYE_COLOR);
+	auto reye = factoryCircle(BasicInfo{{1412, 828, 0.4}, {5, 7, 1}, {}}, EYE_COLOR);
 	systems::parent::addChild(first, reye);
 	ecs->addEntity(reye, ShaderType::SHADER_DEFAULT);
-	auto mouth = factoryHermite(BasicInfo{{1399, 816, 1}, {10, 11, 1}, {0, 0, 180}}, "./resources/hermite/mouth.txt");
+	auto mouth = factoryHermite(BasicInfo{{1399, 816, 0.4}, {10, 11, 1}, {0, 0, 180}}, "./resources/hermite/mouth.txt");
 	systems::parent::addChild(first, mouth);
 	ecs->addEntity(mouth, ShaderType::SHADER_DEFAULT);
 
@@ -227,17 +227,18 @@ int main(int argc, char *argv[]) {
 	ed->subscribe(event::loop::LOOP_UPDATE, [&first, &w]() {
 		auto pos = systems::transform::getPosition(first);
 		auto scale = systems::transform::getScale(first);
+		auto z = pos.z;
 		if (pos.y + scale.y > w.getHeight()) {
-			pos = {pos.x, w.getHeight() - scale.y, 0};
+			pos = {pos.x, w.getHeight() - scale.y, z};
 		}
 		if (pos.y - scale.y < 0) {
-			pos = {pos.x, scale.y, 0};
+			pos = {pos.x, scale.y, z};
 		}
 		if (pos.x - scale.x < 0) {
-			pos = {scale.x, pos.y, 0};
+			pos = {scale.x, pos.y, z};
 		}
 		if (pos.x + scale.x > w.getWidth()) {
-			pos = {w.getWidth() - scale.x, pos.y, 0};
+			pos = {w.getWidth() - scale.x, pos.y, z};
 		}
 		systems::transform::updatePosition(first, pos);
 	});
