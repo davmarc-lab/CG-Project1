@@ -180,7 +180,6 @@ unsigned int factoryHermite(const BasicInfo &info, const std::string &path, cons
 	buildHermite(color, color, curve);
 	auto vc = em->addComponent<VertexComponent>(id, curve->vertex, curve->colors, std::vector<unsigned int>{});
 	auto bc = em->addComponent<BufferComponent>(id);
-	em->addComponent<AABB>(id);
 	systems::collision::updateCollider(id);
 	bc->vao.onAttach();
 	bc->vao.bind();

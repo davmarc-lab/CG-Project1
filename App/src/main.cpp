@@ -42,13 +42,28 @@ const float HP_FACTOR = 2.f;
 
 const glm::vec4 EYE_COLOR = {0.2274, 0.4627, 0.9411, 1};
 
+/**
+ * @brief Player data structure
+ */
 struct Player {
+	/// main mesh id
 	unsigned int id;
+	/// player gun data
 	GunInfo gunInfo{};
+	/// gun projectile data
 	ProjInfo projInfo{100, PROJ_RANGE, PROJ_COLOR};
+	/// is player dead
 	bool dead = false;
 } player;
 
+/**
+ * @brief Retrieves a random position around a point outside a given offset.
+ *
+ * @param pos the point
+ * @param offset the random position offset
+ *
+ * @return a point in a random position outside the given offset
+ */
 glm::vec3 getRandomPosNear(const glm::vec3 &pos, const glm::vec3 &offset) {
 	auto x = rand() % (int)WIDTH;
 	while (x > pos.x - offset.x && x < pos.x + offset.x)
@@ -59,16 +74,39 @@ glm::vec3 getRandomPosNear(const glm::vec3 &pos, const glm::vec3 &offset) {
 	return {x, y, 0};
 }
 
+/**
+ * @brief Retrieves a random position (z value = 0).
+ *
+ * @return a random vector
+ */
 glm::vec3 getRandomPos() {
 	auto x = rand() % (int)WIDTH;
 	auto y = rand() % (int)HEIGHT;
 	return {x, y, 0};
 }
 
+/**
+ * @brief Checks if a mesh at the given position with the given scale is outside
+ * the screen.
+ *
+ * @param size the window size
+ * @param pos the mesh position
+ * @param scale the mesh scale
+ *
+ * @return true if the mesh is outside the window boundaries
+ */
 bool outOfScreen(const Pair<float> &size, const glm::vec3 &pos, const glm::vec3 &scale) {
 	return (pos.y + scale.y > size.y) || (pos.y - scale.y < 0) || (pos.x + scale.x > size.x) || (pos.x - scale.x < 0);
 }
 
+/**
+ * @brief This method shoots a projectile to the given direction in the given scene.
+ * It handles the gun cooldown.
+ *
+ * @param id the mesh id used to position the projectile
+ * @param direction the projectile direction
+ * @param scene the scene to draw
+ */
 void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<BasicScene> &scene) {
 	if (direction == glm::vec3(0))
 		return;
@@ -105,75 +143,109 @@ int main(int argc, char *argv[]) {
 	s.bgColor = {0};
 	Window w{s};
 	w.onAttach();
+	// enable stencil buffer to draw mesh outlines https://learnopengl.com/Advanced-OpenGL/Stencil-testing
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	w.addClearMask(GL_STENCIL_BUFFER_BIT);
 
+	// add window function to execute every frame
 	ed->subscribe(event::loop::LOOP_UPDATE, [&w]() { w.onUpdate(); });
 	ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&w]() { w.begin(); });
 	ed->subscribe(event::loop::LOOP_RENDER, [&w]() { w.onRender(); });
 
+	// initialize imgui panel manager
 	ImGuiManager im{&w};
 	im.onAttach();
+	// add imgui operations to execute every frame in different phase
 	ed->subscribe(event::loop::LOOP_UPDATE, [&im]() { im.onUpdate(); });
 	ed->subscribe(event::loop::LOOP_RENDER, [&im]() { im.onRender(); });
 	ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&im]() { im.begin(); });
 	ed->subscribe(event::loop::LOOP_END_RENDER, [&im]() { im.end(); });
 
+	// text manager
 	const auto tm = TextManager::instance();
 	tm->onAttach();
 
+	// level manager
 	LevelManager lm{};
 	ed->subscribe(event::loop::LOOP_UPDATE, [&lm]() { if (!player.dead) lm.onUpdate(); });
 
+	// creates simple text to keep track of the current level
 	TextHelper helper{};
 	helper.text = std::string{"Level: " + std::to_string(levelCount)};
 	helper.position = {w.getWidth() - 200, w.getHeight() - 50};
 	helper.color = {1, 1, 1};
 	helper.scale = 1;
+	// creates the text
 	auto level = tm->addText(helper);
 
+	// when the level is completed executes this operation
 	ed->subscribe(EVENT_LEVEL_COMPLETED, [&level, &lm]() {
 		level->setText("Level: " + std::to_string(lm.getCurrentLevel()));
 	});
 
+	// adds statistics panel
 	im.addPanel<ImGuiStats>();
 
+	// creates the shader for the scene
 	Shared<ShaderProgram> ss = CreateShared<ShaderProgram>("singlevs.glsl", "singlefs.glsl");
 	ss->createShaderProgram();
 	ecs->setSingleShader(ss);
 
 	auto ett = EntityManager::instance();
 
+	// create the square where the background is drawn
 	auto back = factorySquare({{w.getWidth() / 2, w.getHeight() / 2, -0.9}, {w.getWidth() / 2, w.getHeight() / 2, 0}, {}}, {0.3f, 0.3f, 0.3f, 1.0f});
 	ett->removeComponent<Outlined>(back);
 	ecs->addEntity(back, ShaderType::SHADER_BACK);
 
-	auto first = factoryHermite(BasicInfo{{1400, 800, 0.2}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
-	ecs->addEntity(first, ShaderType::SHADER_DEFAULT);
-	ett->addComponent<GunComponent>(first, player.gunInfo);
-	ett->addComponent<PlayerComponent>(first);
-	ett->addComponent<InputComponent>(first);
-	ett->addComponent<HealthComponent>(first);
-	ett->addComponent<ParentComponent>(first);
+	// creates the body of the player
+	auto body = factoryHermite(BasicInfo{{1400, 800, 0.2}, {40, 45, 1}, {}}, "./resources/hermite/player/down.txt", {1, 0.7568, 0.9450, 1});
+	// adds a gun
+	ett->addComponent<GunComponent>(body, player.gunInfo);
+	// adds a collider to the body
+	ett->addComponent<AABB>(body);
+	ett->addComponent<PlayerComponent>(body);
+	// adds the input component for handling user input
+	ett->addComponent<InputComponent>(body);
+	// adds an health component
+	ett->addComponent<HealthComponent>(body);
+	// adds a parent component to link multiple meshes to this single mesh
+	// Used to manage other meshes relative movement
+	ett->addComponent<ParentComponent>(body);
+	// adds to the current scene
+	ecs->addEntity(body, ShaderType::SHADER_DEFAULT);
 
+	// creates head mesh
 	auto head = factoryCircle(BasicInfo{{1399, 824, 0.3}, {27, 20, 1}, {}}, {1, 1, 0, 1}, 40);
+	// adds a collider to the head
 	ett->addComponent<AABB>(head);
-	systems::parent::addChild(first, head);
+	// define head parent mesh for relative movement
+	systems::parent::addChild(body, head);
 	ecs->addEntity(head, ShaderType::SHADER_DEFAULT);
 
+	// creates the player left eye
 	auto leye = factoryCircle(BasicInfo{{1387, 828, 0.4}, {5, 7, 1}, {}}, EYE_COLOR);
-	systems::parent::addChild(first, leye);
+	// define left eye parent mesh for relative movement
+	systems::parent::addChild(body, leye);
 	ecs->addEntity(leye, ShaderType::SHADER_DEFAULT);
+
+	// creates the player right eye
 	auto reye = factoryCircle(BasicInfo{{1412, 828, 0.4}, {5, 7, 1}, {}}, EYE_COLOR);
-	systems::parent::addChild(first, reye);
+	// define right eye parent mesh for relative movement
+	systems::parent::addChild(body, reye);
 	ecs->addEntity(reye, ShaderType::SHADER_DEFAULT);
+
+	// creates the player mouth
 	auto mouth = factoryHermite(BasicInfo{{1399, 816, 0.4}, {10, 11, 1}, {0, 0, 180}}, "./resources/hermite/mouth.txt");
-	systems::parent::addChild(first, mouth);
+	// define mouth parent mesh for relative movement
+	systems::parent::addChild(body, mouth);
 	ecs->addEntity(mouth, ShaderType::SHADER_DEFAULT);
 
+	// creates a generic imgui panel
 	auto iglevel = im.addPanel<ImGuiPanel>();
+	// define the render function for the imgui panel
 	iglevel->setRenderFunc([&iglevel, &lm]() {
 		ImGui::Begin("Level");
 		ImGui::Text("Max Enemies: %u", lm.getMaxEnemies());
@@ -182,64 +254,76 @@ int main(int argc, char *argv[]) {
 		ImGui::End();
 	});
 
+	// creates the player health bar
 	auto healthBar = factorySquare(BasicInfo{{10 + HEALTH_BAR_SIZE.x, w.getHeight() - HEALTH_BAR_SIZE.y - 10, 1}, HEALTH_BAR_SIZE, {}}, {1, 0, 0, 1});
 	ecs->addEntity(healthBar, ShaderType::SHADER_DEFAULT);
 
-	ed->subscribe(event::loop::LOOP_UPDATE, [&healthBar, &first, &w]() {
-		auto health = systems::enemy::getHealth(first);
+	// implements health bar behaviour at every frame in the update game loop phase
+	// to shrink it when health decrease
+	ed->subscribe(event::loop::LOOP_UPDATE, [&healthBar, &body, &w]() {
+		auto health = systems::enemy::getHealth(body);
 		systems::transform::updatePosition(healthBar, {10 + health * HP_FACTOR, w.getHeight() - HEALTH_BAR_SIZE.y - 10, 0});
 		systems::transform::updateScale(healthBar, {health * HP_FACTOR, HEALTH_BAR_SIZE.y, 1});
 	});
 
-	// movement
-	systems::input::setKeyCallback(first, GLFW_KEY_W, [&first]() {
+	// implements all player movement behaviour, storing data in the InputComponent
+	systems::input::setKeyCallback(body, GLFW_KEY_W, [&body]() {
 		if (!player.dead)
-			systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(0, 1, 0));
+			systems::transform::addPosition(body, 0.1f * PLAYER_VEL * glm::vec3(0, 1, 0));
 	});
-	systems::input::setKeyCallback(first, GLFW_KEY_A, [&first]() {
+	systems::input::setKeyCallback(body, GLFW_KEY_A, [&body]() {
 		if (!player.dead)
-			systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(-1, 0, 0));
+			systems::transform::addPosition(body, 0.1f * PLAYER_VEL * glm::vec3(-1, 0, 0));
 	});
-	systems::input::setKeyCallback(first, GLFW_KEY_S, [&first]() {
+	systems::input::setKeyCallback(body, GLFW_KEY_S, [&body]() {
 		if (!player.dead)
-			systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(0, -1, 0));
+			systems::transform::addPosition(body, 0.1f * PLAYER_VEL * glm::vec3(0, -1, 0));
 	});
-	systems::input::setKeyCallback(first, GLFW_KEY_D, [&first]() {
+	systems::input::setKeyCallback(body, GLFW_KEY_D, [&body]() {
 		if (!player.dead)
-			systems::transform::addPosition(first, 0.1f * PLAYER_VEL * glm::vec3(1, 0, 0));
-	});
-
-	// shoot
-	systems::input::setKeyCallback(first, GLFW_KEY_UP, [&first]() {
-		if (!player.dead)
-			playerShoot(first, glm::vec3{0, 1, 0}, ecs);
-	});
-	systems::input::setKeyCallback(first, GLFW_KEY_LEFT, [&first]() {
-		if (!player.dead)
-			playerShoot(first, glm::vec3{-1, 0, 0}, ecs);
-	});
-	systems::input::setKeyCallback(first, GLFW_KEY_DOWN, [&first]() {
-		if (!player.dead)
-			playerShoot(first, glm::vec3{0, -1, 0}, ecs);
-	});
-	systems::input::setKeyCallback(first, GLFW_KEY_RIGHT, [&first]() {
-		if (!player.dead)
-			playerShoot(first, glm::vec3{1, 0, 0}, ecs);
+			systems::transform::addPosition(body, 0.1f * PLAYER_VEL * glm::vec3(1, 0, 0));
 	});
 
-	w.setMouseButtonCallback([&first](GLFWwindow *window, int button, int action, int) {
+	// implements all player shooting behaviour, storing data in the InputComponent
+	systems::input::setKeyCallback(body, GLFW_KEY_UP, [&body]() {
+		if (!player.dead)
+			playerShoot(body, glm::vec3{0, 1, 0}, ecs);
+	});
+	systems::input::setKeyCallback(body, GLFW_KEY_LEFT, [&body]() {
+		if (!player.dead)
+			playerShoot(body, glm::vec3{-1, 0, 0}, ecs);
+	});
+	systems::input::setKeyCallback(body, GLFW_KEY_DOWN, [&body]() {
+		if (!player.dead)
+			playerShoot(body, glm::vec3{0, -1, 0}, ecs);
+	});
+	systems::input::setKeyCallback(body, GLFW_KEY_RIGHT, [&body]() {
+		if (!player.dead)
+			playerShoot(body, glm::vec3{1, 0, 0}, ecs);
+	});
+
+	// implements a mouse button callback for the current window, when the left mouse button
+	// is clicked, calls the playerShoot() function
+	w.setMouseButtonCallback([&body](GLFWwindow *window, int button, int action, int) {
 		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
+			// gets the mouse position
 			double x, y;
 			glfwGetCursorPos(window, &x, &y);
+			// moves the y axis orientation (GLFW y = 0 point is at the top but in the scene
+			// y = 0 point is the bottom)
 			y = std::abs(y - HEIGHT);
-			auto dir = glm::normalize(glm::vec3{x, y, 0} - systems::transform::getPosition(first));
-			playerShoot(first, dir, ecs);
+			// calculates the vector which start from the body position and ends at the cursor position
+			auto dir = glm::normalize(glm::vec3{x, y, 0} - systems::transform::getPosition(body));
+			// shoot to the calculated direction
+			playerShoot(body, dir, ecs);
 		}
 	});
 
-	ed->subscribe(event::loop::LOOP_UPDATE, [&first, &w]() {
-		auto pos = systems::transform::getPosition(first);
-		auto scale = systems::transform::getScale(first);
+	// these operations are called everytime the gameloop is in update phase
+	// they prevent the player to move out of the window
+	ed->subscribe(event::loop::LOOP_UPDATE, [&body, &w]() {
+		auto pos = systems::transform::getPosition(body);
+		auto scale = systems::transform::getScale(body);
 		auto z = pos.z;
 		if (pos.y + scale.y > w.getHeight()) {
 			pos = {pos.x, w.getHeight() - scale.y, z};
@@ -253,11 +337,12 @@ int main(int argc, char *argv[]) {
 		if (pos.x + scale.x > w.getWidth()) {
 			pos = {w.getWidth() - scale.x, pos.y, z};
 		}
-		systems::transform::updatePosition(first, pos);
+		systems::transform::updatePosition(body, pos);
 	});
 
 	// Entity Manager callbacks
 	std::cerr << "Move this operation in EventManger: LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
+    // executes all the input callbacks when game loop is in input phase
 	ed->subscribe(event::loop::LOOP_INPUT, [&w, &ett]() {
 		for (auto e : ett->getEntitiesFromComponent<InputComponent>()) {
 			for (auto [key, f] : systems::input::getKeysCallback(e)) {
@@ -297,15 +382,15 @@ int main(int argc, char *argv[]) {
 
 	// event for spawning an enemy
 	auto offset = glm::vec3{100, 100, 0};
-	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &first, &offset]() {
+	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &body, &offset]() {
 		return;
 		if (player.dead)
 			return;
-		auto pos = systems::transform::getPosition(first);
+		auto pos = systems::transform::getPosition(body);
 		auto id = factoryEnemy(BasicInfo{{getRandomPosNear(pos, offset)}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
 		ett->addComponent<BehaviourComponent>(id);
-		systems::enemy::setBehaviour(id, [id, first]() {
-			auto target = systems::transform::getPosition(first) - systems::transform::getPosition(id);
+		systems::enemy::setBehaviour(id, [id, body]() {
+			auto target = systems::transform::getPosition(body) - systems::transform::getPosition(id);
 			systems::transform::addPosition(id, glm::normalize(target) * ENEMY_VEL);
 		});
 		ecs->addEntity(id, ShaderType::SHADER_DEFAULT);
