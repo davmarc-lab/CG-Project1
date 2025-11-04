@@ -19,8 +19,8 @@ using namespace ogl;
 const auto ed = EventManager::instance();
 const auto ecs = BasicScene::instance();
 
-const float WIDTH = 1600.f;
-const float HEIGHT = 900.f;
+const float WIDTH = 800.f;
+const float HEIGHT = 600.f;
 
 const auto ENEMY_SPAWN_DELAY = 5;
 const auto ENEMY_MAX_ENTITIES = 5;
@@ -70,8 +70,7 @@ void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<Basi
 	if (direction == glm::vec3(0))
 		return;
 
-	if (!EntityManager::instance()->entityHasComponent<GunComponent>(id))
-		return;
+    ASSERT(EntityManager::instance()->entityHasComponent<GunComponent>(id));
 
 	auto ls = systems::gun::getLastShoot(id);
 	auto cd = systems::gun::getCooldown(id);
@@ -96,6 +95,7 @@ int main(int argc, char *argv[]) {
 	srand(time(NULL));
 
 	WindowSettings s{};
+    s.position = {40, 40};
 	s.decorated = false;
 	s.vsync = true;
 	s.size = {WIDTH, HEIGHT};

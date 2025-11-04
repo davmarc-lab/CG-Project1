@@ -375,8 +375,10 @@ namespace systems {
 							::systems::enemy::decreaseHealth(c.y, ::systems::gun::getDamage(c.x));
 							updateEnemyLastHit(c.y, time);
 							if (::systems::enemy::getHealth(c.y) <= 0) {
-								rmv.insert(c.y);
-								ogl::EventManager::instance()->post(EVENT_ENEMY_DEAD);
+								if (rmv.size() < 1) {
+									rmv.insert(c.y);
+									ogl::EventManager::instance()->post(EVENT_ENEMY_DEAD);
+								}
 							}
 						}
 						rmv.insert(c.x);
@@ -393,8 +395,10 @@ namespace systems {
 							::systems::enemy::decreaseHealth(c.x, ::systems::gun::getDamage(c.y));
 							updateEnemyLastHit(c.x, time);
 							if (::systems::enemy::getHealth(c.x) <= 0) {
-								rmv.insert(c.x);
-								ogl::EventManager::instance()->post(EVENT_ENEMY_DEAD);
+								if (rmv.size() < 1) {
+									rmv.insert(c.x);
+									ogl::EventManager::instance()->post(EVENT_ENEMY_DEAD);
+								}
 							}
 						}
 						rmv.insert(c.y);
@@ -608,7 +612,7 @@ namespace systems {
 				glStencilMask(0x00);
 				glDisable(GL_DEPTH_TEST);
 				stencil.use();
-                stencil.setInt("shaderProgram", ShaderType::SHADER_DEFAULT);
+				stencil.setInt("shaderProgram", ShaderType::SHADER_DEFAULT);
 				for (auto id : outlines) {
 					if (std::find(ALL(outlines), id) != outlines.end()) {
 						// render a bigger mesh using stencil buffer
