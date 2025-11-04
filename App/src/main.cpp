@@ -10,6 +10,9 @@
 
 #include "../include/LevelManager.hpp"
 
+#include <GLFW/glfw3.h>
+#include <cstdlib>
+#include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../include/ECS/EcsScene.hpp"
@@ -224,6 +227,16 @@ int main(int argc, char *argv[]) {
 			playerShoot(first, glm::vec3{1, 0, 0}, ecs);
 	});
 
+	w.setMouseButtonCallback([&first](GLFWwindow *window, int button, int action, int) {
+		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
+			double x, y;
+			glfwGetCursorPos(window, &x, &y);
+			y = std::abs(y - HEIGHT);
+			auto dir = glm::normalize(glm::vec3{x, y, 0} - systems::transform::getPosition(first));
+			playerShoot(first, dir, ecs);
+		}
+	});
+
 	ed->subscribe(event::loop::LOOP_UPDATE, [&first, &w]() {
 		auto pos = systems::transform::getPosition(first);
 		auto scale = systems::transform::getScale(first);
@@ -285,6 +298,7 @@ int main(int argc, char *argv[]) {
 	// event for spawning an enemy
 	auto offset = glm::vec3{100, 100, 0};
 	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &first, &offset]() {
+		return;
 		if (player.dead)
 			return;
 		auto pos = systems::transform::getPosition(first);
