@@ -4,6 +4,7 @@
 
 void BasicScene::setSingleShader(const Shared<ogl::ShaderProgram> &shader) {
 	this->m_init = true;
+	this->m_shader = shader;
 }
 
 void BasicScene::addEntity(const unsigned int &ett, const ShaderType &type) {

@@ -28,8 +28,20 @@ float DY(int i, float *t);
 
 void hermiteInterpolation(float *t, glm::vec4 color_top, glm::vec4 color_bot, Curve *curve);
 
-// Creates the shapes from the already read text file.
+/**
+ * @brief Interpolates the given points into mesh vertices.
+ *
+ * @param color_top the mesh top color
+ * @param color_bot the mesh bot color
+ * @param curve the data structure containing all control points and interpolated vertices
+ */
 void buildHermite(glm::vec4 color_top, glm::vec4 color_bot, Shared<Curve> curve);
 
 // Read the text file given and store all the data.
+/**
+ * @brief Retrives a shared pointer to data read from the given file containing
+ * a list of points to use for hermite interpolation.
+ *
+ * @param path the file path
+ */
 Shared<Curve> readDataFromFile(const char *path);

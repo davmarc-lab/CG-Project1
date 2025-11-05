@@ -20,6 +20,7 @@
 using namespace ogl;
 
 const auto ed = EventManager::instance();
+// main mesh scene
 const auto ecs = BasicScene::instance();
 
 const float WIDTH = 800.f;
@@ -27,11 +28,9 @@ const float HEIGHT = 600.f;
 
 const auto ENEMY_SPAWN_DELAY = 5;
 const auto ENEMY_MAX_ENTITIES = 5;
+// max eneymies per level
 const glm::vec4 ENEMY_COLOR = {1, 0, 0, 1};
 const float ENEMY_VEL = 3.f;
-
-float lastEnemySpawnTime = 0;
-unsigned int enemyCount = 0;
 
 unsigned int levelCount = 1;
 
@@ -219,8 +218,6 @@ int main(int argc, char *argv[]) {
 
 	// creates head mesh
 	auto head = factoryCircle(BasicInfo{{1399, 824, 0.3}, {27, 20, 1}, {}}, {1, 1, 0, 1}, 40);
-	// adds a collider to the head
-	ett->addComponent<AABB>(head);
 	// define head parent mesh for relative movement
 	systems::parent::addChild(body, head);
 	ecs->addEntity(head, ShaderType::SHADER_DEFAULT);
@@ -342,7 +339,7 @@ int main(int argc, char *argv[]) {
 
 	// Entity Manager callbacks
 	std::cerr << "Move this operation in EventManger: LINE -> " << __LINE__ << ", FILE -> " << __FILE__ << "\n";
-    // executes all the input callbacks when game loop is in input phase
+	// executes all the input callbacks when game loop is in input phase
 	ed->subscribe(event::loop::LOOP_INPUT, [&w, &ett]() {
 		for (auto e : ett->getEntitiesFromComponent<InputComponent>()) {
 			for (auto [key, f] : systems::input::getKeysCallback(e)) {
@@ -353,22 +350,30 @@ int main(int argc, char *argv[]) {
 		}
 	});
 
+	// creates an uniform buffer to send common data to different shaders
+	// https://learnopengl.com/Advanced-OpenGL/Advanced-GLSL
 	UniformBuffer ubo{"Matrices"};
 	glm::mat4 proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
 	ubo.onAttach();
+	// alloc buffer memory for the projection matrix and time variable
 	ubo.setup(sizeof(glm::mat4) + sizeof(float) + 12, 0, 0, 0);
+	// assign projection matrix values
 	ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
 	float time = glfwGetTime();
+	// assign time value
 	ubo.update(sizeof(glm::mat4), sizeof(float), &time);
+	// every time it's time to render meshes it updates the time value
 	ed->subscribe(event::loop::LOOP_BEGIN_RENDER, [&ubo]() {
 		float time = glfwGetTime();
 		ubo.update(sizeof(glm::mat4), sizeof(float), &time);
 	});
+	// every time the projection matrix is modified updates the matrix values
 	ed->subscribe(event::shader::SHADER_PROJECTION_CHANGED, [&w, &ubo]() {
 		auto proj = glm::ortho(0.f, w.getWidth(), 0.f, w.getHeight());
 		ubo.update(0, sizeof(glm::mat4), glm::value_ptr(proj));
 	});
 
+	// add general panel to debug collisions (bounding boxes)
 	auto igdebug = im.addPanel<ImGuiDebug>();
 	igdebug->setRenderFunc([&igdebug]() {
 		ImGui::Begin("Debug");
@@ -382,37 +387,45 @@ int main(int argc, char *argv[]) {
 
 	// event for spawning an enemy
 	auto offset = glm::vec3{100, 100, 0};
+	// everytime the enemy spawn event is "posted" it creates one
 	ed->subscribe(EVENT_ENEMY_SPAWN, [&ett, &body, &offset]() {
-		return;
 		if (player.dead)
 			return;
 		auto pos = systems::transform::getPosition(body);
 		auto id = factoryEnemy(BasicInfo{{getRandomPosNear(pos, offset)}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
+		// add a behavior component to simulate enemy movement
 		ett->addComponent<BehaviourComponent>(id);
+		// enemy moves towards the player
 		systems::enemy::setBehaviour(id, [id, body]() {
 			auto target = systems::transform::getPosition(body) - systems::transform::getPosition(id);
 			systems::transform::addPosition(id, glm::normalize(target) * ENEMY_VEL);
 		});
 		ecs->addEntity(id, ShaderType::SHADER_DEFAULT);
-		enemyCount++;
+		// increses enemy count for the level manager
 	});
 
 	// event to decrease enemy counter
 	ed->subscribe(EVENT_ENEMY_DEAD, [&lm]() {
-		enemyCount--;
 		lm.decreaseEnemies();
 	});
 
+	// prevent the level manager to spawn an enemy every frame
 	ed->subscribe(EVENT_SPAWN_ITEM, [&lm]() {
 		lm.setPause(5);
 	});
 
+	// exec all entities behaviour
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { if (!player.dead) systems::enemy::execAllBehaviourFunc(); });
+	// exec all timed animations
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { if (!player.dead) systems::animation::executeNextFrame(glfwGetTime()); });
+	// exec all distance animations for projectiles movement
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { if (!player.dead) systems::animation::updateDistanceAnimation(); });
+	// resolve all entities collisions
 	ed->subscribe(event::loop::LOOP_UPDATE, []() { if (!player.dead) systems::collision::resolveCollisions(); });
+	// renders all the meshes in the scene
 	ed->subscribe(event::loop::LOOP_RENDER, []() { systems::render::renderAllMeshes(); });
 
+	// this is executed when the player is dead
 	ed->subscribe(PLAYER_DEAD_EVENT, [&w, &tm]() {
 		player.dead = true;
 		TextHelper h{};
@@ -421,6 +434,7 @@ int main(int argc, char *argv[]) {
 		h.color = {1, 1, 1};
 		auto l = tm->addText(h);
 	});
+	// renders bounding boxes if the debug flag is enabled
 	ed->subscribe(event::loop::LOOP_RENDER, [&igdebug]() {
 		if (igdebug->isBoundingBoxVisible())
 			systems::render::renderBoundingBox();
@@ -429,22 +443,24 @@ int main(int argc, char *argv[]) {
 	// Text Rendering on top of all
 	ed->subscribe(event::loop::LOOP_RENDER, [&tm]() { tm->onRender(); });
 
-	// compress all BoundingBox
+	// compress all entities with ParentComponent bounding boxes
 	systems::collision::compressBoundingBox();
 
+	// initialize the stencil buffer to draw a simple outline
 	systems::render::initStencilShader();
 
 	while (!glfwWindowShouldClose(w.getContext())) {
+		// for each event it executes all the registered callbacks
 		ed->post(event::loop::LOOP_INPUT);
-		// if (!player.dead) {
 		ed->post(event::loop::LOOP_UPDATE);
-		// }
 		ed->post(event::loop::LOOP_BEGIN_RENDER);
 		ed->post(event::loop::LOOP_RENDER);
 		ed->post(event::loop::LOOP_END_RENDER);
 	}
 
+	// clear all imgui data
 	im.onDetach();
+	// clear all window data
 	w.onDetach();
 
 	return 0;

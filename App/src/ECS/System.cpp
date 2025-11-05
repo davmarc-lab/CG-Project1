@@ -591,6 +591,7 @@ namespace systems {
 		void renderAllMeshes() {
 			auto outlines = em->getEntitiesFromComponent<Outlined>();
 			auto shader = scene->getShader();
+            ASSERT(shader != nullptr);
 			for (auto [stype, etts] : scene->getShaderEntityMap()) {
 				shader->use();
 				shader->setInt("shaderProgram", stype);
