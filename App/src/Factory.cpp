@@ -6,6 +6,10 @@
 
 #include <glm/glm.hpp>
 
+const auto ecs = BasicScene::instance();
+
+const glm::vec4 EYE_COLOR = {0.2274, 0.4627, 0.9411, 1};
+
 const std::vector<glm::vec3> squareVertices{
 	{-1, -1, 0},
 	{1, -1, 0},
@@ -180,7 +184,7 @@ unsigned int factoryHermite(const BasicInfo &info, const std::string &path, cons
 	buildHermite(color, color, curve);
 	auto vc = em->addComponent<VertexComponent>(id, curve->vertex, curve->colors, std::vector<unsigned int>{});
 	auto bc = em->addComponent<BufferComponent>(id);
-    em->addComponent<AABB>(id);
+	em->addComponent<AABB>(id);
 	systems::collision::updateCollider(id);
 	bc->vao.onAttach();
 	bc->vao.bind();
@@ -227,6 +231,22 @@ unsigned int factoryEnemy(const BasicInfo &info, const glm::vec4 &color) {
 	bc->vbo_c.onAttach();
 	bc->vbo_c.setup(vc->getColorsCoords().data(), vc->getColorsCoords().size(), GL_STATIC_DRAW);
 	bc->vao.linkAttribFast(1, 4, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+	em->addComponent<ParentComponent>(id);
+	{
+		auto pos = info.position;
+        pos.x += 8;
+        pos.y += 2;
+        pos.z += 0.2;
+		auto left = factoryCircle(BasicInfo{pos, {5, 7, 1}, {}}, EYE_COLOR);
+		systems::parent::addChild(id, left);
+		ecs->addEntity(left, ShaderType::SHADER_DEFAULT);
+
+        pos.x -= 20;
+		auto right = factoryCircle(BasicInfo{pos, {5, 7, 1}, {}}, EYE_COLOR);
+		systems::parent::addChild(id, right);
+		ecs->addEntity(right, ShaderType::SHADER_DEFAULT);
+	}
 
 	em->addComponent<Outlined>(id);
 	auto cc = em->addComponent<RenderComponent>(id);

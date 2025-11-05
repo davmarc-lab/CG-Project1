@@ -217,7 +217,7 @@ int main(int argc, char *argv[]) {
 	ecs->addEntity(body, ShaderType::SHADER_DEFAULT);
 
 	// creates head mesh
-	auto head = factoryCircle(BasicInfo{{1399, 824, 0.3}, {27, 20, 1}, {}}, {1, 1, 0, 1}, 40);
+	auto head = factoryCircle(BasicInfo{{1399, 824, 0.3}, {27, 20, 1}, {}}, {1, 0.7568, 0.9450, 1}, 40);
 	// define head parent mesh for relative movement
 	systems::parent::addChild(body, head);
 	ecs->addEntity(head, ShaderType::SHADER_DEFAULT);
@@ -244,7 +244,7 @@ int main(int argc, char *argv[]) {
 	auto iglevel = im.addPanel<ImGuiPanel>();
 	// define the render function for the imgui panel
 	iglevel->setRenderFunc([&iglevel, &lm]() {
-		ImGui::Begin("Level");
+		ImGui::Begin("Level", NULL, ImGuiWindowFlags_NoFocusOnAppearing);
 		ImGui::Text("Max Enemies: %u", lm.getMaxEnemies());
 		ImGui::Text("Spawned Enemies: %u", lm.getEnemiesSpawned());
 		ImGui::Text("Current Enemies: %u", lm.getCurrentEnemies());
@@ -376,7 +376,7 @@ int main(int argc, char *argv[]) {
 	// add general panel to debug collisions (bounding boxes)
 	auto igdebug = im.addPanel<ImGuiDebug>();
 	igdebug->setRenderFunc([&igdebug]() {
-		ImGui::Begin("Debug");
+		ImGui::Begin("Debug", NULL, ImGuiWindowFlags_NoFocusOnAppearing);
 		auto b = igdebug->isBoundingBoxVisible();
 		if (ImGui::Checkbox("View BB", &b)) {
 			igdebug->showBoundingBox(b);
@@ -395,10 +395,13 @@ int main(int argc, char *argv[]) {
 		auto id = factoryEnemy(BasicInfo{{getRandomPosNear(pos, offset)}, ENEMY_SLIME_SIZE, {}}, ENEMY_COLOR);
 		// add a behavior component to simulate enemy movement
 		ett->addComponent<BehaviourComponent>(id);
+
 		// enemy moves towards the player
 		systems::enemy::setBehaviour(id, [id, body]() {
 			auto target = systems::transform::getPosition(body) - systems::transform::getPosition(id);
-			systems::transform::addPosition(id, glm::normalize(target) * ENEMY_VEL);
+			auto dir = glm::normalize(target) * ENEMY_VEL;
+			dir.z = 0;
+			systems::transform::addPosition(id, dir);
 		});
 		ecs->addEntity(id, ShaderType::SHADER_DEFAULT);
 		// increses enemy count for the level manager

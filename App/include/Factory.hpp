@@ -42,7 +42,7 @@ struct EntityVertex {
 	std::vector<unsigned int> indices{};
 };
 
-const glm::vec3 ENEMY_SLIME_SIZE{120, 220, 1};
+const glm::vec3 ENEMY_SLIME_SIZE{80, 160, 1};
 const glm::vec3 SLIME_LEYE_OFFSET{-13, 0, 0};
 const glm::vec3 SLIME_REYE_OFFSET{10, 0, 0};
 const glm::vec3 SLIME_EYE_SCALE{10, 15, 1};

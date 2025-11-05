@@ -55,7 +55,7 @@ namespace systems {
 		}
 		bool removeEntityFromAll(const unsigned int &id) {
 			removeEntityFromScene(id);
-			return em->removeEntity(id);
+			return removeEntityFromManager(id);
 		}
 	} // namespace ecs
 	namespace transform {
@@ -591,7 +591,7 @@ namespace systems {
 		void renderAllMeshes() {
 			auto outlines = em->getEntitiesFromComponent<Outlined>();
 			auto shader = scene->getShader();
-            ASSERT(shader != nullptr);
+			ASSERT(shader != nullptr);
 			for (auto [stype, etts] : scene->getShaderEntityMap()) {
 				shader->use();
 				shader->setInt("shaderProgram", stype);
