@@ -42,7 +42,7 @@ const float HP_FACTOR = 2.f;
 const glm::vec4 EYE_COLOR = {0.2274, 0.4627, 0.9411, 1};
 
 /**
- * @brief Player data structure
+ * @brief Player data structure.
  */
 struct Player {
 	/// main mesh id
@@ -63,7 +63,7 @@ struct Player {
  *
  * @return a point in a random position outside the given offset
  */
-glm::vec3 getRandomPosNear(const glm::vec3 &pos, const glm::vec3 &offset) {
+static glm::vec3 getRandomPosNear(const glm::vec3 &pos, const glm::vec3 &offset) {
 	auto x = rand() % (int)WIDTH;
 	while (x > pos.x - offset.x && x < pos.x + offset.x)
 		x = rand() % (int)WIDTH;
@@ -78,7 +78,7 @@ glm::vec3 getRandomPosNear(const glm::vec3 &pos, const glm::vec3 &offset) {
  *
  * @return a random vector
  */
-glm::vec3 getRandomPos() {
+static glm::vec3 getRandomPos() {
 	auto x = rand() % (int)WIDTH;
 	auto y = rand() % (int)HEIGHT;
 	return {x, y, 0};
@@ -94,7 +94,7 @@ glm::vec3 getRandomPos() {
  *
  * @return true if the mesh is outside the window boundaries
  */
-bool outOfScreen(const Pair<float> &size, const glm::vec3 &pos, const glm::vec3 &scale) {
+static bool outOfScreen(const Pair<float> &size, const glm::vec3 &pos, const glm::vec3 &scale) {
 	return (pos.y + scale.y > size.y) || (pos.y - scale.y < 0) || (pos.x + scale.x > size.x) || (pos.x - scale.x < 0);
 }
 
@@ -106,7 +106,7 @@ bool outOfScreen(const Pair<float> &size, const glm::vec3 &pos, const glm::vec3 
  * @param direction the projectile direction
  * @param scene the scene to draw
  */
-void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<BasicScene> &scene) {
+static void playerShoot(unsigned int &id, const glm::vec3 &direction, const Shared<BasicScene> &scene) {
 	if (direction == glm::vec3(0))
 		return;
 

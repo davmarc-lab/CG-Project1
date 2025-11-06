@@ -53,7 +53,7 @@ void main() {
     float ypattern = mod(gl_FragCoord.x, GRID_SQUARE);
     float xpattern = mod(gl_FragCoord.y, GRID_SQUARE);
 
-    vec2 p = vec2(xpattern, ypattern) / 600 * 200;
+    vec2 p = vec2(xpattern, ypattern) / 900 * 200;
 
     bool yborder = ypattern < (GRID_SQUARE / 2.f) + GRID_GAP + GRID_SIZE && ypattern > (GRID_SQUARE / 2.f) + GRID_GAP - GRID_SIZE;
     bool xborder = xpattern < (GRID_SQUARE / 2.f) + GRID_GAP + GRID_SIZE && xpattern > (GRID_SQUARE / 2.f) + GRID_GAP - GRID_SIZE;

@@ -9,6 +9,7 @@ uniform mat4 model;
 
 layout(std140, binding = 0) uniform Matrices {
     mat4 proj;
+    float time;
 };
 
 void main() {

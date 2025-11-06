@@ -114,6 +114,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="resources\fonts\arial.ttf" />
     <Content Include="resources\hermite\other.txt" />
     <Content Include="resources\hermite\slime.txt" />
     <Content Include="resources\shader\fragmentShader.glsl" />
