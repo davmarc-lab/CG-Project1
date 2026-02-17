@@ -23,8 +23,8 @@ const auto ed = EventManager::instance();
 // main mesh scene
 const auto ecs = BasicScene::instance();
 
-const float WIDTH = 800.f;
-const float HEIGHT = 600.f;
+const float WIDTH = 1280.f;
+const float HEIGHT = 724.f;
 
 const auto ENEMY_SPAWN_DELAY = 5;
 const auto ENEMY_MAX_ENTITIES = 5;
