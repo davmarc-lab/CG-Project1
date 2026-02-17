@@ -15,6 +15,7 @@ You can shoot at enemies, but you'll need more then you hit to kill them.
  - `LEFT_ARROW` => shoot a projectile to the left
  - `DOWN_ARROW` => shoot a projectile to the bottom
  - `RIGHT_ARROW` => shoot a projectile to the right
+ - `MOUSE1` => shoot along mouse cursor direction
  - `ESC` => if you press thi key the game will close in every state the game is
 
 ## How to Run
